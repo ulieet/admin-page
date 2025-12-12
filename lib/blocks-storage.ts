@@ -2,6 +2,7 @@ import type { PageConfig, Block, StyleConfig } from "./types/blocks"
 
 const STORAGE_KEY = "page-builder-config"
 
+// Valores por defecto para estilos
 const defaultStyles: StyleConfig = {
   colores: {
     primario: "#1e40af", // Azul royal
@@ -30,8 +31,8 @@ const defaultConfig: PageConfig = {
       orden: 0,
       activo: true,
       datos: {
-        logoImagen: "", // Added logoImagen field
-        logoTexto: "LOGO", // Changed from logo to logoTexto
+        logoImagen: "",
+        logoTexto: "LOGO",
         nombreEmpresa: "Empresa X",
         navegacion: [
           { nombre: "Inicio", url: "#inicio" },
@@ -41,6 +42,8 @@ const defaultConfig: PageConfig = {
         ],
         botonTexto: "Contactar",
         botonUrl: "#contacto",
+        alineacion: "derecha",
+        transparente: false,
       },
     },
     {
@@ -90,6 +93,19 @@ export function cargarConfiguracion(): PageConfig {
 
   try {
     const config = JSON.parse(stored) as PageConfig
+
+    // --- CORRECCIÓN CRÍTICA: Asegurar estilos ---
+    // Si no existen estilos, usamos los default.
+    // Si existen, hacemos merge para asegurar que no falten propiedades nuevas.
+    if (!config.estilos) {
+      config.estilos = defaultStyles
+    } else {
+      config.estilos = {
+        colores: { ...defaultStyles.colores, ...(config.estilos.colores || {}) },
+        tipografia: { ...defaultStyles.tipografia, ...(config.estilos.tipografia || {}) },
+      }
+    }
+    // ---------------------------------------------
 
     const bloquesFijos: Record<string, Block> = {}
     const bloquesVariables: Block[] = []

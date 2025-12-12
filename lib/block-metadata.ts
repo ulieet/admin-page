@@ -4,7 +4,7 @@ export interface BlockMetadata {
   description: string
   icon: string
   category: "fixed" | "content"
-  previewImage: string // URL to preview image
+  previewImage: string 
   variants: {
     id: string
     name: string
@@ -20,7 +20,7 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     description: "Barra de navegación superior con logo y menú",
     icon: "Settings",
     category: "fixed",
-    previewImage: "/header-navigation-bar.jpg",
+    previewImage: "/navbar.png",
     variants: [
       {
         id: "default",

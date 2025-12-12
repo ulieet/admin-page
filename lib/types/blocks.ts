@@ -33,16 +33,16 @@ export interface BaseBlock {
   tipo: BlockType
   orden: number
   activo: boolean
-  variant?: BlockVariant // Added variant property
+  variant?: BlockVariant
 }
 
-// SECCIONES FIJAS (únicas, no se pueden duplicar)
+// SECCIONES FIJAS
 
 export interface HeaderBlock extends BaseBlock {
   tipo: "header"
   datos: {
-    logoImagen?: string // URL de la imagen del logo
-    logoTexto?: string // Texto alternativo si no hay imagen
+    logoImagen?: string
+    logoTexto?: string
     nombreEmpresa: string
     navegacion: Array<{
       nombre: string
@@ -50,6 +50,9 @@ export interface HeaderBlock extends BaseBlock {
     }>
     botonTexto: string
     botonUrl: string
+    // Nuevas propiedades para Header
+    alineacion?: "izquierda" | "centro" | "derecha"
+    transparente?: boolean
   }
 }
 
@@ -77,12 +80,12 @@ export interface FooterBlock extends BaseBlock {
     imagenMapa: string
     redesSociales: {
       linkedin: string
-      instagram: string
+      facebook: string // Cambiado a facebook según tu uso anterior, ajusta si es necesario
     }
   }
 }
 
-// BLOQUES VARIABLES (genéricos, reutilizables)
+// BLOQUES VARIABLES
 
 export interface BannerBlock extends BaseBlock {
   tipo: "banner"
@@ -101,7 +104,7 @@ export interface Cards3Block extends BaseBlock {
   datos: {
     titulo?: string
     items: Array<{
-      icono: string // Puede ser nombre de lucide icon o base64 de imagen
+      icono: string
       titulo: string
       descripcion: string
       botonTexto?: string
@@ -117,6 +120,7 @@ export interface TextImageBlock extends BaseBlock {
     texto: string
     imagen: string
     imagenDerecha: boolean
+    posicionImagen?: "izquierda" | "derecha" // Asegurando compatibilidad con el editor
     puntos?: string[]
   }
 }
@@ -138,6 +142,9 @@ export interface FormBlock extends BaseBlock {
       email: string
       horario: string
     }
+    // NUEVAS PROPIEDADES AGREGADAS
+    alineacion?: "izquierda" | "centro" | "derecha"
+    estiloVisual?: "clasico" | "tarjeta" | "minimal"
   }
 }
 
