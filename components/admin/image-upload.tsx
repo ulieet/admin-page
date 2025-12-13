@@ -1,83 +1,67 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { ChangeEvent, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Image as ImageIcon, X, Upload } from "lucide-react"
-import Image from "next/image"
+import { Upload, Image as ImageIcon, X } from "lucide-react"
 
 interface ImageUploadProps {
-  label: string
   value: string
   onChange: (value: string) => void
 }
 
-export function ImageUpload({ label, value, onChange }: ImageUploadProps) {
-  const [preview, setPreview] = useState(value)
+export function ImageUpload({ value, onChange }: ImageUploadProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
-  useEffect(() => {
-    setPreview(value)
-  }, [value])
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value
-    setPreview(url)
-    onChange(url)
+    setIsUploading(true)
+    
+    // Aquí simulamos la subida. En producción, aquí harías el upload real a tu servidor/cloud
+    // y obtendrías la URL real.
+    const fakeUrl = URL.createObjectURL(file)
+    onChange(fakeUrl)
+    
+    setIsUploading(false)
   }
 
   return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      
-      {/* Área de Previsualización */}
-      <div className="relative flex flex-col gap-3">
-        {preview ? (
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted group">
-            {/* AQUÍ ESTÁ LA CLAVE: object-cover evita que se deforme */}
-            <Image
-              src={preview}
-              alt="Preview"
-              fill
-              className="object-cover transition-transform group-hover:scale-105"
-            />
-            {/* Botón para quitar la imagen */}
-            <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => {
-                setPreview("")
-                onChange("")
-              }}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        ) : (
-          <div className="flex aspect-video w-full items-center justify-center rounded-lg border border-dashed bg-muted/50 text-muted-foreground">
-            <div className="flex flex-col items-center gap-2 text-xs">
-              <ImageIcon className="h-8 w-8 opacity-50" />
-              <span>Sin imagen</span>
-            </div>
-          </div>
-        )}
+    <div className="flex gap-2 items-center">
+      {/* Input oculto para el explorador de archivos */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        accept="image/*"
+      />
 
-        {/* Input para la URL */}
-        <div className="flex gap-2">
-          <Input
-            placeholder="https://..."
-            value={preview}
-            onChange={handleUrlChange}
-            className="flex-1"
-          />
-          {/* Aquí podrías conectar un selector de archivos real si tuvieras backend de carga */}
-          <Button variant="outline" size="icon" title="Subir (Simulado)">
-            <Upload className="h-4 w-4" />
-          </Button>
+      {/* Input visible para ver la URL o pegarla manualmente */}
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="https://..."
+        className="flex-1"
+      />
+
+      {/* Botón que activa el explorador de windows directamente */}
+      <Button 
+        type="button" 
+        variant="secondary"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={isUploading}
+      >
+        <Upload className="h-4 w-4 mr-2" />
+        {isUploading ? "..." : "Subir"}
+      </Button>
+
+      {/* Previsualización rápida (opcional, ayuda a saber qué imagen es) */}
+      {value && (
+        <div className="relative w-10 h-10 border rounded overflow-hidden shrink-0">
+             <img src={value} alt="Preview" className="w-full h-full object-cover" />
         </div>
-      </div>
+      )}
     </div>
   )
 }
