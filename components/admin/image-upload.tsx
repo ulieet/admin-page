@@ -1,90 +1,83 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useRef } from "react"
-import { Upload, X, ImageIcon } from "lucide-react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Image as ImageIcon, X, Upload } from "lucide-react"
+import Image from "next/image"
 
 interface ImageUploadProps {
+  label: string
   value: string
   onChange: (value: string) => void
-  label?: string
-  className?: string
 }
 
-export function ImageUpload({ value, onChange, label, className }: ImageUploadProps) {
+export function ImageUpload({ label, value, onChange }: ImageUploadProps) {
   const [preview, setPreview] = useState(value)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const result = reader.result as string
-        setPreview(result)
-        onChange(result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+  useEffect(() => {
+    setPreview(value)
+  }, [value])
 
-  const handleRemove = () => {
-    setPreview("")
-    onChange("")
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value
+    setPreview(url)
+    onChange(url)
   }
 
   return (
-    <div className={cn("space-y-2", className)}>
-      {label && <label className="text-sm font-medium">{label}</label>}
-
-      <div className="border-2 border-dashed rounded-lg p-4 hover:border-primary/50 transition-colors">
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      
+      {/* Área de Previsualización */}
+      <div className="relative flex flex-col gap-3">
         {preview ? (
-          <div className="relative">
-            <img src={preview || "/placeholder.svg"} alt="Preview" className="w-full h-48 object-cover rounded-md" />
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted group">
+            {/* AQUÍ ESTÁ LA CLAVE: object-cover evita que se deforme */}
+            <Image
+              src={preview}
+              alt="Preview"
+              fill
+              className="object-cover transition-transform group-hover:scale-105"
+            />
+            {/* Botón para quitar la imagen */}
             <Button
               type="button"
               variant="destructive"
-              size="sm"
-              className="absolute top-2 right-2"
-              onClick={handleRemove}
+              size="icon"
+              className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => {
+                setPreview("")
+                onChange("")
+              }}
             >
-              <X className="w-4 h-4" />
+              <X className="h-3 w-3" />
             </Button>
           </div>
         ) : (
-          <div
-            className="flex flex-col items-center justify-center py-8 cursor-pointer"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-              <ImageIcon className="w-8 h-8 text-primary" />
+          <div className="flex aspect-video w-full items-center justify-center rounded-lg border border-dashed bg-muted/50 text-muted-foreground">
+            <div className="flex flex-col items-center gap-2 text-xs">
+              <ImageIcon className="h-8 w-8 opacity-50" />
+              <span>Sin imagen</span>
             </div>
-            <p className="text-sm font-medium mb-1">Haz clic para subir una imagen</p>
-            <p className="text-xs text-muted-foreground">PNG, JPG hasta 5MB</p>
           </div>
         )}
 
-        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+        {/* Input para la URL */}
+        <div className="flex gap-2">
+          <Input
+            placeholder="https://..."
+            value={preview}
+            onChange={handleUrlChange}
+            className="flex-1"
+          />
+          {/* Aquí podrías conectar un selector de archivos real si tuvieras backend de carga */}
+          <Button variant="outline" size="icon" title="Subir (Simulado)">
+            <Upload className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-
-      {preview && (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="w-full bg-transparent"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          Cambiar imagen
-        </Button>
-      )}
     </div>
   )
 }

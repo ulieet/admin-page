@@ -2,11 +2,10 @@ import type { PageConfig, Block, StyleConfig } from "./types/blocks"
 
 const STORAGE_KEY = "page-builder-config"
 
-// Valores por defecto para estilos
 const defaultStyles: StyleConfig = {
   colores: {
-    primario: "#1e40af", // Azul royal
-    secundario: "#1e3a8a", // Azul oscuro
+    primario: "#1e40af",
+    secundario: "#1e3a8a",
     fondo: "#ffffff",
     texto: "#1f2937",
     acento: "#3b82f6",
@@ -54,7 +53,7 @@ const defaultConfig: PageConfig = {
       datos: {
         titulo: "Soluciones empresariales para tu crecimiento",
         subtitulo: "Servicios profesionales diseñados para potenciar tu negocio",
-        imagenFondo: "",
+        imagenes: [],
         botonPrimarioTexto: "Comenzar ahora",
         botonPrimarioUrl: "#contacto",
         botonSecundarioTexto: "Ver más",
@@ -73,9 +72,19 @@ const defaultConfig: PageConfig = {
         telefono: "+54 (11) 1234-5678",
         direccion: "Av. Principal 1234, Buenos Aires",
         imagenMapa: "",
+        estiloVisual: "completo",
         redesSociales: {
           linkedin: "",
           facebook: "",
+          instagram: "",
+          twitter: "",
+          whatsapp: "",
+        },
+        // Nuevos valores por defecto
+        personalizacion: {
+          tipoFondo: "default",
+          colorPersonalizado: "#000000",
+          textoOscuro: false,
         },
       },
     },
@@ -94,18 +103,14 @@ export function cargarConfiguracion(): PageConfig {
   try {
     const config = JSON.parse(stored) as PageConfig
 
-    // --- CORRECCIÓN CRÍTICA: Asegurar estilos ---
-    // Si no existen estilos, usamos los default.
-    // Si existen, hacemos merge para asegurar que no falten propiedades nuevas.
     if (!config.estilos) {
       config.estilos = defaultStyles
     } else {
       config.estilos = {
-        colores: { ...defaultStyles.colores, ...(config.estilos.colores || {}) },
-        tipografia: { ...defaultStyles.tipografia, ...(config.estilos.tipografia || {}) },
+        colores: { ...defaultStyles.colores, ...config.estilos.colores },
+        tipografia: { ...defaultStyles.tipografia, ...config.estilos.tipografia },
       }
     }
-    // ---------------------------------------------
 
     const bloquesFijos: Record<string, Block> = {}
     const bloquesVariables: Block[] = []

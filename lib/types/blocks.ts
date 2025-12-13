@@ -50,7 +50,6 @@ export interface HeaderBlock extends BaseBlock {
     }>
     botonTexto: string
     botonUrl: string
-    // Nuevas propiedades para Header
     alineacion?: "izquierda" | "centro" | "derecha"
     transparente?: boolean
   }
@@ -80,7 +79,16 @@ export interface FooterBlock extends BaseBlock {
     imagenMapa: string
     redesSociales: {
       linkedin: string
-      facebook: string // Cambiado a facebook según tu uso anterior, ajusta si es necesario
+      facebook: string
+      instagram: string
+      twitter: string
+      whatsapp: string
+    }
+    estiloVisual?: "simple" | "con-mapa" | "completo"
+    personalizacion?: {
+      tipoFondo: "default" | "custom" | "transparente"
+      colorPersonalizado?: string
+      textoOscuro?: boolean
     }
   }
 }
@@ -120,7 +128,7 @@ export interface TextImageBlock extends BaseBlock {
     texto: string
     imagen: string
     imagenDerecha: boolean
-    posicionImagen?: "izquierda" | "derecha" // Asegurando compatibilidad con el editor
+    posicionImagen?: "izquierda" | "derecha"
     puntos?: string[]
   }
 }
@@ -142,7 +150,6 @@ export interface FormBlock extends BaseBlock {
       email: string
       horario: string
     }
-    // NUEVAS PROPIEDADES AGREGADAS
     alineacion?: "izquierda" | "centro" | "derecha"
     estiloVisual?: "clasico" | "tarjeta" | "minimal"
   }
@@ -166,8 +173,8 @@ export interface GalleryBlock extends BaseBlock {
     titulo?: string
     imagenes: Array<{
       url: string
-      alt: string
-      descripcion?: string
+      alt: string // Mantenemos alt para accesibilidad interna, pero el usuario editará el link
+      link?: string // Nuevo campo para el enlace
     }>
     columnas: 2 | 3 | 4
   }

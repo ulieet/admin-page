@@ -46,7 +46,6 @@ export default function Home() {
       root.style.setProperty("--color-secundario", estilos.colores.secundario)
       root.style.setProperty("--color-fondo", estilos.colores.fondo)
       root.style.setProperty("--color-texto", estilos.colores.texto)
-      root.style.setProperty("--color-acento", estilos.colores.acento)
       root.style.setProperty("--fuente-base", estilos.tipografia.fuente)
       root.style.setProperty("--tamano-base", estilos.tipografia.tamanoBase)
       root.style.setProperty("--tamano-titulo", estilos.tipografia.tamanoTitulo)
@@ -58,6 +57,10 @@ export default function Home() {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
   }
 
+  // Obtenemos los links del header para pasarlos al footer
+  const headerBlock = bloques.find((b) => b.tipo === "header")
+  const navLinks = headerBlock ? (headerBlock.datos as any).navegacion : []
+
   const bloquesVisibles = bloques.filter((b) => b.activo).sort((a, b) => a.orden - b.orden)
 
   return (
@@ -68,7 +71,16 @@ export default function Home() {
           console.warn("[v0] Componente no encontrado para tipo:", bloque.tipo)
           return null
         }
-        return <Componente key={bloque.id} data={bloque.datos as any} variant={bloque.variant} estilos={estilos} />
+        return (
+          <Componente 
+            key={bloque.id} 
+            data={bloque.datos as any} 
+            variant={bloque.variant} 
+            estilos={estilos}
+            // Pasamos los links a todos los componentes (el Footer los usará)
+            navLinks={navLinks} 
+          />
+        )
       })}
     </>
   )

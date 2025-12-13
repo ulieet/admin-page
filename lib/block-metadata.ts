@@ -48,25 +48,25 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     description: "Sección principal con imagen de fondo y llamado a la acción",
     icon: "ImageIcon",
     category: "fixed",
-    previewImage: "/hero-background-abstract.png",
+    previewImage: "/portada.png",
     variants: [
       {
         id: "default",
         name: "Centrado",
         description: "Contenido centrado con imagen de fondo completa",
-        previewImage: "/centered-hero-full-background-image.jpg",
+        previewImage: "/centrado.png",
       },
       {
         id: "modern",
         name: "Split",
         description: "Texto a la izquierda, imagen a la derecha",
-        previewImage: "/split-hero-text-left-image-right.jpg",
+        previewImage: "/split.png",
       },
       {
         id: "minimal",
         name: "Gradiente",
         description: "Hero con gradiente de color y texto grande",
-        previewImage: "/gradient-hero-large-text.jpg",
+        previewImage: "/gradiente.png",
       },
     ],
   },
@@ -76,7 +76,7 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     description: "Pie de página con información de contacto y redes sociales",
     icon: "Type",
     category: "fixed",
-    previewImage: "/footer-with-contact-info-social-media.jpg",
+    previewImage: "/footer.png",
     variants: [
       {
         id: "default",
@@ -244,7 +244,7 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     description: "Galería de imágenes en grid",
     icon: "Grid3x3",
     category: "content",
-    previewImage: "/placeholder.svg?height=150&width=400",
+    previewImage: "/galeria.png",
     variants: [
       {
         id: "default",

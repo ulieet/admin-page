@@ -13,14 +13,12 @@ interface EditorEstilosProps {
   onGuardar: (estilos: StyleConfig) => void
 }
 
-// Valores por defecto para evitar caídas si la prop viene vacía
-const defaultEstilos: StyleConfig = {
+const fallbackEstilos: StyleConfig = {
   colores: {
-    primario: "#1e40af",
-    secundario: "#1e3a8a",
+    primario: "#000000",
+    secundario: "#000000",
     fondo: "#ffffff",
-    texto: "#1f2937",
-    acento: "#3b82f6",
+    texto: "#000000",
   },
   tipografia: {
     fuente: "Inter",
@@ -31,8 +29,7 @@ const defaultEstilos: StyleConfig = {
 }
 
 export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
-  // Inicializamos con los estilos recibidos o los defaults si es null/undefined
-  const [estilosEditados, setEstilosEditados] = useState<StyleConfig>(estilos || defaultEstilos)
+  const [estilosEditados, setEstilosEditados] = useState<StyleConfig>(estilos || fallbackEstilos)
   const [tieneCambios, setTieneCambios] = useState(false)
 
   useEffect(() => {
@@ -44,9 +41,7 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
 
   const actualizar = (categoria: keyof StyleConfig, campo: string, valor: string) => {
     setEstilosEditados((prev) => {
-      // Aseguramos que la categoría existe antes de expandirla
-      const categoriaActual = prev[categoria] || defaultEstilos[categoria]
-      
+      const categoriaActual = prev[categoria] || fallbackEstilos[categoria]
       return {
         ...prev,
         [categoria]: {
@@ -63,9 +58,8 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
     setTieneCambios(false)
   }
 
-  // Si algo falla catastróficamente y estilosEditados es null, mostramos un fallback
-  if (!estilosEditados || !estilosEditados.colores || !estilosEditados.tipografia) {
-    return <div className="p-4 text-red-500">Error: No se pudieron cargar los estilos.</div>
+  if (!estilosEditados?.colores || !estilosEditados?.tipografia) {
+    return <div className="p-4 text-red-500">Error: Datos de estilos inválidos.</div>
   }
 
   return (
@@ -78,34 +72,34 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Color Primario</Label>
+              <Label>Color Primario (Botones, Títulos)</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
-                  value={estilosEditados.colores.primario || "#000000"}
+                  value={estilosEditados.colores.primario}
                   onChange={(e) => actualizar("colores", "primario", e.target.value)}
                   className="w-20 h-10 p-1 cursor-pointer"
                 />
                 <Input
                   type="text"
-                  value={estilosEditados.colores.primario || ""}
+                  value={estilosEditados.colores.primario}
                   onChange={(e) => actualizar("colores", "primario", e.target.value)}
                   placeholder="#1e40af"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Color Secundario</Label>
+              <Label>Color Secundario (Botones secundarios)</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
-                  value={estilosEditados.colores.secundario || "#000000"}
+                  value={estilosEditados.colores.secundario}
                   onChange={(e) => actualizar("colores", "secundario", e.target.value)}
                   className="w-20 h-10 p-1 cursor-pointer"
                 />
                 <Input
                   type="text"
-                  value={estilosEditados.colores.secundario || ""}
+                  value={estilosEditados.colores.secundario}
                   onChange={(e) => actualizar("colores", "secundario", e.target.value)}
                   placeholder="#1e3a8a"
                 />
@@ -116,13 +110,13 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
               <div className="flex gap-2">
                 <Input
                   type="color"
-                  value={estilosEditados.colores.fondo || "#ffffff"}
+                  value={estilosEditados.colores.fondo}
                   onChange={(e) => actualizar("colores", "fondo", e.target.value)}
                   className="w-20 h-10 p-1 cursor-pointer"
                 />
                 <Input
                   type="text"
-                  value={estilosEditados.colores.fondo || ""}
+                  value={estilosEditados.colores.fondo}
                   onChange={(e) => actualizar("colores", "fondo", e.target.value)}
                   placeholder="#ffffff"
                 />
@@ -133,32 +127,15 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
               <div className="flex gap-2">
                 <Input
                   type="color"
-                  value={estilosEditados.colores.texto || "#000000"}
+                  value={estilosEditados.colores.texto}
                   onChange={(e) => actualizar("colores", "texto", e.target.value)}
                   className="w-20 h-10 p-1 cursor-pointer"
                 />
                 <Input
                   type="text"
-                  value={estilosEditados.colores.texto || ""}
+                  value={estilosEditados.colores.texto}
                   onChange={(e) => actualizar("colores", "texto", e.target.value)}
                   placeholder="#1f2937"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Color de Acento</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="color"
-                  value={estilosEditados.colores.acento || "#000000"}
-                  onChange={(e) => actualizar("colores", "acento", e.target.value)}
-                  className="w-20 h-10 p-1 cursor-pointer"
-                />
-                <Input
-                  type="text"
-                  value={estilosEditados.colores.acento || ""}
-                  onChange={(e) => actualizar("colores", "acento", e.target.value)}
-                  placeholder="#3b82f6"
                 />
               </div>
             </div>
@@ -175,7 +152,7 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
           <div className="space-y-2">
             <Label>Fuente Principal</Label>
             <Select
-              value={estilosEditados.tipografia.fuente || "Inter"}
+              value={estilosEditados.tipografia.fuente}
               onValueChange={(value) => actualizar("tipografia", "fuente", value)}
             >
               <SelectTrigger>
@@ -196,7 +173,7 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
               <Label>Tamaño Base</Label>
               <Input
                 type="text"
-                value={estilosEditados.tipografia.tamanoBase || ""}
+                value={estilosEditados.tipografia.tamanoBase}
                 onChange={(e) => actualizar("tipografia", "tamanoBase", e.target.value)}
                 placeholder="16px"
               />
@@ -205,7 +182,7 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
               <Label>Tamaño Título</Label>
               <Input
                 type="text"
-                value={estilosEditados.tipografia.tamanoTitulo || ""}
+                value={estilosEditados.tipografia.tamanoTitulo}
                 onChange={(e) => actualizar("tipografia", "tamanoTitulo", e.target.value)}
                 placeholder="48px"
               />
@@ -214,7 +191,7 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
               <Label>Tamaño Subtítulo</Label>
               <Input
                 type="text"
-                value={estilosEditados.tipografia.tamanoSubtitulo || ""}
+                value={estilosEditados.tipografia.tamanoSubtitulo}
                 onChange={(e) => actualizar("tipografia", "tamanoSubtitulo", e.target.value)}
                 placeholder="20px"
               />
