@@ -13,6 +13,7 @@ import { BloqueForm } from "@/components/bloques/form"
 import { BloqueStats } from "@/components/bloques/stats"
 import { BloqueGallery } from "@/components/bloques/gallery"
 
+// Mapeo de componentes
 const COMPONENTES = {
   header: BloqueHeader,
   hero: BloqueHero,
@@ -35,10 +36,9 @@ export default function Home() {
     setBloques(config.bloques)
     setEstilos(config.estilos)
     setLoading(false)
-    console.log("[v0] Bloques cargados en página principal:", config.bloques)
-    console.log("[v0] Estilos cargados:", config.estilos)
   }, [])
 
+  // Aplicar variables CSS globales al cargar
   useEffect(() => {
     if (estilos && typeof document !== "undefined") {
       const root = document.documentElement
@@ -57,31 +57,53 @@ export default function Home() {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
   }
 
-  // Obtenemos los links del header para pasarlos al footer
-  const headerBlock = bloques.find((b) => b.tipo === "header")
+  // 1. Identificamos Header y Footer por separado
+  const headerBlock = bloques.find((b) => b.tipo === "header" && b.activo)
+  const footerBlock = bloques.find((b) => b.tipo === "footer" && b.activo)
+  
+  // 2. Filtramos el resto de bloques (Contenido Central)
+  const contenidoBlocks = bloques
+    .filter((b) => b.activo && b.tipo !== "header" && b.tipo !== "footer")
+    .sort((a, b) => a.orden - b.orden)
+
+  // Datos para pasar al footer (enlaces de navegación)
   const navLinks = headerBlock ? (headerBlock.datos as any).navegacion : []
 
-  const bloquesVisibles = bloques.filter((b) => b.activo).sort((a, b) => a.orden - b.orden)
+  // Helper para renderizar
+  const renderBlock = (bloque: Block) => {
+    const Componente = COMPONENTES[bloque.tipo]
+    if (!Componente) return null
+    return (
+      <Componente 
+        key={bloque.id} 
+        data={bloque.datos as any} 
+        variant={bloque.variant} 
+        estilos={estilos}
+        navLinks={navLinks} 
+      />
+    )
+  }
 
   return (
     <>
-      {bloquesVisibles.map((bloque) => {
-        const Componente = COMPONENTES[bloque.tipo]
-        if (!Componente) {
-          console.warn("[v0] Componente no encontrado para tipo:", bloque.tipo)
-          return null
-        }
-        return (
-          <Componente 
-            key={bloque.id} 
-            data={bloque.datos as any} 
-            variant={bloque.variant} 
-            estilos={estilos}
-            // Pasamos los links a todos los componentes (el Footer los usará)
-            navLinks={navLinks} 
-          />
-        )
-      })}
+      {/* A. HEADER */}
+      {headerBlock && renderBlock(headerBlock)}
+
+      {/* B. CONTENIDO PRINCIPAL 
+          'flex-1' hace que este div crezca para ocupar todo el espacio disponible,
+          empujando el footer hacia abajo si hay poco contenido.
+      */}
+      <main className="flex-1 flex flex-col w-full">
+        {contenidoBlocks.length > 0 ? (
+          contenidoBlocks.map((bloque) => renderBlock(bloque))
+        ) : (
+          // Placeholder invisible para evitar colapsos si no hay contenido
+          <div className="min-h-[20vh]" />
+        )}
+      </main>
+
+      {/* C. FOOTER */}
+      {footerBlock && renderBlock(footerBlock)}
     </>
   )
 }

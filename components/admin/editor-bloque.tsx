@@ -3,12 +3,12 @@
 import type { Block, BlockVariant } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Save } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { VariantSelector } from "./variant-selector"
 import { BlockPreview } from "./block-preview"
 import { Separator } from "@/components/ui/separator"
 
-// --- IMPORTACIÓN DE EDITORES DE BLOQUES ---
+// Importamos todos los editores
 import { HeaderEditor } from "./blocks/HeaderEditor"
 import { HeroEditor } from "./blocks/HeroEditor"
 import { FooterEditor } from "./blocks/FooterEditor"
@@ -25,7 +25,6 @@ import { ContactFormEditor } from "./blocks/ContactFormEditor"
 import { StatsEditor } from "./blocks/StatsEditor"
 import { GalleryEditor } from "./blocks/GalleryEditor"
 
-// Mapeo de tipos de bloque a sus componentes editores
 const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   header: HeaderEditor,
   hero: HeroEditor,
@@ -54,21 +53,19 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
   const [bloqueEditado, setBloqueEditado] = useState<Block>(bloque)
   const [tieneCambios, setTieneCambios] = useState(false)
 
-  // Sincronizar estado si cambian las props
   useEffect(() => {
     setBloqueEditado(bloque)
     setTieneCambios(false)
   }, [bloque])
 
-  // Función unificada para actualizar datos (se pasa a los hijos)
-const actualizarDatos = (campo: string, valor: any) => {
+  const actualizarDatos = useCallback((campo: string, valor: any) => {
     setBloqueEditado((prev) => ({
       ...prev,
       datos: { ...prev.datos, [campo]: valor },
-    } as Block)) // <--- AGREGAMOS ESTO: "as Block"
+    } as Block))
     setTieneCambios(true)
-  }
-  // Función para actualizar variante
+  }, [])
+
   const actualizarVariant = (variant: BlockVariant) => {
     setBloqueEditado((prev) => ({
       ...prev,
@@ -82,24 +79,18 @@ const actualizarDatos = (campo: string, valor: any) => {
     setTieneCambios(false)
   }
 
-  // Seleccionamos el componente correcto basado en el tipo
   const EditorComponent = BLOCK_EDITORS[bloqueEditado.tipo]
-
-  // Bloques que NO muestran selector de variantes (según tu lógica original)
   const hideVariantSelector = ["header", "form", "footer", "gallery"].includes(bloqueEditado.tipo)
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* 1. Vista Previa */}
       <div className="p-6 border-b">
         <BlockPreview blockType={bloqueEditado.tipo} />
       </div>
 
-      {/* 2. Área de Edición (Scrollable) */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="space-y-6">
           
-          {/* Selector de Variantes (Condicional) */}
           {!hideVariantSelector && (
             <>
               <VariantSelector
@@ -111,15 +102,16 @@ const actualizarDatos = (campo: string, valor: any) => {
             </>
           )}
 
-          {/* Renderizado Dinámico del Editor Específico */}
           <div>
             <h3 className="font-semibold text-sm mb-4 capitalize">
               Editando: {bloqueEditado.tipo.replace("-", " ")}
             </h3>
             
             {EditorComponent ? (
+              // 👇 AQUÍ ESTÁ LA SOLUCIÓN: Pasamos la variante al hijo
               <EditorComponent 
                 data={bloqueEditado.datos} 
+                variant={bloqueEditado.variant} 
                 onChange={actualizarDatos} 
               />
             ) : (
@@ -131,7 +123,6 @@ const actualizarDatos = (campo: string, valor: any) => {
         </div>
       </div>
 
-      {/* 3. Barra de Acciones (Footer Fijo) */}
       <div className="border-t p-4 bg-background flex items-center justify-between sticky bottom-0 z-10">
         <div className="text-sm text-muted-foreground">
           {tieneCambios ? "Hay cambios sin guardar" : "Sin cambios"}
