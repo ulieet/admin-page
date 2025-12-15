@@ -98,7 +98,6 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
       },
     ],
   },
-  // --- ACTUALIZADO: BANNER (Coincide con BannerEditor y BloqueBanner) ---
   banner: {
     type: "banner",
     name: "Banner",
@@ -108,26 +107,42 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     previewImage: "/promotional-banner-with-image-text.jpg",
     variants: [
       {
-        id: "standard", // Antes "default"
+        id: "standard",
         name: "Estándar",
         description: "Banner con imagen de fondo y texto superpuesto",
         previewImage: "/standard-banner-background-image-overlay-text.jpg",
       },
       {
-        id: "card", // Antes "modern"
+        id: "card",
         name: "Card",
         description: "Banner estilo tarjeta flotante con sombra",
         previewImage: "/card-style-banner-with-shadow.jpg",
       },
       {
-        id: "flat", // Antes "minimal"
+        id: "flat",
         name: "Flat",
         description: "Banner plano con color de fondo sólido",
         previewImage: "/flat-banner-solid-background-color.jpg",
       },
     ],
   },
-  // --- ACTUALIZADO: CARDS-3 (Coincide con Cards3Editor y BloqueCards3) ---
+  // AQUÍ ESTÁ EL BLOQUE NUEVO PARA QUE APAREZCA EN LA LISTA:
+  "logo-marquee": {
+    type: "logo-marquee",
+    name: "Carrusel de Logos",
+    description: "Cinta deslizante infinita de marcas o clientes",
+    icon: "MoveHorizontal", 
+    category: "content",
+    previewImage: "/placeholder.svg?height=150&width=400",
+    variants: [
+      {
+        id: "default",
+        name: "Estándar",
+        description: "Desplazamiento horizontal continuo",
+        previewImage: "/placeholder.svg?height=150&width=400",
+      },
+    ],
+  },
   "cards-3": {
     type: "cards-3",
     name: "Tarjetas (3 columnas)",
@@ -137,19 +152,19 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     previewImage: "/placeholder.svg?height=150&width=400",
     variants: [
       {
-        id: "corporate", // Antes "default"
+        id: "corporate",
         name: "Corporativo",
         description: "Tarjetas con borde, centradas y formales",
         previewImage: "/placeholder.svg?height=150&width=400",
       },
       {
-        id: "interactive", // Antes "modern"
+        id: "interactive",
         name: "Interactivo",
         description: "Fondos suaves y animaciones al pasar el mouse",
         previewImage: "/placeholder.svg?height=150&width=400",
       },
       {
-        id: "minimal", // Se mantiene igual pero actualizamos descripción
+        id: "minimal",
         name: "Minimalista",
         description: "Sin bordes, alineación izquierda, mucho aire",
         previewImage: "/placeholder.svg?height=150&width=400",

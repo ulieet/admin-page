@@ -29,7 +29,7 @@ import {
   CreditCard,
   FileText,
   FormInput,
-  BarChart3,
+  MoveHorizontal, // Icono para el carrusel
 } from "lucide-react"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -56,10 +56,10 @@ const getBlockIcon = (tipo: string) => {
       return FileText
     case "form":
       return FormInput
-    case "stats":
-      return BarChart3
     case "gallery":
       return Grid3x3
+    case "logo-marquee":
+      return MoveHorizontal
     default:
       return Type
   }
@@ -74,8 +74,8 @@ const getBlockName = (tipo: string) => {
     "cards-3": "Tarjetas (3 columnas)",
     "text-image": "Texto + Imagen",
     form: "Formulario",
-    stats: "Estadísticas",
     gallery: "Galería",
+    "logo-marquee": "Carrusel de Logos",
   }
   return names[tipo as keyof typeof names] || tipo
 }
@@ -91,15 +91,12 @@ export default function AdminPage() {
     const configuracion = cargarConfiguracion()
     setConfig(configuracion)
 
-    // Intentar recuperar el último estado guardado
     const savedState = localStorage.getItem("admin_last_state")
     let estadoRestaurado = false
 
     if (savedState) {
       try {
         const parsedState = JSON.parse(savedState)
-        
-        // Verificamos si el bloque guardado todavía existe (por si fue eliminado)
         const bloqueExiste = parsedState.bloqueSeleccionado 
           ? configuracion.bloques.some(b => b.id === parsedState.bloqueSeleccionado) 
           : false
@@ -108,12 +105,10 @@ export default function AdminPage() {
           setVistaActual(parsedState.vistaActual)
         }
 
-        // Si hay un bloque seleccionado válido y la vista es bloques, lo restauramos
         if (bloqueExiste) {
           setBloqueSeleccionado(parsedState.bloqueSeleccionado)
           estadoRestaurado = true
         } else if (parsedState.vistaActual !== "bloques") {
-          // Si estaba en configuración o estilos, no necesitamos seleccionar bloque
           estadoRestaurado = true
         }
       } catch (e) {
@@ -121,7 +116,6 @@ export default function AdminPage() {
       }
     }
 
-    // Si no se restauró nada (o es la primera vez), comportamiento por defecto: seleccionar primer fijo
     if (!estadoRestaurado) {
       const bloquesFijos = configuracion.bloques.filter((b) => esBloqueFijo(b.tipo))
       if (bloquesFijos.length > 0) {
@@ -130,16 +124,16 @@ export default function AdminPage() {
     }
   }, [])
 
-  // Efecto para guardar configuración de la página (contenido)
+  // Efecto para guardar configuración
   useEffect(() => {
     if (config) {
       guardarConfiguracion(config)
     }
   }, [config])
 
-  // Nuevo efecto: Guardar posición actual (vista y bloque) cada vez que cambia
+  // Guardar posición actual
   useEffect(() => {
-    if (config) { // Solo guardar si la configuración ya cargó
+    if (config) { 
       const stateToSave = {
         vistaActual,
         bloqueSeleccionado
@@ -168,7 +162,6 @@ export default function AdminPage() {
       const nuevosBloqueo = config.bloques.filter((b) => b.id !== id)
       setConfig({ ...config, bloques: nuevosBloqueo })
       eliminarBloque(id)
-      // Si eliminamos el bloque seleccionado, intentar volver al último estado válido o al default
       if (bloqueSeleccionado === id) {
         const bloquesFijos = nuevosBloqueo.filter((b) => esBloqueFijo(b.tipo))
         setBloqueSeleccionado(bloquesFijos.length > 0 ? bloquesFijos[0].id : null)
@@ -552,7 +545,8 @@ export default function AdminPage() {
                   <CardTitle>Configuración General</CardTitle>
                   <CardDescription>Información básica de tu empresa</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
+                  {/* Nombre de la Empresa */}
                   <div className="space-y-2">
                     <Label>Nombre de la Empresa</Label>
                     <Input
@@ -565,6 +559,24 @@ export default function AdminPage() {
                         })
                       }
                     />
+                  </div>
+
+                  {/* WhatsApp Flotante */}
+                  <div className="space-y-2">
+                    <Label>WhatsApp Flotante</Label>
+                    <Input
+                      placeholder="Ej: 5491112345678 (Código país + Número)"
+                      value={config.empresa.whatsapp || ""}
+                      onChange={(e) =>
+                        setConfig({
+                          ...config,
+                          empresa: { ...config.empresa, whatsapp: e.target.value },
+                        })
+                      }
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Ingresa el número completo solo con dígitos. Aparecerá un botón flotante en tu web.
+                    </p>
                   </div>
                 </CardContent>
               </Card>

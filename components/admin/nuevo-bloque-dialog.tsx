@@ -5,7 +5,7 @@ import type { Block, BlockType } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EditorBloque } from "./editor-bloque"
-import { ImageIcon, CreditCard, FileText, FormInput, BarChart3, Grid3x3Icon } from "lucide-react"
+import { ImageIcon, CreditCard, FileText, FormInput, Grid3x3Icon, MoveHorizontal } from "lucide-react"
 
 interface NuevoBloqueDialogProps {
   onAgregar: (bloque: Block) => void
@@ -27,8 +27,8 @@ const tiposBloques = [
     icono: FileText,
   },
   { tipo: "form", nombre: "Formulario", descripcion: "Formulario de contacto personalizable", icono: FormInput },
-  { tipo: "stats", nombre: "Estadísticas", descripcion: "Números destacados con iconos", icono: BarChart3 },
   { tipo: "gallery", nombre: "Galería", descripcion: "Grid de imágenes", icono: Grid3x3Icon },
+  { tipo: "logo-marquee", nombre: "Carrusel de Logos", descripcion: "Cinta deslizante infinita de marcas", icono: MoveHorizontal },
 ]
 
 export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDialogProps) {
@@ -36,7 +36,8 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
 
   const crearBloqueBase = (tipo: BlockType): Block => {
     const id = `bloque-${Date.now()}`
-    const base = { id, tipo, orden: siguienteOrden, activo: true }
+    // Casting inicial para permitir la construcción flexible del objeto
+    const base = { id, tipo: tipo as any, orden: siguienteOrden, activo: true }
 
     switch (tipo) {
       case "banner":
@@ -89,9 +90,11 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           tipo: "text-image",
           datos: {
             titulo: "Acerca de Nosotros",
-            parrafo1: "Primer párrafo de contenido.",
-            parrafo2: "Segundo párrafo de contenido.",
+            // CORREGIDO: Usamos 'texto' en lugar de parrafo1/parrafo2
+            texto: "Este es un texto de ejemplo para describir tu empresa, producto o servicio. Puedes editarlo libremente.",
             imagen: "",
+            // CORREGIDO: Agregamos el campo requerido por el tipo
+            imagenDerecha: true, 
             posicionImagen: "derecha",
             puntos: ["Punto destacado 1", "Punto destacado 2", "Punto destacado 3"],
           },
@@ -117,19 +120,6 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             },
           },
         }
-      case "stats":
-        return {
-          ...base,
-          tipo: "stats",
-          datos: {
-            estadisticas: [
-              { numero: "15+", label: "Años de experiencia", icono: "award" },
-              { numero: "500+", label: "Clientes satisfechos", icono: "users" },
-              { numero: "1000+", label: "Proyectos completados", icono: "check-circle" },
-            ],
-            fondoOscuro: false,
-          },
-        }
       case "gallery":
         return {
           ...base,
@@ -144,6 +134,21 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             columnas: 3,
           },
         }
+      case "logo-marquee":
+        return {
+            ...base,
+            tipo: "logo-marquee",
+            datos: {
+                titulo: "Nuestros Clientes",
+                subtitulo: "Empresas que confían en nosotros",
+                empresas: [
+                    { nombre: "Empresa 1", logo: "" },
+                    { nombre: "Empresa 2", logo: "" },
+                    { nombre: "Empresa 3", logo: "" },
+                ]
+            }
+        } as Block 
+      
       default:
         throw new Error("Tipo de bloque no soportado")
     }

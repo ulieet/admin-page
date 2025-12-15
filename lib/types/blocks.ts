@@ -6,8 +6,8 @@ export type BlockType =
   | "cards-3"
   | "text-image"
   | "form"
-  | "stats"
   | "gallery"
+  | "logo-marquee" // ✅ Agregamos el tipo aquí
 
 // Configuración global de estilos
 export interface StyleConfig {
@@ -155,15 +155,16 @@ export interface FormBlock extends BaseBlock {
   }
 }
 
-export interface StatsBlock extends BaseBlock {
-  tipo: "stats"
+// ✅ Definimos la estructura del nuevo bloque
+export interface LogoMarqueeBlock extends BaseBlock {
+  tipo: "logo-marquee"
   datos: {
-    estadisticas: Array<{
-      numero: string
-      label: string
-      icono?: string
+    titulo?: string
+    subtitulo?: string
+    empresas: Array<{
+      nombre: string
+      logo: string
     }>
-    fondoOscuro: boolean
   }
 }
 
@@ -173,8 +174,8 @@ export interface GalleryBlock extends BaseBlock {
     titulo?: string
     imagenes: Array<{
       url: string
-      alt: string // Mantenemos alt para accesibilidad interna, pero el usuario editará el link
-      link?: string // Nuevo campo para el enlace
+      alt: string
+      link?: string
     }>
     columnas: 2 | 3 | 4
   }
@@ -188,8 +189,8 @@ export type Block =
   | Cards3Block
   | TextImageBlock
   | FormBlock
-  | StatsBlock
   | GalleryBlock
+  | LogoMarqueeBlock
 
 export interface PageConfig {
   bloques: Block[]
@@ -197,5 +198,6 @@ export interface PageConfig {
   empresa: {
     nombre: string
     logo?: string
+    whatsapp?: string 
   }
 }

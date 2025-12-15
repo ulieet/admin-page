@@ -63,14 +63,14 @@ export function BloqueFooter({ data, estilos, navLinks = [] }: BloqueFooterProps
 
   if (estiloVisual === "simple") {
     return (
-      // CAMBIO: pt-12 (arriba) pb-4 (abajo mínimo)
       <footer className={`${borderClass} pt-12 pb-6 transition-colors duration-300`} style={{ backgroundColor: finalBgColor, color: finalTextColor }}>
         <div className="container mx-auto px-4 flex flex-col items-center gap-6 text-center">
           <h3 className="text-2xl font-bold tracking-tight">{data.nombreEmpresa}</h3>
           <div className="flex gap-4 items-center">
             {renderSocialIcons()}
           </div>
-          <p className="text-sm opacity-80">
+          {/* ✅ Quitamos text-sm */}
+          <p className="opacity-80">
             © {new Date().getFullYear()} {data.nombreEmpresa}. Todos los derechos reservados.
           </p>
         </div>
@@ -81,7 +81,6 @@ export function BloqueFooter({ data, estilos, navLinks = [] }: BloqueFooterProps
   if (estiloVisual === "con-mapa") {
     return (
       <footer className={`${borderClass} transition-colors duration-300`} style={{ backgroundColor: finalBgColor, color: finalTextColor }}>
-        {/* CAMBIO: pt-16 (arriba) pb-4 (abajo mínimo) */}
         <div className="container mx-auto px-4 pt-16 pb-4">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
             <div className="space-y-8">
@@ -89,7 +88,8 @@ export function BloqueFooter({ data, estilos, navLinks = [] }: BloqueFooterProps
                 <h3 className="text-3xl font-bold" style={{ color: isDarkText ? primaryVar : 'inherit' }}>
                   {data.nombreEmpresa}
                 </h3>
-                <p className="opacity-80 max-w-md text-lg">
+                {/* ✅ Quitamos text-lg */}
+                <p className="opacity-80 max-w-md">
                   {data.descripcion}
                 </p>
               </div>
@@ -127,8 +127,8 @@ export function BloqueFooter({ data, estilos, navLinks = [] }: BloqueFooterProps
               )}
             </div>
           </div>
-          {/* Copyright Section - Ajustado margen superior */}
-          <div className="mt-12 border-t pt-4 text-center text-sm opacity-60" style={{ borderColor: isDarkText ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)' }}>
+          {/* ✅ Quitamos text-sm */}
+          <div className="mt-12 border-t pt-4 text-center opacity-60" style={{ borderColor: isDarkText ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)' }}>
             <p>© {new Date().getFullYear()} {data.nombreEmpresa}. Todos los derechos reservados.</p>
           </div>
         </div>
@@ -138,28 +138,30 @@ export function BloqueFooter({ data, estilos, navLinks = [] }: BloqueFooterProps
 
   // COMPLETO
   return (
-    // CAMBIO: pt-16 (arriba) pb-4 (abajo mínimo) en lugar de py-16
     <footer className="pt-16 pb-4 transition-colors duration-300" style={{ backgroundColor: finalBgColor, color: finalTextColor }}>
       <div className="container mx-auto px-4">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4 col-span-1 lg:col-span-2">
             <h3 className="text-2xl font-bold">{data.nombreEmpresa}</h3>
+            {/* ✅ Quitamos text-sm */}
             <p className="opacity-80 max-w-sm leading-relaxed">{data.descripcion}</p>
             <div className="flex gap-4 pt-2">{renderSocialIcons("h-6 w-6")}</div>
           </div>
           
           <div className="space-y-4">
             <h4 className="font-semibold text-lg">Contacto</h4>
-            <ul className="space-y-3 text-sm opacity-80">
-               {data.telefono && <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> <a href={`tel:${data.telefono}`} className="hover:underline">{data.telefono}</a></li>}
-               {data.email && <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> <a href={`mailto:${data.email}`} className="hover:underline">{data.email}</a></li>}
-               {data.direccion && <li className="flex items-start gap-2"><MapPin className="h-4 w-4 mt-1" /> <span>{data.direccion}</span></li>}
+            {/* ✅ Quitamos text-sm */}
+            <ul className="space-y-3 opacity-80">
+               <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> <a href={`tel:${data.telefono}`} className="hover:underline">{data.telefono}</a></li>
+               <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> <a href={`mailto:${data.email}`} className="hover:underline">{data.email}</a></li>
+               <li className="flex items-start gap-2"><MapPin className="h-4 w-4 mt-1" /> <span>{data.direccion}</span></li>
             </ul>
           </div>
 
           <div className="space-y-4">
             <h4 className="font-semibold text-lg">Empresa</h4>
-            <ul className="space-y-2 text-sm opacity-80">
+            {/* ✅ Quitamos text-sm */}
+            <ul className="space-y-2 opacity-80">
               {navLinks.length > 0 ? navLinks.map((link, i) => (
                 <li key={i}><Link href={link.url} className="hover:underline">{link.nombre}</Link></li>
               )) : (
@@ -168,8 +170,8 @@ export function BloqueFooter({ data, estilos, navLinks = [] }: BloqueFooterProps
             </ul>
           </div>
         </div>
-        {/* Copyright Section - Ajustado margen superior y padding top */}
-        <div className="mt-12 pt-4 border-t text-center text-sm opacity-60" style={{ borderColor: isDarkText ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)' }}>
+        {/* ✅ Quitamos text-sm */}
+        <div className="mt-12 pt-4 border-t text-center opacity-60" style={{ borderColor: isDarkText ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)' }}>
           <p>© {new Date().getFullYear()} {data.nombreEmpresa}. Creado con Page Builder.</p>
         </div>
       </div>

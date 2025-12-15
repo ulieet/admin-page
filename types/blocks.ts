@@ -1,115 +1,194 @@
-export type BlockType = "hero" | "text-image" | "gallery" | "features" | "contact" | "testimonials" | "stats" | "cta"
+export type BlockType =
+  | "header"
+  | "hero"
+  | "footer"
+  | "banner"
+  | "cards-3"
+  | "text-image"
+  | "form"
+  | "gallery"
+  | "logo-marquee" // ✅ Agregado
+
+// Configuración global de estilos
+export interface StyleConfig {
+  colores: {
+    primario: string
+    secundario: string
+    fondo: string
+    texto: string
+    acento: string
+  }
+  tipografia: {
+    fuente: string
+    tamanoBase: string
+    tamanoTitulo: string
+    tamanoSubtitulo: string
+  }
+}
+
+export type BlockVariant = "default" | "modern" | "minimal" | "bold"
 
 export interface BaseBlock {
   id: string
-  type: BlockType
-  order: number
-  active: boolean
+  tipo: BlockType
+  orden: number
+  activo: boolean
+  variant?: BlockVariant
+}
+
+// SECCIONES FIJAS
+
+export interface HeaderBlock extends BaseBlock {
+  tipo: "header"
+  datos: {
+    logoImagen?: string
+    logoTexto?: string
+    nombreEmpresa: string
+    navegacion: Array<{
+      nombre: string
+      url: string
+    }>
+    botonTexto: string
+    botonUrl: string
+    alineacion?: "izquierda" | "centro" | "derecha"
+    transparente?: boolean
+  }
 }
 
 export interface HeroBlock extends BaseBlock {
-  type: "hero"
-  data: {
-    title: string
-    subtitle: string
-    ctaText: string
-    ctaLink: string
-    backgroundImage?: string
-    layout: "center" | "left"
+  tipo: "hero"
+  datos: {
+    titulo: string
+    subtitulo: string
+    imagenes: string[]
+    botonPrimarioTexto: string
+    botonPrimarioUrl: string
+    botonSecundarioTexto: string
+    botonSecundarioUrl: string
+  }
+}
+
+export interface FooterBlock extends BaseBlock {
+  tipo: "footer"
+  datos: {
+    nombreEmpresa: string
+    descripcion: string
+    email: string
+    telefono: string
+    direccion: string
+    imagenMapa: string
+    redesSociales: {
+      linkedin: string
+      facebook: string
+      instagram: string
+      twitter: string
+      whatsapp: string
+    }
+    estiloVisual?: "simple" | "con-mapa" | "completo"
+    personalizacion?: {
+      tipoFondo: "default" | "custom" | "transparente"
+      colorPersonalizado?: string
+      textoOscuro?: boolean
+    }
+  }
+}
+
+// BLOQUES VARIABLES
+
+export interface BannerBlock extends BaseBlock {
+  tipo: "banner"
+  datos: {
+    titulo: string
+    subtitulo: string
+    imagen: string
+    botonTexto: string
+    botonUrl: string
+    alineacion: "izquierda" | "centro" | "derecha"
+  }
+}
+
+export interface Cards3Block extends BaseBlock {
+  tipo: "cards-3"
+  datos: {
+    titulo?: string
+    items: Array<{
+      icono: string
+      titulo: string
+      descripcion: string
+      botonTexto?: string
+      botonUrl?: string
+    }>
   }
 }
 
 export interface TextImageBlock extends BaseBlock {
-  type: "text-image"
-  data: {
-    title: string
-    description: string
-    image: string
-    imagePosition: "left" | "right"
-    ctaText?: string
-    ctaLink?: string
+  tipo: "text-image"
+  datos: {
+    titulo: string
+    texto: string
+    imagen: string
+    imagenDerecha: boolean
+    posicionImagen?: "izquierda" | "derecha"
+    puntos?: string[]
+  }
+}
+
+export interface FormBlock extends BaseBlock {
+  tipo: "form"
+  datos: {
+    titulo: string
+    descripcion: string
+    campos: Array<{
+      nombre: string
+      tipo: "text" | "email" | "tel" | "textarea"
+      requerido: boolean
+      placeholder: string
+    }>
+    botonTexto: string
+    infoContacto?: {
+      telefono: string
+      email: string
+      horario: string
+    }
+    alineacion?: "izquierda" | "centro" | "derecha"
+    estiloVisual?: "clasico" | "tarjeta" | "minimal"
+  }
+}
+
+// ✅ Nueva Interfaz para el Carrusel
+export interface LogoMarqueeBlock extends BaseBlock {
+  tipo: "logo-marquee"
+  datos: {
+    titulo?: string
+    subtitulo?: string
+    empresas: Array<{
+      nombre: string
+      logo: string
+    }>
   }
 }
 
 export interface GalleryBlock extends BaseBlock {
-  type: "gallery"
-  data: {
-    title: string
-    description?: string
-    images: Array<{
+  tipo: "gallery"
+  datos: {
+    titulo?: string
+    imagenes: Array<{
       url: string
-      title: string
-      description?: string
+      alt: string
+      link?: string
     }>
-    columns: 2 | 3 | 4
+    columnas: 2 | 3 | 4
   }
 }
 
-export interface FeaturesBlock extends BaseBlock {
-  type: "features"
-  data: {
-    title: string
-    description?: string
-    features: Array<{
-      icon: string
-      title: string
-      description: string
-    }>
-  }
-}
-
-export interface ContactBlock extends BaseBlock {
-  type: "contact"
-  data: {
-    title: string
-    description?: string
-    email: string
-    phone: string
-    address?: string
-  }
-}
-
-export interface TestimonialsBlock extends BaseBlock {
-  type: "testimonials"
-  data: {
-    title: string
-    testimonials: Array<{
-      name: string
-      role: string
-      content: string
-      avatar?: string
-    }>
-  }
-}
-
-export interface StatsBlock extends BaseBlock {
-  type: "stats"
-  data: {
-    title?: string
-    stats: Array<{
-      value: string
-      label: string
-    }>
-  }
-}
-
-export interface CTABlock extends BaseBlock {
-  type: "cta"
-  data: {
-    title: string
-    description: string
-    buttonText: string
-    buttonLink: string
-    backgroundColor?: string
-  }
-}
 
 export type Block =
+  | HeaderBlock
   | HeroBlock
+  | FooterBlock
+  | BannerBlock
+  | Cards3Block
   | TextImageBlock
+  | FormBlock
   | GalleryBlock
-  | FeaturesBlock
-  | ContactBlock
-  | TestimonialsBlock
-  | StatsBlock
-  | CTABlock
+  | LogoMarqueeBlock 

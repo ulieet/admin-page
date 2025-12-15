@@ -38,6 +38,8 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   "contact-form": ContactFormEditor,
   stats: StatsEditor,
   gallery: GalleryEditor,
+  // IMPORTANTE: Asignamos el Editor de Clientes al nuevo bloque Marquee
+  "logo-marquee": ClientsEditor,
 }
 
 interface EditorBloqueProps {
@@ -55,17 +57,11 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
     setTieneCambios(false)
   }, [bloque])
 
-  // --- FUNCIÓN CLAVE CORREGIDA ---
   const handleEditorChange = useCallback((campo: string, valor: any) => {
     setBloqueEditado((prev) => {
-      // 1. Si es un cambio de variante (Estilo)
       if (campo === "variant") {
-        // SOLUCIÓN: Agregamos 'as Block' al final para calmar a TypeScript
         return { ...prev, variant: valor } as Block
       }
-      
-      // 2. Si es un cambio de contenido (Datos)
-      // SOLUCIÓN: Agregamos 'as Block' al final
       return {
         ...prev,
         datos: { ...prev.datos, [campo]: valor },
@@ -81,11 +77,13 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
 
   const EditorComponent = BLOCK_EDITORS[bloqueEditado.tipo]
 
+  // CORRECCIÓN CSS: Cambiamos h-full/flex-1 por estilos de tarjeta sólida
+  // Esto asegura que el contenido fuerce la altura y sea visible.
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="flex flex-col bg-background border rounded-xl shadow-sm overflow-hidden">
       
       {/* CABECERA */}
-      <div className="p-6 border-b bg-slate-50/50">
+      <div className="p-6 border-b bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-200">
                 {bloqueEditado.tipo.replace("-", " ")}
@@ -95,12 +93,10 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
       </div>
 
       {/* ÁREA DE EDICIÓN */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="p-6 min-h-[300px]">
         <div className="space-y-6">
-          
           {EditorComponent ? (
             <EditorComponent 
-              // Pasamos 'data' fusionando datos y variant
               data={{ ...bloqueEditado.datos, variant: bloqueEditado.variant }} 
               onChange={handleEditorChange} 
             />
@@ -113,7 +109,7 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
       </div>
 
       {/* PIE DE PÁGINA (BOTONES) */}
-      <div className="border-t p-4 bg-white flex items-center justify-between sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <div className="border-t p-4 bg-slate-50/50 flex items-center justify-between">
         <div className="text-sm font-medium">
           {tieneCambios ? (
             <span className="text-amber-600 flex items-center gap-2">

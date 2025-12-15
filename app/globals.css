@@ -131,10 +131,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  /* ✅ CORRECCIÓN CLAVE: Mover la aplicación del tamaño base a HTML */
+  html {
+    font-size: var(--tamano-base);
+  }
+  
   body {
     @apply bg-background text-foreground;
     /* Apply dynamic font family */
     font-family: var(--fuente-base), var(--font-sans);
-    font-size: var(--tamano-base);
+    /* ❌ Eliminamos la línea font-size: var(--tamano-base); de aquí */
   }
 }
