@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { cargarConfiguracion } from "@/lib/blocks-storage"
 import type { Block, StyleConfig } from "@/lib/types/blocks"
+
+// Imports de tus componentes
 import { BloqueHeader } from "@/components/bloques/header"
 import { BloqueHero } from "@/components/bloques/hero"
 import { BloqueFooter } from "@/components/bloques/footer"
@@ -13,8 +15,8 @@ import { BloqueForm } from "@/components/bloques/form"
 import { BloqueStats } from "@/components/bloques/stats"
 import { BloqueGallery } from "@/components/bloques/gallery"
 
-// Mapeo de componentes
-const COMPONENTES = {
+// Mapeo de componentes (nombre en DB -> Componente React)
+const COMPONENTES: Record<string, any> = {
   header: BloqueHeader,
   hero: BloqueHero,
   footer: BloqueFooter,
@@ -71,13 +73,18 @@ export default function Home() {
 
   // Helper para renderizar
   const renderBlock = (bloque: Block) => {
+    // CORRECCIÓN: Usamos 'as any' para evitar conflictos de tipos
+    // entre componentes que tienen 'variant' y los que no.
     const Componente = COMPONENTES[bloque.tipo]
+
     if (!Componente) return null
+    
     return (
       <Componente 
         key={bloque.id} 
         data={bloque.datos as any} 
-        variant={bloque.variant} 
+        // Forzamos el tipo aquí también para máxima seguridad
+        variant={bloque.variant as any} 
         estilos={estilos}
         navLinks={navLinks} 
       />
@@ -85,7 +92,7 @@ export default function Home() {
   }
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col w-full">
       {/* A. HEADER */}
       {headerBlock && renderBlock(headerBlock)}
 
@@ -104,6 +111,6 @@ export default function Home() {
 
       {/* C. FOOTER */}
       {footerBlock && renderBlock(footerBlock)}
-    </>
+    </div>
   )
 }

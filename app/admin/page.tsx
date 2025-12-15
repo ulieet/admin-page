@@ -86,20 +86,67 @@ export default function AdminPage() {
   const [dialogNuevoAbierto, setDialogNuevoAbierto] = useState(false)
   const [vistaActual, setVistaActual] = useState<"bloques" | "configuracion" | "estilos">("bloques")
 
+  // Efecto de carga inicial y recuperación de estado
   useEffect(() => {
     const configuracion = cargarConfiguracion()
     setConfig(configuracion)
-    const bloquesFijos = configuracion.bloques.filter((b) => esBloqueFijo(b.tipo))
-    if (bloquesFijos.length > 0) {
-      setBloqueSeleccionado(bloquesFijos[0].id)
+
+    // Intentar recuperar el último estado guardado
+    const savedState = localStorage.getItem("admin_last_state")
+    let estadoRestaurado = false
+
+    if (savedState) {
+      try {
+        const parsedState = JSON.parse(savedState)
+        
+        // Verificamos si el bloque guardado todavía existe (por si fue eliminado)
+        const bloqueExiste = parsedState.bloqueSeleccionado 
+          ? configuracion.bloques.some(b => b.id === parsedState.bloqueSeleccionado) 
+          : false
+
+        if (parsedState.vistaActual) {
+          setVistaActual(parsedState.vistaActual)
+        }
+
+        // Si hay un bloque seleccionado válido y la vista es bloques, lo restauramos
+        if (bloqueExiste) {
+          setBloqueSeleccionado(parsedState.bloqueSeleccionado)
+          estadoRestaurado = true
+        } else if (parsedState.vistaActual !== "bloques") {
+          // Si estaba en configuración o estilos, no necesitamos seleccionar bloque
+          estadoRestaurado = true
+        }
+      } catch (e) {
+        console.error("Error al restaurar estado del admin:", e)
+      }
+    }
+
+    // Si no se restauró nada (o es la primera vez), comportamiento por defecto: seleccionar primer fijo
+    if (!estadoRestaurado) {
+      const bloquesFijos = configuracion.bloques.filter((b) => esBloqueFijo(b.tipo))
+      if (bloquesFijos.length > 0) {
+        setBloqueSeleccionado(bloquesFijos[0].id)
+      }
     }
   }, [])
 
+  // Efecto para guardar configuración de la página (contenido)
   useEffect(() => {
     if (config) {
       guardarConfiguracion(config)
     }
   }, [config])
+
+  // Nuevo efecto: Guardar posición actual (vista y bloque) cada vez que cambia
+  useEffect(() => {
+    if (config) { // Solo guardar si la configuración ya cargó
+      const stateToSave = {
+        vistaActual,
+        bloqueSeleccionado
+      }
+      localStorage.setItem("admin_last_state", JSON.stringify(stateToSave))
+    }
+  }, [vistaActual, bloqueSeleccionado, config])
 
   if (!config) {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
@@ -121,6 +168,7 @@ export default function AdminPage() {
       const nuevosBloqueo = config.bloques.filter((b) => b.id !== id)
       setConfig({ ...config, bloques: nuevosBloqueo })
       eliminarBloque(id)
+      // Si eliminamos el bloque seleccionado, intentar volver al último estado válido o al default
       if (bloqueSeleccionado === id) {
         const bloquesFijos = nuevosBloqueo.filter((b) => esBloqueFijo(b.tipo))
         setBloqueSeleccionado(bloquesFijos.length > 0 ? bloquesFijos[0].id : null)

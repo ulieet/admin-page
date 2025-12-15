@@ -98,6 +98,7 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
       },
     ],
   },
+  // --- ACTUALIZADO: BANNER (Coincide con BannerEditor y BloqueBanner) ---
   banner: {
     type: "banner",
     name: "Banner",
@@ -107,25 +108,26 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     previewImage: "/promotional-banner-with-image-text.jpg",
     variants: [
       {
-        id: "default",
+        id: "standard", // Antes "default"
         name: "Estándar",
         description: "Banner con imagen de fondo y texto superpuesto",
         previewImage: "/standard-banner-background-image-overlay-text.jpg",
       },
       {
-        id: "modern",
+        id: "card", // Antes "modern"
         name: "Card",
-        description: "Banner estilo tarjeta con sombra",
+        description: "Banner estilo tarjeta flotante con sombra",
         previewImage: "/card-style-banner-with-shadow.jpg",
       },
       {
-        id: "minimal",
+        id: "flat", // Antes "minimal"
         name: "Flat",
         description: "Banner plano con color de fondo sólido",
         previewImage: "/flat-banner-solid-background-color.jpg",
       },
     ],
   },
+  // --- ACTUALIZADO: CARDS-3 (Coincide con Cards3Editor y BloqueCards3) ---
   "cards-3": {
     type: "cards-3",
     name: "Tarjetas (3 columnas)",
@@ -135,21 +137,21 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
     previewImage: "/placeholder.svg?height=150&width=400",
     variants: [
       {
-        id: "default",
-        name: "Con Bordes",
-        description: "Tarjetas con bordes y hover effect",
+        id: "corporate", // Antes "default"
+        name: "Corporativo",
+        description: "Tarjetas con borde, centradas y formales",
         previewImage: "/placeholder.svg?height=150&width=400",
       },
       {
-        id: "modern",
-        name: "Con Sombra",
-        description: "Tarjetas elevadas con sombras",
+        id: "interactive", // Antes "modern"
+        name: "Interactivo",
+        description: "Fondos suaves y animaciones al pasar el mouse",
         previewImage: "/placeholder.svg?height=150&width=400",
       },
       {
-        id: "minimal",
-        name: "Sin Bordes",
-        description: "Tarjetas sin bordes, solo contenido",
+        id: "minimal", // Se mantiene igual pero actualizamos descripción
+        name: "Minimalista",
+        description: "Sin bordes, alineación izquierda, mucho aire",
         previewImage: "/placeholder.svg?height=150&width=400",
       },
     ],

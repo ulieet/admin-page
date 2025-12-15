@@ -1,199 +1,208 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
-import Image from "next/image"
+import type { StyleConfig } from "@/lib/types/blocks"
+import { Menu } from "lucide-react"
 
-// Helper para convertir Hex a Rgba
-function hexToRgba(hex: string, alpha: number) {
-  let c: any;
-  if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
-      c= hex.substring(1).split('');
-      if(c.length== 3){
-          c= [c[0], c[0], c[1], c[1], c[2], c[2]];
-      }
-      c= '0x'+c.join('');
-      return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+alpha+')';
-  }
-  return hex;
-}
-
-interface HeaderProps {
+interface BloqueHeaderProps {
   data: any
-  estilos?: any 
   variant?: string
-  navLinks?: any[]
+  estilos?: StyleConfig | null
 }
 
-export function BloqueHeader({ data, estilos }: HeaderProps) {
-  const [isScrolled, setIsScrolled] = useState(false)
+export function BloqueHeader({ data, variant = "default", estilos }: BloqueHeaderProps) {
+  const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState("")
 
-  const getSize = (size?: string) => {
-    if (!size) return undefined;
-    const value = size.trim();
-    if (/^\d+$/.test(value)) return `${value}px`;
-    return value;
-  };
+  // Datos por defecto para evitar errores
+  const nombreEmpresa = data.nombreEmpresa || "Mi Empresa"
+  const logoImagen = data.logoImagen
+  const navegacion = data.navegacion || [
+    { nombre: "Inicio", url: "/" },
+    { nombre: "Servicios", url: "#servicios" },
+    { nombre: "Contacto", url: "#contacto" },
+  ]
+  const botonTexto = data.botonTexto
+  const botonUrl = data.botonUrl || "#"
+  const esTransparente = data.transparente || false
+  const alineacion = data.alineacion || "derecha" // "izquierda", "centro", "derecha"
 
-  const fontSizeStyle = getSize(data.tamanoTexto);
-  const logoHeightStyle = getSize(data.tamanoLogo); 
-  
-  const bgColorHex = estilos?.colores?.fondo || "#ffffff";
-  const bgRgbaScroll = hexToRgba(bgColorHex, 0.95);
+  const primaryColor = estilos?.colores?.primario || "#3b82f6"
+  const userBgColor = estilos?.colores?.fondo || "#ffffff"
+  const userTextColor = estilos?.colores?.texto || "#0f172a"
 
-  // Lógica para detectar si se ha hecho scroll y cambiar el fondo
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50)
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    // Check inicial
-    handleScroll();
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // --- LÓGICA DE SCROLL SPY CORREGIDA (DETECTA INICIO POR DEFECTO) ---
-  useEffect(() => {
-    const handleScrollSpy = () => {
-      const navItems = data.navegacion || [];
-      if (navItems.length === 0) return;
+  const isTransparentState = esTransparente && !scrolled
 
-      let currentSection = "";
+  // Clase base del contenedor principal
+  const headerClass = cn(
+    "fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full shadow-sm",
+    isTransparentState ? "py-6 shadow-none" : "py-4"
+  )
 
-      // 1. ZONA SUPERIOR (INICIO):
-      // Si estamos muy cerca del top (ej. menos de 100px de scroll),
-      // asumimos que estamos en la primera sección ("Inicio").
-      if (window.scrollY < 100) {
-         currentSection = navItems[0].url;
-      } 
-      // 2. ZONA DE SCROLL (BUSCAR SECCIONES):
-      // Si ya bajamos, buscamos qué ID está en pantalla.
-      else {
-        const sectionsIds = navItems.map((item: any) => item.url.replace("#", "")).filter(Boolean);
-        for (const id of sectionsIds) {
-          const element = document.getElementById(id);
-          if (element) {
-            const rect = element.getBoundingClientRect();
-            // Usamos un offset de 150px. Si el elemento pasa esa línea imaginaria cerca del header, se activa.
-            if (rect.top <= 150 && rect.bottom >= 150) {
-               currentSection = `#${id}`;
-               // Importante: break para quedarnos con la sección más alta visible.
-               break;
-            }
-          }
-        }
-      }
+  const containerStyle = {
+    backgroundColor: isTransparentState ? "transparent" : userBgColor,
+    color: userTextColor,
+  }
 
-      // Si encontramos una sección válida, actualizamos el estado.
-      // Si no encontramos nada (ej. scroll intermedio raro), no desmarcamos la última activa.
-      if (currentSection) {
-        setActiveSection(prev => (prev !== currentSection ? currentSection : prev));
-      }
-    }
+  const renderLogo = () => (
+    <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity shrink-0">
+      {logoImagen ? <img src={logoImagen} alt={nombreEmpresa} className="h-10 w-auto object-contain" /> : <span>{nombreEmpresa}</span>}
+    </Link>
+  )
 
-    window.addEventListener("scroll", handleScrollSpy, { passive: true });
+  // ==========================================
+  // VARIANTE CENTERED (EDITORIAL / STACKED)
+  // Diseño vertical: Logo arriba, Menú abajo.
+  // ==========================================
+  if (variant === "centered") {
+    return (
+      <header className={headerClass} style={containerStyle}>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-4 md:gap-6">
+            
+            {/* Fila 1: Logo y Toggle Mobile */}
+            <div className="w-full flex justify-between md:justify-center items-center relative">
+              <div className="md:hidden">
+                 <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: userTextColor }}>
+                    <Menu className="w-6 h-6" />
+                 </Button>
+              </div>
+              
+              {renderLogo()}
+              
+              {/* Espaciador invisible para equilibrar el toggle en mobile */}
+              <div className="w-10 md:hidden" />
+            </div>
 
-    // IMPORTANTE: Ejecutar al montar (con un pequeño delay para asegurar que el DOM existe)
-    // Esto fuerza a que se marque "Inicio" apenas carga la página.
-    const timeoutId = setTimeout(handleScrollSpy, 100);
+            {/* Fila 2: Navegación y Botón (Desktop) */}
+            <div className="hidden md:flex items-center gap-8">
+              <nav className="flex items-center gap-6">
+                {navegacion.map((item: any, idx: number) => (
+                  <Link 
+                    key={idx} 
+                    href={item.url} 
+                    className="text-sm font-medium hover:text-[var(--color-primario)] transition-colors"
+                    style={{ color: userTextColor }}
+                  >
+                    {item.nombre}
+                  </Link>
+                ))}
+              </nav>
+              
+              {botonTexto && (
+                 <Button asChild size="sm" style={{ backgroundColor: primaryColor, color: "#ffffff" }}>
+                    <Link href={botonUrl}>{botonTexto}</Link>
+                 </Button>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-4 border-t pt-4 space-y-3 px-4 pb-4 bg-inherit">
+             {navegacion.map((item: any, idx: number) => (
+                <Link key={idx} href={item.url} className="block py-2 font-medium" style={{ color: userTextColor }}>{item.nombre}</Link>
+             ))}
+          </div>
+        )}
+      </header>
+    )
+  }
 
-    return () => {
-      window.removeEventListener("scroll", handleScrollSpy);
-      clearTimeout(timeoutId);
-    }
-  }, [data.navegacion]); // Se re-ejecuta si cambian los enlaces
+  // ==========================================
+  // VARIANTE STANDARD / MODERN (ROW LAYOUT)
+  // Aquí es donde simplificamos la lógica de alineación
+  // ==========================================
 
-  const alineacion = data.alineacion || "derecha"
-  const navPositionClass = {
-    izquierda: "justify-start", centro: "justify-center", derecha: "justify-end",
-  }[alineacion as "izquierda" | "centro" | "derecha"]
+  // Definir clases de margen según alineación
+  let navContainerClass = "hidden md:flex items-center gap-8"
+  
+  if (alineacion === "izquierda") {
+    // Pegado al logo (margin-left fijo) y empuja al botón (margin-right auto)
+    navContainerClass += " ml-10 mr-auto"
+  } else if (alineacion === "centro") {
+    // Centrado absoluto en el espacio disponible
+    navContainerClass += " mx-auto"
+  } else {
+    // (Por defecto Derecha) Empuja desde el logo (margin-left auto)
+    navContainerClass += " ml-auto"
+  }
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-16 md:h-20 flex items-center",
-        data.transparente && !isScrolled
-          ? "py-4 border-b border-transparent"
-          : "py-2 shadow-sm border-b border-black/5"
-      )}
-      style={{
-        backgroundColor: data.transparente && !isScrolled ? "transparent" : bgRgbaScroll,
-        backdropFilter: data.transparente && !isScrolled ? "none" : "blur(8px)"
-      }}
-    >
-      <div className="container mx-auto px-4 flex items-center justify-between relative h-full">
-        <Link href="/" className={cn("flex items-center gap-2 z-50 md:order-none h-full py-2", alineacion === "izquierda" ? "order-2 mx-auto" : "order-1 mr-auto")}>
-          {data.logoImagen ? (
-             <div className="relative w-auto flex items-center" style={{ height: '100%', maxHeight: logoHeightStyle || '100%' }}>
-                <Image src={data.logoImagen} alt={data.logoTexto || "Logo"} width={300} height={100} className="w-auto h-full object-contain" priority />
-             </div>
-          ) : (
-            <span className="text-2xl font-bold text-[var(--color-primario)]">{data.logoTexto || data.nombreEmpresa || "LOGO"}</span>
-          )}
-        </Link>
-        <div className={cn("hidden md:flex items-center flex-1 px-8 md:order-none h-full", navPositionClass)}>
-          <nav className="flex items-center gap-8">
-            {(data.navegacion || []).map((item: any, index: number) => {
-              const isActive = activeSection === item.url
-              return (
+    <header className={headerClass} style={containerStyle}>
+      {/* IMPORTANTE: 'gap-6'. Esto asegura que NUNCA se toquen.
+         Si la pantalla se achica, el flexbox respetará este espacio mínimo.
+      */}
+      <div className="container mx-auto px-4 md:px-8 flex items-center gap-6">
+        
+        {/* 1. LOGO */}
+        {renderLogo()}
+
+        {/* 2. NAVEGACIÓN */}
+        <nav className={navContainerClass}>
+            {navegacion.map((item: any, idx: number) => (
                 <Link 
-                  key={index} 
-                  href={item.url} 
-                  style={{ fontSize: fontSizeStyle }} 
-                  className={cn(
-                    "transition-all duration-200 text-[var(--color-primario)]", 
-                    !fontSizeStyle && "text-sm", 
-                    isActive 
-                      ? "font-bold underline decoration-2 underline-offset-4 opacity-100" 
-                      : "font-medium opacity-70 hover:opacity-100"
-                  )} 
-                  onClick={(e) => { 
-                    if (item.url.startsWith("#")) { 
-                      e.preventDefault(); 
-                      const id = item.url.replace("#", "")
-                      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); 
-                      // Actualizamos manualmente al hacer click para feedback instantáneo
-                      setActiveSection(item.url) 
-                    } 
-                  }}
+                    key={idx} 
+                    href={item.url} 
+                    className={cn(
+                        "text-sm font-medium transition-all whitespace-nowrap", // whitespace-nowrap evita que los textos se rompan en 2 líneas
+                        variant === "modern" 
+                           ? "px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800" 
+                           : "hover:text-blue-600" 
+                    )}
+                    style={{ 
+                      color: userTextColor,
+                      // Si es modern, aplicamos color primario en hover via estilo inline si es necesario, 
+                      // pero clases de tailwind suelen ser mejores para hovers complejos.
+                    }}
                 >
-                  {item.nombre}
+                    {item.nombre}
                 </Link>
-              )
-            })}
-          </nav>
-        </div>
-        <div className="hidden md:flex items-center gap-4 md:order-none">
-          {data.botonTexto && <Button asChild style={{ backgroundColor: 'var(--color-primario)', color: '#fff' }}><Link href={data.botonUrl || "#"}>{data.botonTexto}</Link></Button>}
-        </div>
-        <button className={cn("md:hidden p-2 text-[var(--color-primario)] hover:bg-black/5 rounded-md transition-colors z-50", alineacion === "izquierda" ? "order-1 mr-auto" : alineacion === "centro" ? "order-2 mx-auto" : "order-3 ml-auto")} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-          {mobileMenuOpen ? <X /> : <Menu />}
-        </button>
-      </div>
-      {mobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 border-b shadow-lg md:hidden p-4 flex flex-col gap-4 animate-in slide-in-from-top-5" style={{ backgroundColor: bgRgbaScroll }}>
-          <nav className="flex flex-col gap-2">
-            {(data.navegacion || []).map((item: any, index: number) => (
-              <Link 
-                key={index} 
-                href={item.url} 
-                style={{ fontSize: fontSizeStyle }} 
-                className={cn(
-                  "block p-3 rounded-md transition-colors text-[var(--color-primario)]", 
-                  activeSection === item.url 
-                    ? "bg-black/5 font-bold border-l-4 border-[var(--color-primario)]" 
-                    : "hover:bg-black/5 font-medium"
-                )} 
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {item.nombre}
-              </Link>
             ))}
-          </nav>
-          {data.botonTexto && <Button className="w-full" asChild style={{ backgroundColor: 'var(--color-primario)', color: '#fff' }}><Link href={data.botonUrl || "#"}>{data.botonTexto}</Link></Button>}
+        </nav>
+
+        {/* 3. ACCIONES (Botón + Mobile) */}
+        {/* shrink-0 evita que el botón se aplaste */}
+        <div className="flex items-center gap-4 shrink-0 ml-auto md:ml-0">
+            {botonTexto && (
+                <Button 
+                    asChild 
+                    className="hidden md:inline-flex"
+                    style={{ backgroundColor: primaryColor, color: "#ffffff" }}
+                >
+                    <Link href={botonUrl}>{botonTexto}</Link>
+                </Button>
+            )}
+            
+            <div className="md:hidden">
+                <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ color: userTextColor }}>
+                    <Menu className="w-6 h-6" />
+                </Button>
+            </div>
+        </div>
+
+      </div>
+
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 border-t shadow-lg p-4 flex flex-col gap-4" style={{ backgroundColor: userBgColor }}>
+            {navegacion.map((item: any, idx: number) => (
+                <Link key={idx} href={item.url} className="text-base font-medium py-2 border-b last:border-0" style={{ color: userTextColor }}>{item.nombre}</Link>
+            ))}
+            {botonTexto && (
+                <Button asChild className="w-full mt-2" style={{ backgroundColor: primaryColor, color: "#ffffff" }}>
+                   <Link href={botonUrl}>{botonTexto}</Link>
+                </Button>
+            )}
         </div>
       )}
     </header>

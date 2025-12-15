@@ -1,12 +1,9 @@
 "use client"
 
-import type { Block, BlockVariant } from "@/lib/types/blocks"
+import type { Block } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Save } from "lucide-react"
 import { useState, useEffect, useCallback } from "react"
-import { VariantSelector } from "./variant-selector"
-import { BlockPreview } from "./block-preview"
-import { Separator } from "@/components/ui/separator"
 
 // Importamos todos los editores
 import { HeaderEditor } from "./blocks/HeaderEditor"
@@ -58,21 +55,24 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
     setTieneCambios(false)
   }, [bloque])
 
-  const actualizarDatos = useCallback((campo: string, valor: any) => {
-    setBloqueEditado((prev) => ({
-      ...prev,
-      datos: { ...prev.datos, [campo]: valor },
-    } as Block))
+  // --- FUNCIÓN CLAVE CORREGIDA ---
+  const handleEditorChange = useCallback((campo: string, valor: any) => {
+    setBloqueEditado((prev) => {
+      // 1. Si es un cambio de variante (Estilo)
+      if (campo === "variant") {
+        // SOLUCIÓN: Agregamos 'as Block' al final para calmar a TypeScript
+        return { ...prev, variant: valor } as Block
+      }
+      
+      // 2. Si es un cambio de contenido (Datos)
+      // SOLUCIÓN: Agregamos 'as Block' al final
+      return {
+        ...prev,
+        datos: { ...prev.datos, [campo]: valor },
+      } as Block
+    })
     setTieneCambios(true)
   }, [])
-
-  const actualizarVariant = (variant: BlockVariant) => {
-    setBloqueEditado((prev) => ({
-      ...prev,
-      variant,
-    }))
-    setTieneCambios(true)
-  }
 
   const handleGuardarCambios = () => {
     onGuardar(bloqueEditado)
@@ -80,58 +80,55 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
   }
 
   const EditorComponent = BLOCK_EDITORS[bloqueEditado.tipo]
-  const hideVariantSelector = ["header", "form", "footer", "gallery"].includes(bloqueEditado.tipo)
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="p-6 border-b">
-        <BlockPreview blockType={bloqueEditado.tipo} />
+      
+      {/* CABECERA */}
+      <div className="p-6 border-b bg-slate-50/50">
+        <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-200">
+                {bloqueEditado.tipo.replace("-", " ")}
+            </span>
+            <h2 className="font-semibold text-slate-800">Editando Bloque</h2>
+        </div>
       </div>
 
+      {/* ÁREA DE EDICIÓN */}
       <div className="flex-1 overflow-y-auto p-6">
         <div className="space-y-6">
           
-          {!hideVariantSelector && (
-            <>
-              <VariantSelector
-                blockType={bloqueEditado.tipo}
-                currentVariant={bloqueEditado.variant || "default"}
-                onSelectVariant={actualizarVariant}
-              />
-              <Separator />
-            </>
+          {EditorComponent ? (
+            <EditorComponent 
+              // Pasamos 'data' fusionando datos y variant
+              data={{ ...bloqueEditado.datos, variant: bloqueEditado.variant }} 
+              onChange={handleEditorChange} 
+            />
+          ) : (
+            <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 text-center bg-slate-50">
+              <p>No se encontró un editor configurado para el tipo <strong>{bloqueEditado.tipo}</strong></p>
+            </div>
           )}
-
-          <div>
-            <h3 className="font-semibold text-sm mb-4 capitalize">
-              Editando: {bloqueEditado.tipo.replace("-", " ")}
-            </h3>
-            
-            {EditorComponent ? (
-              // 👇 AQUÍ ESTÁ LA SOLUCIÓN: Pasamos la variante al hijo
-              <EditorComponent 
-                data={bloqueEditado.datos} 
-                variant={bloqueEditado.variant} 
-                onChange={actualizarDatos} 
-              />
-            ) : (
-              <div className="p-4 border border-dashed rounded text-muted-foreground text-center">
-                No hay un editor configurado para el bloque "{bloqueEditado.tipo}"
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
-      <div className="border-t p-4 bg-background flex items-center justify-between sticky bottom-0 z-10">
-        <div className="text-sm text-muted-foreground">
-          {tieneCambios ? "Hay cambios sin guardar" : "Sin cambios"}
+      {/* PIE DE PÁGINA (BOTONES) */}
+      <div className="border-t p-4 bg-white flex items-center justify-between sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div className="text-sm font-medium">
+          {tieneCambios ? (
+            <span className="text-amber-600 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"/>
+              Cambios sin guardar
+            </span>
+          ) : (
+            <span className="text-slate-400">Sin cambios pendientes</span>
+          )}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={onCancelar} disabled={!tieneCambios}>
-            Descartar
+          <Button variant="ghost" onClick={onCancelar}>
+            Cancelar
           </Button>
-          <Button onClick={handleGuardarCambios} disabled={!tieneCambios}>
+          <Button onClick={handleGuardarCambios} disabled={!tieneCambios} className="bg-slate-900 text-white hover:bg-slate-800">
             <Save className="w-4 h-4 mr-2" />
             Guardar
           </Button>

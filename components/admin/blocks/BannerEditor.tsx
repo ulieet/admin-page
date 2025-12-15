@@ -13,10 +13,10 @@ interface BannerEditorProps {
   onChange: (campo: string, valor: any) => void
 }
 
-export function BannerEditor({ data, variant = "default", onChange }: BannerEditorProps) {
+export function BannerEditor({ data, variant, onChange }: BannerEditorProps) {
   
-  // Aseguramos que la comparación sea insensible a mayúsculas/minúsculas
-  const isFlat = (variant || "default").toLowerCase() === "flat"
+  const estiloActual = variant || data.variant || data.estilo || "default"
+  const isFlat = estiloActual.toLowerCase() === "flat"
 
   return (
     <div className="space-y-6">
@@ -25,6 +25,7 @@ export function BannerEditor({ data, variant = "default", onChange }: BannerEdit
         <Input 
           value={data.titulo || ""} 
           onChange={(e) => onChange("titulo", e.target.value)} 
+          placeholder="Título del banner"
         />
       </div>
       
@@ -34,50 +35,61 @@ export function BannerEditor({ data, variant = "default", onChange }: BannerEdit
           value={data.subtitulo || ""}
           onChange={(e) => onChange("subtitulo", e.target.value)}
           rows={2}
+          placeholder="Descripción corta o subtítulo"
         />
       </div>
 
-      {/* BLOQUE DE IMAGEN */}
+      {/* BLOQUE DE IMAGEN - Se bloquea si es Flat */}
       <div 
-        className={`space-y-2 p-3 rounded-lg border transition-all ${
-          isFlat ? "bg-muted/50 opacity-50 pointer-events-none grayscale" : "bg-transparent border-transparent p-0"
+        className={`space-y-3 p-3 rounded-lg border transition-all ${
+          isFlat 
+            ? "bg-muted/30 border-dashed border-muted-foreground/20 opacity-75" 
+            : "bg-transparent border-transparent p-0"
         }`}
       >
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-1">
             <Label className={isFlat ? "text-muted-foreground" : ""}>Imagen de Fondo</Label>
             {isFlat && (
                 <span className="text-[10px] flex items-center gap-1 text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                    <AlertCircle className="w-3 h-3" /> Bloqueado en Flat
+                    <AlertCircle className="w-3 h-3" /> No disponible en Flat
                 </span>
             )}
         </div>
 
-        <ImageUpload
-           value={data.imagen || ""}
-           onChange={(value) => onChange("imagen", value)}
-        />
+        {/* Contenedor del upload: deshabilitado visual y funcionalmente */}
+        <div className={isFlat ? "pointer-events-none opacity-50 grayscale" : ""}>
+            <ImageUpload
+               value={data.imagen || ""}
+               onChange={(value) => onChange("imagen", value)}
+            />
+        </div>
         
         {isFlat && (
-            <p className="text-[10px] text-muted-foreground mt-2">
-                Cambia la variante a "Default" para poder subir una imagen.
+            <p className="text-[11px] text-muted-foreground mt-2 flex gap-1.5 items-start">
+                <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                El estilo "Flat" utiliza un color sólido de fondo. Cambia a "Estándar" o "Card" para usar una imagen.
             </p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label>Texto del Botón</Label>
-        <Input 
-          value={data.botonTexto || ""} 
-          onChange={(e) => onChange("botonTexto", e.target.value)} 
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label>URL del Botón</Label>
-        <Input 
-          value={data.botonUrl || ""} 
-          onChange={(e) => onChange("botonUrl", e.target.value)} 
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+            <Label>Texto del Botón</Label>
+            <Input 
+            value={data.botonTexto || ""} 
+            onChange={(e) => onChange("botonTexto", e.target.value)} 
+            placeholder="Ej: Ver más"
+            />
+        </div>
+        
+        <div className="space-y-2">
+            <Label>URL del Botón</Label>
+            <Input 
+            value={data.botonUrl || ""} 
+            onChange={(e) => onChange("botonUrl", e.target.value)} 
+            placeholder="#"
+            />
+        </div>
       </div>
       
       <div className="pt-4 border-t">
