@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import type { Block, BlockType } from "@/lib/types/blocks"
+import type { Block, BlockType, BannerBlock, Cards3Block, TextImageBlock, FormBlock, GalleryBlock, LogoMarqueeBlock, ImageCardListBlock, TituloParrafosBlock } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EditorBloque } from "./editor-bloque"
-import { ImageIcon, CreditCard, FileText, FormInput, Grid3x3Icon, MoveHorizontal } from "lucide-react"
+import { ImageIcon, CreditCard, FileText, FormInput, Grid3x3Icon, MoveHorizontal, LayoutGrid, Split } from "lucide-react"
 
 interface NuevoBloqueDialogProps {
   onAgregar: (bloque: Block) => void
@@ -29,6 +29,8 @@ const tiposBloques = [
   { tipo: "form", nombre: "Formulario", descripcion: "Formulario de contacto personalizable", icono: FormInput },
   { tipo: "gallery", nombre: "Galería", descripcion: "Grid de imágenes", icono: Grid3x3Icon },
   { tipo: "logo-marquee", nombre: "Carrusel de Logos", descripcion: "Cinta deslizante infinita de marcas", icono: MoveHorizontal },
+  { tipo: "image-card-list", nombre: "Lista de Tarjetas Destacadas", descripcion: "Múltiples tarjetas de imagen en 3 o 4 columnas", icono: LayoutGrid },
+  { tipo: "titulo-parrafos", nombre: "Título y Párrafos Divididos", descripcion: "Sección con título primario y texto en 1 o 2 columnas.", icono: Split },
 ]
 
 export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDialogProps) {
@@ -36,7 +38,6 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
 
   const crearBloqueBase = (tipo: BlockType): Block => {
     const id = `bloque-${Date.now()}`
-    // Casting inicial para permitir la construcción flexible del objeto
     const base = { id, tipo: tipo as any, orden: siguienteOrden, activo: true }
 
     switch (tipo) {
@@ -47,12 +48,12 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           datos: {
             titulo: "Título del Banner",
             subtitulo: "Subtítulo descriptivo",
-            imagen: "",
+            imagen: "/placeholder.jpg",
             botonTexto: "Ver más",
             botonUrl: "#",
             alineacion: "centro",
           },
-        }
+        } as BannerBlock
       case "cards-3":
         return {
           ...base,
@@ -83,22 +84,20 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
               },
             ],
           },
-        }
+        } as Cards3Block
       case "text-image":
         return {
           ...base,
           tipo: "text-image",
           datos: {
             titulo: "Acerca de Nosotros",
-            // CORREGIDO: Usamos 'texto' en lugar de parrafo1/parrafo2
             texto: "Este es un texto de ejemplo para describir tu empresa, producto o servicio. Puedes editarlo libremente.",
-            imagen: "",
-            // CORREGIDO: Agregamos el campo requerido por el tipo
+            imagen: "/placeholder.jpg",
             imagenDerecha: true, 
             posicionImagen: "derecha",
             puntos: ["Punto destacado 1", "Punto destacado 2", "Punto destacado 3"],
           },
-        }
+        } as TextImageBlock
       case "form":
         return {
           ...base,
@@ -119,7 +118,7 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
               horario: "Lunes a Viernes — 9:00 a 18:00",
             },
           },
-        }
+        } as FormBlock
       case "gallery":
         return {
           ...base,
@@ -127,13 +126,13 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           datos: {
             titulo: "Galería de Proyectos",
             imagenes: [
-              { url: "", alt: "Proyecto 1" },
-              { url: "", alt: "Proyecto 2" },
-              { url: "", alt: "Proyecto 3" },
+              { url: "/placeholder.jpg", alt: "Proyecto 1" },
+              { url: "/placeholder.jpg", alt: "Proyecto 2" },
+              { url: "/placeholder.jpg", alt: "Proyecto 3" },
             ],
             columnas: 3,
           },
-        }
+        } as GalleryBlock
       case "logo-marquee":
         return {
             ...base,
@@ -142,12 +141,65 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
                 titulo: "Nuestros Clientes",
                 subtitulo: "Empresas que confían en nosotros",
                 empresas: [
-                    { nombre: "Empresa 1", logo: "" },
-                    { nombre: "Empresa 2", logo: "" },
-                    { nombre: "Empresa 3", logo: "" },
+                    { nombre: "Empresa 1", logo: "/placeholder-logo.svg" },
+                    { nombre: "Empresa 2", logo: "/placeholder-logo.svg" },
+                    { nombre: "Empresa 3", logo: "/placeholder-logo.svg" },
                 ]
             }
-        } as Block 
+        } as LogoMarqueeBlock
+      
+      case "image-card-list":
+        return {
+          ...base,
+          tipo: "image-card-list",
+          datos: {
+            titulo: "Proyectos Destacados",
+            subtitulo: "Descubre nuestro trabajo más reciente.",
+            columnas: 3,
+            cards: [
+              { 
+                imagenUrl: "/placeholder.jpg", 
+                altTexto: "Card 1", 
+                etiqueta: "Residential", 
+                titulo: "Hogar Moderno", 
+                descripcion: "Descripción del primer proyecto.", 
+                linkTexto: "Explorar", 
+                linkUrl: "#" 
+              },
+              { 
+                imagenUrl: "/placeholder.jpg", 
+                altTexto: "Card 2", 
+                etiqueta: "Comercial", 
+                titulo: "Edificio Corporativo", 
+                descripcion: "Descripción del segundo proyecto.", 
+                linkTexto: "Explorar", 
+                linkUrl: "#" 
+              },
+              { 
+                imagenUrl: "/placeholder.jpg", 
+                altTexto: "Card 3", 
+                etiqueta: "Urbanismo", 
+                titulo: "Parque Urbano", 
+                descripcion: "Descripción del tercer proyecto.", 
+                linkTexto: "Explorar", 
+                linkUrl: "#" 
+              },
+            ],
+          }
+        } as ImageCardListBlock
+        
+      case "titulo-parrafos":
+        return {
+          ...base,
+          tipo: "titulo-parrafos",
+          datos: {
+            titulo: "Título que usa el color primario del sitio.",
+            parrafoIzquierda: "Este es el párrafo principal. Se utiliza para introducir la sección o dar contexto al texto dividido. En modo centrado, ocupa el centro del contenedor.",
+            parrafoDerecha: "Este segundo párrafo se utiliza para el modo 'dividido'. Aquí puedes profundizar en la información presentada en la columna izquierda o añadir un segundo punto de vista.",
+            alineacion: "dividido",
+            colorFondo: "#ffffff", // ✅ Inicializamos en blanco. El componente de visualización usa el color de fondo del body si es `#ffffff` o transparente, pero aquí se fuerza a blanco.
+          }
+        } as TituloParrafosBlock
       
       default:
         throw new Error("Tipo de bloque no soportado")

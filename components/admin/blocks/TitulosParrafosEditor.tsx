@@ -14,7 +14,7 @@ interface TituloParrafosEditorProps {
   onChange: (field: keyof TituloParrafosBlock["datos"] | "variant", value: any) => void
 }
 
-export function TextImageEditor({ data, onChange }: TituloParrafosEditorProps) {
+export function TituloParrafosEditor({ data, onChange }: TituloParrafosEditorProps) {
   const handleDataChange = (field: keyof TituloParrafosBlock["datos"], value: any) => {
     onChange(field, value);
   };
@@ -88,7 +88,7 @@ export function TextImageEditor({ data, onChange }: TituloParrafosEditorProps) {
           onChange={(color) => handleDataChange("colorFondo", color)}
         />
         <p className="text-xs text-muted-foreground">
-            Define un color de fondo diferente al fondo global.
+            Define un color de fondo. Si seleccionas **#FFFFFF** (blanco), tomará el color de fondo global definido en Estilos.
         </p>
       </div>
       

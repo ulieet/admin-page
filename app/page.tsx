@@ -14,6 +14,9 @@ import { BloqueTextImage } from "@/components/bloques/text-image"
 import { BloqueForm } from "@/components/bloques/form"
 import { BloqueGallery } from "@/components/bloques/gallery"
 import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
+import { BloqueImageCard } from "@/components/bloques/ImageCard"
+import { BloqueImageCardList } from "@/components/bloques/ImageCardList"
+import { BloqueTituloParrafos } from "@/components/bloques/TitulosParrafos" // ✅ Importación Correcta
 
 // Importamos el botón de WhatsApp
 import { WhatsappFloatingButton } from "@/components/bloques/whatsapp-button"
@@ -29,6 +32,9 @@ const COMPONENTES: Record<string, any> = {
   form: BloqueForm,
   gallery: BloqueGallery,
   "logo-marquee": BloqueLogoMarquee,
+  "image-card": BloqueImageCard,
+  "image-card-list": BloqueImageCardList,
+  "titulo-parrafos": BloqueTituloParrafos, // ✅ Mapeo Correcto
 }
 
 export default function Home() {

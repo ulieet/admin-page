@@ -21,6 +21,9 @@ import { CtaEditor } from "./blocks/CTAEditor"
 import { ContactFormEditor } from "./blocks/ContactFormEditor"
 import { StatsEditor } from "./blocks/StatsEditor"
 import { GalleryEditor } from "./blocks/GalleryEditor"
+import { ImageCardEditor } from "./blocks/ImageCardEditor" 
+import { ImageCardListEditor } from "./blocks/ImageCardListEditor"
+import { TituloParrafosEditor } from "./blocks/TitulosParrafosEditor" // Importación que debe existir
 
 const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   header: HeaderEditor,
@@ -38,8 +41,10 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   "contact-form": ContactFormEditor,
   stats: StatsEditor,
   gallery: GalleryEditor,
-  // IMPORTANTE: Asignamos el Editor de Clientes al nuevo bloque Marquee
   "logo-marquee": ClientsEditor,
+  "image-card": ImageCardEditor,
+  "image-card-list": ImageCardListEditor,
+  "titulo-parrafos": TituloParrafosEditor, // Mapeo Correcto
 }
 
 interface EditorBloqueProps {
@@ -77,8 +82,6 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
 
   const EditorComponent = BLOCK_EDITORS[bloqueEditado.tipo]
 
-  // CORRECCIÓN CSS: Cambiamos h-full/flex-1 por estilos de tarjeta sólida
-  // Esto asegura que el contenido fuerce la altura y sea visible.
   return (
     <div className="flex flex-col bg-background border rounded-xl shadow-sm overflow-hidden">
       

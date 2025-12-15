@@ -1,66 +1,93 @@
 "use client"
 
-import { getBlockMetadata } from "@/lib/block-metadata"
-import { useState, useEffect } from "react"
-import { Info, ImageOff } from "lucide-react"
-import { cn } from "@/lib/utils"
+import type { Block, StyleConfig } from "@/lib/types/blocks"
+import { BloqueHeader } from "@/components/bloques/header"
+import { BloqueHero } from "@/components/bloques/hero"
+import { BloqueFooter } from "@/components/bloques/footer"
+import { BloqueBanner } from "@/components/bloques/banner"
+import { BloqueCards3 } from "@/components/bloques/cards-3"
+import { BloqueTextImage } from "@/components/bloques/text-image"
+import { BloqueForm } from "@/components/bloques/form"
+import { BloqueGallery } from "@/components/bloques/gallery"
+import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
+import { BloqueImageCard } from "@/components/bloques/ImageCard" // ✅ IMPORTAMOS EL NUEVO BLOQUE
 
-interface BlockPreviewProps {
-  blockType: string
+// Mapeo de tipos de bloque a componentes de React
+const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
+  header: BloqueHeader,
+  hero: BloqueHero,
+  footer: BloqueFooter,
+  banner: BloqueBanner,
+  "cards-3": BloqueCards3,
+  "text-image": BloqueTextImage,
+  form: BloqueForm,
+  gallery: BloqueGallery,
+  "logo-marquee": BloqueLogoMarquee,
+  "image-card": BloqueImageCard, // ✅ AÑADIDO: Mapeamos el nuevo componente
 }
 
-export function BlockPreview({ blockType }: BlockPreviewProps) {
-  // 1. Recuperamos la metadata usando el ID del bloque (ej: "header")
-  const metadata = getBlockMetadata(blockType)
-  const [imgError, setImgError] = useState(false)
+interface BlockPreviewProps {
+  bloque: Block
+  estilos: StyleConfig
+}
 
-  // Reseteamos el error si cambiamos de bloque
-  useEffect(() => {
-    setImgError(false)
-  }, [blockType])
+export function BlockPreview({ bloque, estilos }: BlockPreviewProps) {
+  const Component = BLOCK_COMPONENTS[bloque.tipo]
 
-  if (!metadata) {
-    return <div className="p-4 text-sm text-red-500">Bloque no encontrado: {blockType}</div>
+  if (!Component) {
+    return <div className="p-8 bg-red-100 text-red-700">Componente para el tipo "{bloque.tipo}" no encontrado.</div>
+  }
+  
+  // 1. CORRECCIÓN DEL TAMAÑO DE FUENTE Y ESCALADO
+  // Para evitar que los estilos globales de rem (que dependen del <html>)
+  // rompan la visualización dentro del iframe del editor (o preview),
+  // forzamos el tamaño base (tamanoBase) al contenedor.
+  // Esto asegura que 1rem sea igual a tamanoBase (ej. 16px) dentro del preview.
+  
+  const tamanoBase = estilos.tipografia.tamanoBase || "16px";
+
+  const previewStyle: React.CSSProperties = {
+    // Forzamos el tamaño de fuente base para que todas las unidades 'rem'
+    // dentro del preview se escalen correctamente según la configuración del usuario.
+    fontSize: tamanoBase, 
+    // Aplicamos la fuente global para una vista previa precisa.
+    fontFamily: estilos.tipografia.fuente || 'inherit', 
+    // Aseguramos que el contenedor no tenga un color de fondo extra
+    backgroundColor: 'transparent',
+  };
+
+
+  // 2. CORRECCIÓN DE DATOS DE TARJETAS (CARDS-3)
+  // El error "no se ven las cards" ocurre si `bloque.datos.items` no existe o no es un array,
+  // lo cual puede pasar si el bloque se inicializa mal.
+  // Aseguramos que, si es un bloque de cards-3, los datos tengan la estructura correcta.
+
+  let datosCorregidos = bloque.datos;
+
+  if (bloque.tipo === "cards-3") {
+    // Si la propiedad 'items' no es un array, la inicializamos con 3 elementos por defecto.
+    if (!Array.isArray(bloque.datos.items) || bloque.datos.items.length === 0) {
+        console.warn(`[BlockPreview] Inicializando items faltantes para cards-3 en el preview.`)
+        datosCorregidos = {
+            ...bloque.datos,
+            items: [
+                { titulo: "Tarjeta 1", descripcion: "Placeholder", icono: "activity", botonTexto: "Ver", botonUrl: "#" },
+                { titulo: "Tarjeta 2", descripcion: "Placeholder", icono: "settings", botonTexto: "Ver", botonUrl: "#" },
+                { titulo: "Tarjeta 3", descripcion: "Placeholder", icono: "users", botonTexto: "Ver", botonUrl: "#" },
+            ]
+        }
+    }
   }
 
-  return (
-    <div className="space-y-3 p-4 bg-muted/30 rounded-lg border">
-      {/* Encabezado con Icono y Descripción */}
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-          <Info className="w-5 h-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm mb-1">{metadata.name}</h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">{metadata.description}</p>
-        </div>
-      </div>
 
-      {/* Área de la Imagen */}
-      <div className="relative w-full h-40 rounded-md overflow-hidden bg-background border border-border/50 flex items-center justify-center">
-        {metadata.previewImage && !imgError ? (
-          <img
-            src={metadata.previewImage}
-            alt={metadata.name}
-            onError={() => setImgError(true)}
-            // CLAVE: 'object-contain' asegura que la imagen alargada (header) entre completa
-            // sin recortarse.
-            className="h-full w-full object-contain p-2" 
-          />
-        ) : (
-          <div className="flex flex-col gap-2 items-center justify-center text-muted-foreground/50">
-            <ImageOff className="h-8 w-8" />
-            <span className="text-xs font-medium">
-              {imgError ? "No se encontró la imagen" : "Sin imagen previa"}
-            </span>
-            {imgError && (
-              <span className="text-[10px] text-red-400 px-2 text-center">
-                Verifica: {metadata.previewImage}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+  return (
+    // Aplicamos los estilos corregidos al contenedor
+    <div style={previewStyle}>
+      <Component 
+        data={datosCorregidos} 
+        variant={bloque.variant} 
+        estilos={estilos} 
+      />
     </div>
   )
 }

@@ -126,7 +126,6 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
       },
     ],
   },
-  // AQUÍ ESTÁ EL BLOQUE NUEVO PARA QUE APAREZCA EN LA LISTA:
   "logo-marquee": {
     type: "logo-marquee",
     name: "Carrusel de Logos",
@@ -280,6 +279,51 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
         name: "Carousel",
         description: "Galería en carrusel deslizable",
         previewImage: "/placeholder.svg?height=150&width=400",
+      },
+    ],
+  },
+  "image-card-list": { 
+    type: "image-card-list",
+    name: "Lista de Tarjetas Destacadas",
+    description: "Una sección con múltiples tarjetas de imagen y contenido, dispuestas en 3 o 4 columnas.",
+    icon: "LayoutGrid",
+    category: "content",
+    previewImage: "/placeholder.svg?text=Lista+de+Tarjetas", 
+    variants: [
+      {
+        id: "default",
+        name: "3 Columnas",
+        description: "Diseño espacioso con 3 tarjetas por fila.",
+        previewImage: "/placeholder.svg?text=3+Columnas",
+      },
+      {
+        id: "compact",
+        name: "4 Columnas",
+        description: "Diseño compacto con 4 tarjetas por fila.",
+        previewImage: "/placeholder.svg?text=4+Columnas",
+      },
+    ],
+  },
+
+  "titulo-parrafos": { 
+    type: "titulo-parrafos",
+    name: "Título y Párrafos Divididos",
+    description: "Sección con título primario y texto en 1 o 2 columnas.",
+    icon: "Split",
+    category: "content",
+    previewImage: "/placeholder.svg?text=Titulo+Parrafos", 
+    variants: [
+      {
+        id: "centrado",
+        name: "Título Centrado",
+        description: "Título centrado y un solo bloque de texto.",
+        previewImage: "/placeholder.svg?text=Centrado",
+      },
+      {
+        id: "dividido",
+        name: "Título + 2 Párrafos",
+        description: "Título a la izquierda, dos párrafos a la derecha.",
+        previewImage: "/placeholder.svg?text=Dividido",
       },
     ],
   },

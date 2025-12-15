@@ -7,7 +7,9 @@ export type BlockType =
   | "text-image"
   | "form"
   | "gallery"
-  | "logo-marquee" // ✅ Agregamos el tipo aquí
+  | "logo-marquee"
+  | "image-card-list"
+  | "titulo-parrafos"
 
 // Configuración global de estilos
 export interface StyleConfig {
@@ -155,7 +157,29 @@ export interface FormBlock extends BaseBlock {
   }
 }
 
-// ✅ Definimos la estructura del nuevo bloque
+export interface ImageCardBlock extends BaseBlock {
+  tipo: "image-card"
+  datos: {
+    imagenUrl: string
+    altTexto: string
+    etiqueta: string
+    titulo: string
+    descripcion: string
+    linkTexto: string
+    linkUrl: string
+  }
+}
+
+export interface ImageCardListBlock extends BaseBlock {
+  tipo: "image-card-list"
+  datos: {
+    titulo: string
+    subtitulo: string
+    columnas: 3 | 4
+    cards: ImageCardBlock["datos"][]
+  }
+}
+
 export interface LogoMarqueeBlock extends BaseBlock {
   tipo: "logo-marquee"
   datos: {
@@ -181,6 +205,17 @@ export interface GalleryBlock extends BaseBlock {
   }
 }
 
+export interface TituloParrafosBlock extends BaseBlock {
+  tipo: "titulo-parrafos"
+  datos: {
+    titulo: string
+    parrafoIzquierda: string
+    parrafoDerecha: string
+    alineacion: "centrado" | "dividido"
+    colorFondo: string
+  }
+}
+
 export type Block =
   | HeaderBlock
   | HeroBlock
@@ -191,6 +226,8 @@ export type Block =
   | FormBlock
   | GalleryBlock
   | LogoMarqueeBlock
+  | ImageCardListBlock
+  | TituloParrafosBlock
 
 export interface PageConfig {
   bloques: Block[]
