@@ -147,9 +147,11 @@ export function BloqueForm({ data, variant = "default", estilos }: BloqueFormPro
                     <Textarea className="bg-slate-50 border-slate-200 min-h-[160px] rounded-none focus-visible:ring-1 focus-visible:ring-slate-400 focus-visible:border-slate-400 resize-none" />
                 </div>
 
-                <div className="pt-2">
+                {/* MODIFICACIÓN: Se añadió 'flex justify-end' para alinear a la derecha y se aplicó el primaryColor */}
+                <div className="pt-2 flex justify-end">
                     <Button 
-                        className="w-full md:w-auto bg-black text-white hover:bg-slate-800 rounded-none h-12 px-12 text-sm font-bold uppercase tracking-widest"
+                        className="w-full md:w-auto text-white rounded-none h-12 px-12 text-sm font-bold uppercase tracking-widest hover:opacity-90 transition-opacity"
+                        style={{ backgroundColor: primaryColor }}
                     >
                         {buttonText}
                     </Button>

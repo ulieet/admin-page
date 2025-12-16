@@ -15,10 +15,8 @@ export type BlockType =
 export interface StyleConfig {
   colores: {
     primario: string
-    secundario: string
     fondo: string
     texto: string
-    acento: string
   }
   tipografia: {
     fuente: string

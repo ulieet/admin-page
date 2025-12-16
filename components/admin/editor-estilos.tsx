@@ -6,31 +6,27 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { toast } from "sonner" // Asumo que usas Sonner para notificaciones
+import { toast } from "sonner" 
 import ColorPicker from "@/components/admin/color-picker" 
 import type { StyleConfig } from "@/lib/types/blocks"
 import { cargarConfiguracion, actualizarEstilos } from "@/lib/blocks-storage"
 
-// Valores iniciales por defecto si no hay configuración guardada
+// Valores iniciales por defecto (LIMPIOS: solo primario, fondo y texto)
 const DEFAULT_ESTILOS: StyleConfig = {
-    colores: {
-        primario: "#1e3a8a", // Azul oscuro fuerte
-        secundario: "#3b82f6",
-        fondo: "#f9fafb", // Gris claro para fondo
-        texto: "#1f2937",
-        acento: "#f59e0b",
-    },
-    tipografia: {
-        fuente: "Inter, sans-serif",
-        tamanoBase: "16px",
-        tamanoTitulo: "3.5rem", // ✅ VALOR GRANDE FORZADO (56px)
-        tamanoSubtitulo: "1.25rem", // Subtítulo grande (20px)
-    }
+  colores: {
+    primario: "#1e3a8a", // Azul oscuro fuerte
+    fondo: "#f9fafb",    // Gris claro para fondo
+    texto: "#1f2937",
+  },
+  tipografia: {
+    fuente: "Inter, sans-serif",
+    tamanoBase: "16px",
+    tamanoTitulo: "3.5rem", 
+    tamanoSubtitulo: "1.25rem", 
+  }
 }
 
-
 interface EditorEstilosProps {
-  // Función para forzar la actualización del padre si es necesario
   onStylesUpdated?: () => void 
 }
 
@@ -38,15 +34,16 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
   const [estilos, setEstilos] = useState<StyleConfig | null>(null)
   const [tieneCambios, setTieneCambios] = useState(false)
 
-  // 1. Cargar estilos al inicio
   useEffect(() => {
     const config = cargarConfiguracion()
-    // Si la configuración de estilos está vacía o incompleta, usamos los valores por defecto.
-    const initialStyles = config.estilos || DEFAULT_ESTILOS;
-    setEstilos(initialStyles);
+    
+    // Aseguramos que si cargamos una config vieja con campos extra, 
+    // al menos el estado inicial respete la estructura limpia si fuera necesario sanitizar.
+    // (Aquí confiamos en que tu tipo StyleConfig en TS forzará la estructura correcta al usar el componente).
+    const initialStyles = config.estilos || DEFAULT_ESTILOS
+    setEstilos(initialStyles)
   }, [])
 
-  // 2. Manejar cambios de datos
   const handleColorChange = useCallback((key: keyof StyleConfig["colores"], value: string) => {
     setEstilos((prevEstilos) => {
       if (!prevEstilos) return null
@@ -75,7 +72,6 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
     })
   }, [])
 
-  // 3. Guardar cambios
   const handleGuardar = () => {
     if (estilos) {
       actualizarEstilos(estilos)
@@ -91,13 +87,11 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
     return <div className="p-6 text-center text-muted-foreground">Cargando configuración de estilos...</div>
   }
   
-  // Nombres descriptivos para la interfaz
-  const colorLabels = {
+  // Nombres descriptivos (SOLO LOS NECESARIOS)
+  const colorLabels: Record<keyof StyleConfig["colores"], string> = {
     primario: "Color Principal (Título/Botones)",
-    secundario: "Color Secundario",
     fondo: "Fondo Global del Sitio",
     texto: "Texto Principal",
-    acento: "Color de Acento",
   }
   
   const tipografiaLabels = {
@@ -125,17 +119,18 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
             <Palette className="w-5 h-5 text-primary" /> Colores del Tema
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.entries(estilos.colores).map(([key, value]) => (
+            {/* Iteramos sobre las claves conocidas para evitar que aparezcan campos viejos si existen en localStorage */}
+            {(Object.keys(DEFAULT_ESTILOS.colores) as Array<keyof StyleConfig["colores"]>).map((key) => (
               <div key={key} className="space-y-2">
-                <Label htmlFor={key}>{colorLabels[key as keyof StyleConfig["colores"]]}</Label>
+                <Label htmlFor={key}>{colorLabels[key]}</Label>
                 <ColorPicker
-                  value={value}
-                  onChange={(color) => handleColorChange(key as keyof StyleConfig["colores"], color)}
+                  value={estilos.colores[key]}
+                  onChange={(color) => handleColorChange(key, color)}
                 />
               </div>
             ))}
             <div className="lg:col-span-3 text-sm text-muted-foreground pt-2">
-                *El **Color Principal** es usado para todos los títulos importantes, incluyendo el nuevo bloque "Título y Párrafos".
+                *El **Color Principal** es usado para todos los títulos importantes.
             </div>
           </div>
         </div>
@@ -168,7 +163,7 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
                 id="tamanoBase"
                 value={estilos.tipografia.tamanoBase}
                 onChange={(e) => handleTipografiaChange("tamanoBase", e.target.value)}
-                placeholder="Ej: 16px (Define el tamaño de 1rem)"
+                placeholder="Ej: 16px"
               />
             </div>
             
@@ -181,7 +176,6 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
                 onChange={(e) => handleTipografiaChange("tamanoTitulo", e.target.value)}
                 placeholder="Ej: 3rem o 48px"
               />
-              <p className="text-xs text-muted-foreground">**Importante:** Ajusta este valor para hacer los títulos grandes.</p>
             </div>
             
             {/* Tamaño Subtítulo */}
@@ -200,7 +194,7 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
 
       </div>
 
-      {/* PIE DE PÁGINA (BOTONES) */}
+      {/* PIE DE PÁGINA */}
       <div className="border-t p-4 bg-slate-50/50 flex items-center justify-between">
         <div className="text-sm font-medium">
           {tieneCambios ? (
