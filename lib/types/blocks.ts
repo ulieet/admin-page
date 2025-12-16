@@ -82,7 +82,13 @@ export interface FooterBlock extends BaseBlock {
     email: string
     telefono: string
     direccion: string
-    imagenMapa: string
+    
+    // --- NUEVO: Coordenadas para el mapa ---
+    lat?: number
+    lng?: number
+    // -------------------------------------
+    
+    imagenMapa?: string
     redesSociales: {
       linkedin: string
       facebook: string

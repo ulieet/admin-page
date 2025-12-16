@@ -4,6 +4,7 @@ import type { Block } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Save } from "lucide-react"
 import { useState, useEffect, useCallback } from "react"
+import { toast } from "sonner"
 
 // Importación de editores
 import { HeaderEditor } from "./blocks/HeaderEditor"
@@ -31,7 +32,8 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   banner: BannerEditor,
   about: AboutEditor,
   "text-image": TextImageEditor,
-  "texto-imagen": TextImageEditor,
+  // Mapeamos ambas variantes por seguridad
+  "texto-imagen": TextImageEditor, 
   "titulo-parrafos": TituloParrafosEditor,
   stats: StatsEditor,
   "cards-3": Cards3Editor,
@@ -78,6 +80,7 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
   const [bloqueEditado, setBloqueEditado] = useState<Block>(bloque)
   const [tieneCambios, setTieneCambios] = useState(false)
 
+  // Reseteamos el estado interno cuando cambia el bloque seleccionado desde afuera
   useEffect(() => {
     setBloqueEditado(bloque)
     setTieneCambios(false)
@@ -99,6 +102,7 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
   const handleGuardarCambios = () => {
     onGuardar(bloqueEditado)
     setTieneCambios(false)
+    toast.success("Bloque guardado correctamente")
   }
 
   const EditorComponent = BLOCK_EDITORS[bloqueEditado.tipo]
@@ -149,7 +153,12 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
           <Button variant="ghost" onClick={onCancelar}>
             Cancelar
           </Button>
-          <Button onClick={handleGuardarCambios} disabled={!tieneCambios} className="bg-slate-900 text-white hover:bg-slate-800">
+          
+          {/* CORRECCIÓN: Botón siempre habilitado */}
+          <Button 
+            onClick={handleGuardarCambios} 
+            className="bg-slate-900 text-white hover:bg-slate-800"
+          >
             <Save className="w-4 h-4 mr-2" />
             Guardar
           </Button>

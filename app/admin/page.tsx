@@ -75,6 +75,8 @@ const getBlockName = (tipo: string) => {
     "text-image": "Texto + Imagen",
     form: "Formulario",
     gallery: "Galería",
+    "image-card-list": "Lista Tarjetas Destacadas",
+
     "logo-marquee": "Carrusel de Logos",
   }
   return names[tipo as keyof typeof names] || tipo

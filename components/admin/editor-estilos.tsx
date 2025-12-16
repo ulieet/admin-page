@@ -9,7 +9,6 @@ import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner" 
 import ColorPicker from "@/components/admin/color-picker" 
 import type { StyleConfig } from "@/lib/types/blocks"
-import { cargarConfiguracion, actualizarEstilos } from "@/lib/blocks-storage"
 
 // Valores iniciales por defecto (LIMPIOS: solo primario, fondo y texto)
 const DEFAULT_ESTILOS: StyleConfig = {
@@ -27,31 +26,30 @@ const DEFAULT_ESTILOS: StyleConfig = {
 }
 
 interface EditorEstilosProps {
-  onStylesUpdated?: () => void 
+  estilos: StyleConfig
+  onGuardar: (estilos: StyleConfig) => void
 }
 
-export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
-  const [estilos, setEstilos] = useState<StyleConfig | null>(null)
+export function EditorEstilos({ estilos: estilosIniciales, onGuardar }: EditorEstilosProps) {
+  // Inicializamos el estado local con los props recibidos o los defaults
+  const [estilos, setEstilos] = useState<StyleConfig>(estilosIniciales || DEFAULT_ESTILOS)
   const [tieneCambios, setTieneCambios] = useState(false)
 
+  // Sincronizar estado local si los props cambian (útil si se recarga la config externa)
   useEffect(() => {
-    const config = cargarConfiguracion()
-    
-    // Aseguramos que si cargamos una config vieja con campos extra, 
-    // al menos el estado inicial respete la estructura limpia si fuera necesario sanitizar.
-    // (Aquí confiamos en que tu tipo StyleConfig en TS forzará la estructura correcta al usar el componente).
-    const initialStyles = config.estilos || DEFAULT_ESTILOS
-    setEstilos(initialStyles)
-  }, [])
+    if (estilosIniciales) {
+      setEstilos(estilosIniciales)
+    }
+  }, [estilosIniciales])
 
   const handleColorChange = useCallback((key: keyof StyleConfig["colores"], value: string) => {
     setEstilos((prevEstilos) => {
-      if (!prevEstilos) return null
+      const base = prevEstilos || DEFAULT_ESTILOS
       setTieneCambios(true)
       return {
-        ...prevEstilos,
+        ...base,
         colores: {
-          ...prevEstilos.colores,
+          ...base.colores,
           [key]: value,
         },
       }
@@ -60,12 +58,12 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
 
   const handleTipografiaChange = useCallback((key: keyof StyleConfig["tipografia"], value: string) => {
     setEstilos((prevEstilos) => {
-      if (!prevEstilos) return null
+      const base = prevEstilos || DEFAULT_ESTILOS
       setTieneCambios(true)
       return {
-        ...prevEstilos,
+        ...base,
         tipografia: {
-          ...prevEstilos.tipografia,
+          ...base.tipografia,
           [key]: value,
         },
       }
@@ -74,12 +72,10 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
 
   const handleGuardar = () => {
     if (estilos) {
-      actualizarEstilos(estilos)
+      // Llamamos a la función del padre en lugar de guardar directamente
+      onGuardar(estilos)
       setTieneCambios(false)
       toast.success("Estilos guardados correctamente.")
-      if (onStylesUpdated) {
-        onStylesUpdated()
-      }
     }
   }
 
@@ -119,7 +115,7 @@ export function EditorEstilos({ onStylesUpdated }: EditorEstilosProps) {
             <Palette className="w-5 h-5 text-primary" /> Colores del Tema
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Iteramos sobre las claves conocidas para evitar que aparezcan campos viejos si existen en localStorage */}
+            {/* Iteramos sobre las claves conocidas para evitar campos viejos */}
             {(Object.keys(DEFAULT_ESTILOS.colores) as Array<keyof StyleConfig["colores"]>).map((key) => (
               <div key={key} className="space-y-2">
                 <Label htmlFor={key}>{colorLabels[key]}</Label>

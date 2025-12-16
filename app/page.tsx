@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { cargarConfiguracion } from "@/lib/blocks-storage"
 import type { Block, StyleConfig } from "@/lib/types/blocks"
 
-// Imports de tus componentes
+// --- IMPORTS DE COMPONENTES EXISTENTES ---
 import { BloqueHeader } from "@/components/bloques/header"
 import { BloqueHero } from "@/components/bloques/hero"
 import { BloqueFooter } from "@/components/bloques/footer"
@@ -17,36 +17,49 @@ import { BloqueImageCard } from "@/components/bloques/ImageCard"
 import { BloqueImageCardList } from "@/components/bloques/ImageCardList"
 import { BloqueTituloParrafos } from "@/components/bloques/TitulosParrafos"
 import { WhatsappFloatingButton } from "@/components/bloques/whatsapp-button"
-
-// --- CORRECCIÓN CLAVE ---
-// Usamos el componente correcto con el nombre en español
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
 
-// Mapeo de componentes (nombre en DB -> Componente React)
+// Bloques adicionales detectados en tu estructura
+import { BloqueAbout } from "@/components/bloques/about"
+import { BloqueServices } from "@/components/bloques/services"
+import { BloqueFeatures } from "@/components/bloques/features"
+import { BloqueCTA } from "@/components/bloques/cta"
+import { BloqueStats } from "@/components/bloques/stats"
+import { BloqueContactForm } from "@/components/bloques/contact-form"
+
+// --- MAPEO DE COMPONENTES (BlockType -> React Component) ---
 const COMPONENTES: Record<string, any> = {
+  // Estructurales
   header: BloqueHeader,
   hero: BloqueHero,
   footer: BloqueFooter,
+  
+  // Contenido
   banner: BloqueBanner,
   "cards-3": BloqueCards3,
+  "text-image": BloqueTextoImagen,
+  "titulo-parrafos": BloqueTituloParrafos,
+  about: BloqueAbout,
+  services: BloqueServices,
+  features: BloqueFeatures,
+  stats: BloqueStats,
+  cta: BloqueCTA,
   
-  // Mapeamos ambas variantes para que funcione sí o sí
-  "text-image": BloqueTextoImagen, 
-  "texto-imagen": BloqueTextoImagen,
-
+  // Formularios
   form: BloqueForm,
+  "contact-form": BloqueContactForm,
+  
+  // Imágenes / Medios
   gallery: BloqueGallery,
-  "logo-marquee": BloqueLogoMarquee,
+  "logo-marquee": BloqueLogoMarquee, // Reemplaza a "clientes"
   "image-card": BloqueImageCard,
   "image-card-list": BloqueImageCardList,
-  "titulo-parrafos": BloqueTituloParrafos,
 }
 
 export default function Home() {
   const [bloques, setBloques] = useState<Block[]>([])
   const [estilos, setEstilos] = useState<StyleConfig | null>(null)
   
-  // Estado para datos globales de la empresa
   const [empresaConfig, setEmpresaConfig] = useState<{ nombre: string; whatsapp?: string }>({ 
     nombre: "", 
     whatsapp: "" 
@@ -59,7 +72,6 @@ export default function Home() {
     setBloques(config.bloques)
     setEstilos(config.estilos)
     
-    // Cargar datos de empresa
     if (config.empresa) {
       setEmpresaConfig(config.empresa)
       if (config.empresa.nombre) {
@@ -70,7 +82,6 @@ export default function Home() {
     setLoading(false)
   }, [])
 
-  // Aplicar variables CSS globales al cargar
   useEffect(() => {
     if (estilos && typeof document !== "undefined") {
       const root = document.documentElement
@@ -102,7 +113,6 @@ export default function Home() {
 
     if (!Componente) return null
     
-    // Inyectamos el nombre global si el bloque no tiene uno específico definido
     const datosMejorados = {
         ...bloque.datos as any,
         nombreEmpresa: (bloque.datos as any).nombreEmpresa || empresaConfig.nombre
@@ -133,7 +143,6 @@ export default function Home() {
 
       {footerBlock && renderBlock(footerBlock)}
 
-      {/* Botón de WhatsApp usando el dato global */}
       <WhatsappFloatingButton numero={empresaConfig.whatsapp} />
     </div>
   )

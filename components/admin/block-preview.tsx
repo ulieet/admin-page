@@ -42,7 +42,6 @@ const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   "contact-form": BloqueContactForm,
   stats: BloqueStats,
   "titulo-parrafos": BloqueTituloParrafos,
-  iconos: BloqueIconos,
 }
 
 interface BlockPreviewProps {
