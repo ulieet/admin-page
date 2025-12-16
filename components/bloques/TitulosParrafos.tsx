@@ -1,109 +1,69 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import type { StyleConfig, TituloParrafosBlock } from "@/lib/types/blocks" 
+import type { TituloParrafosBlock } from "@/lib/types/blocks" 
 
 interface BloqueTituloParrafosProps {
   data: TituloParrafosBlock["datos"]
-  estilos?: StyleConfig | null
   className?: string
 }
 
-export function BloqueTituloParrafos({ data, estilos, className }: BloqueTituloParrafosProps) {
-  // Estilos globales
-  const primaryColor = estilos?.colores?.primario || "#3b82f6" 
-  const globalBackgroundColor = estilos?.colores?.fondo || "#ffffff" 
-  const userTextColor = estilos?.colores?.texto || "#0f172a"
+export function BloqueTituloParrafos({ data, className }: BloqueTituloParrafosProps) {
+  // Aseguramos valores por defecto
+  const alineacion = data.alineacion || "centrado";
+  const isWhiteBg = !data.colorFondo || data.colorFondo === '#ffffff' || data.colorFondo === '#FFFFFF';
   
-  // ✅ Usamos los tamaños definidos en el administrador
-  const userTitleSize = estilos?.tipografia?.tamanoTitulo || "3rem" // Forzamos un valor grande por si el config es bajo
-  const userSubtitleSize = estilos?.tipografia?.tamanoSubtitulo || "1.25rem"
-  
-  // Lógica para determinar el color de fondo (si es blanco, usa el color de fondo global)
-  const effectiveBackgroundColor = data.colorFondo === '#ffffff' || data.colorFondo === '#FFFFFF'
-    ? globalBackgroundColor
-    : data.colorFondo;
-    
-  // Estilos de la Sección
-  const sectionStyle: React.CSSProperties = {
-    backgroundColor: effectiveBackgroundColor,
-    color: userTextColor,
-    // La fuente base se hereda del body/html
-  };
-  
-  // ✅ ESTILOS DEL TÍTULO (Grande y Primario)
-  const titleStyle: React.CSSProperties = {
-    color: primaryColor, // Color principal
-    fontSize: userTitleSize, // Tamaño grande
-    lineHeight: 1.1,
-    // Aseguramos que los párrafos y el subtítulo sean más pequeños que el título
-  };
-
-  // ✅ ESTILOS DE LOS PÁRRAFOS (Usando tamaño de subtítulo o más pequeño para contraste)
-  const paragraphStyle: React.CSSProperties = {
-    color: userTextColor,
-    fontSize: userSubtitleSize, // Usa tamaño de subtítulo para buen impacto
-    lineHeight: 1.6,
-  };
-
-  // Clases de alineación
-  const isDividido = data.alineacion === 'dividido';
-  const titleAlignmentClass = isDividido ? "text-left" : "text-center";
-  const textAlignmentClass = isDividido ? "text-left" : "text-center mx-auto";
-
-
   return (
-    <section className={cn("py-16 md:py-24", className)} style={sectionStyle}>
+    <section 
+        className={cn("py-16 md:py-24 transition-colors duration-300", className)} 
+        style={{ 
+            backgroundColor: isWhiteBg ? "var(--color-fondo)" : data.colorFondo,
+            color: "var(--color-texto)"
+        }}
+    >
       <div className="container mx-auto px-4">
         
         <div className={cn(
-            "grid gap-8", 
-            isDividido ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1"
+            "grid gap-8 items-start", 
+            // Si es 'dividido', usamos 12 columnas. Si no, 1 sola.
+            alineacion === 'dividido' ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1"
         )}>
           
           {/* TÍTULO */}
-          <div className={isDividido ? "lg:col-span-4" : "lg:col-span-full"}>
+          <div className={alineacion === 'dividido' ? "lg:col-span-4" : "lg:col-span-full"}>
             <h2 
-                style={titleStyle} 
-                className={cn("font-extrabold tracking-tight", titleAlignmentClass, isDividido ? "max-w-md" : "max-w-4xl mx-auto")}
+                className={cn(
+                    "text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.1]", 
+                    alineacion === 'dividido' ? "text-left" : "text-center max-w-4xl mx-auto"
+                )}
+                style={{ color: "var(--color-primario)" }}
             >
                 {data.titulo}
             </h2>
           </div>
           
-          {/* CONTENIDO (PÁRRAFOS) */}
-          <div className={isDividido ? "lg:col-span-8" : "lg:col-span-full"}>
+          {/* CONTENIDO (Párrafos) */}
+          <div className={alineacion === 'dividido' ? "lg:col-span-8" : "lg:col-span-full"}>
             
-            {isDividido ? (
-              // Modo Dividido (2 columnas de texto a la derecha)
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <p style={paragraphStyle}>
-                    {data.parrafoIzquierda}
-                  </p>
+            {alineacion === 'dividido' ? (
+              // MODO DIVIDIDO: Grid de 2 columnas para los textos
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-lg opacity-90 leading-relaxed">
+                <div className="prose-p:mb-4">
+                    <p>{data.parrafoIzquierda}</p>
                 </div>
-                {data.parrafoDerecha && (
-                    <div>
-                        <p style={paragraphStyle}>
-                            {data.parrafoDerecha}
-                        </p>
-                    </div>
-                )}
+                <div className="prose-p:mb-4">
+                    <p>{data.parrafoDerecha}</p>
+                </div>
               </div>
-              
             ) : (
-              // Modo Centrado (Texto único centrado)
-              <div className={cn("max-w-3xl", textAlignmentClass)}>
-                <p style={paragraphStyle}>
-                  {data.parrafoIzquierda}
-                </p>
+              // MODO CENTRADO: Un solo bloque centrado
+              <div className="max-w-3xl mx-auto text-center text-lg md:text-xl opacity-90 leading-relaxed">
+                <p>{data.parrafoIzquierda}</p>
               </div>
             )}
             
           </div>
-          
         </div>
-        
       </div>
     </section>
   )

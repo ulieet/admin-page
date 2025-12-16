@@ -1,37 +1,35 @@
-// components/admin/color-picker.tsx
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 
 interface ColorPickerProps {
-    value: string;
+    value?: string; // Hacemos opcional el valor para evitar crashes
     onChange: (color: string) => void;
     className?: string;
 }
 
 export default function ColorPicker({ value, onChange, className }: ColorPickerProps) {
+    // Si el valor es undefined, nulo o vacío, usamos blanco por defecto
+    const safeValue = value || "#ffffff";
+
     return (
         <div className="flex gap-2 items-center">
-            {/* Input de color visual */}
             <input
                 type="color"
-                value={value}
+                value={safeValue}
                 onChange={(e) => onChange(e.target.value)}
                 className="w-8 h-8 p-0 border-none rounded-md cursor-pointer overflow-hidden"
                 style={{ background: 'transparent' }}
             />
-            {/* Input de texto para código HEX */}
             <Input
-                value={value.toUpperCase()}
+                value={safeValue.toUpperCase()}
                 onChange={(e) => {
-                    // Permite códigos HEX válidos o código parcial
                     const newValue = e.target.value;
                     if (newValue.match(/^#?([0-9A-F]{1,6})$/i) || newValue === '#') {
                         onChange(newValue);
                     }
                 }}
                 maxLength={7}
-                className="w-32 font-mono text-xs"
+                className="w-28 font-mono text-xs uppercase"
             />
         </div>
     );

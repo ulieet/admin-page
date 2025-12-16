@@ -1,8 +1,9 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ArrowRight, Shield, Zap, BarChart3, Users, Globe, Lock, Smartphone, Mail, Star, FileText } from "lucide-react"
 import Link from "next/link"
-import type { StyleConfig } from "@/lib/types/blocks"
 
 const ICON_MAP: Record<string, any> = {
   shield: Shield, zap: Zap, chart: BarChart3, users: Users, globe: Globe,
@@ -18,40 +19,43 @@ const DEMO_ITEMS = [
 interface BloqueCards3Props {
   data: any
   variant?: string
-  estilos?: StyleConfig | null
 }
 
-export function BloqueCards3({ data, variant = "corporate", estilos }: BloqueCards3Props) {
+export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props) {
   const title = data.title || "Nuestros Servicios"
   const subtitle = data.description || "Soluciones profesionales para tu crecimiento."
   const rawItems = data.items?.length > 0 ? data.items : DEMO_ITEMS
-  const primaryColor = estilos?.colores?.primario || "#1e3a8a" 
+  
+  // Variables CSS
+  const primaryColor = "var(--color-primario)"
+  const bgColor = "var(--color-fondo)"
+  const textColor = "var(--color-texto)"
 
   const renderIcon = (item: any, className: string) => {
     const IconComponent = (typeof item.icon === 'string' ? ICON_MAP[item.icon] : item.icon) || Star
     return <IconComponent className={className} />
   }
 
-  // Helper para asegurar que el link no rompa si viene vacío
   const getLink = (link?: string) => link && link.trim() !== "" ? link : "#"
 
-  // --- MINIMALISTA (COMPACTO) ---
+  // --- ESTILO 1: MINIMALISTA (Limpio, sin bordes pesados) ---
   if (variant === "minimal") {
     return (
-      <section className="py-20 px-4 bg-white">
-        <div className="container mx-auto max-w-5xl"> {/* Ancho máximo reducido un poco */}
+      <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor, color: textColor }}>
+        <div className="container mx-auto max-w-5xl">
           <div className="mb-12 max-w-2xl">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">{title}</h2>
-            <p className="text-lg text-slate-500">{subtitle}</p>
+            <h2 className="text-3xl font-bold mb-4" style={{ color: primaryColor }}>{title}</h2>
+            <p className="text-lg opacity-70">{subtitle}</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8"> {/* Gap reducido de 12 a 8 */}
+          <div className="grid md:grid-cols-3 gap-8">
             {rawItems.map((item: any, idx: number) => (
               <div key={idx} className="group flex flex-col items-start gap-3 h-full">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-1" style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-1 transition-colors" 
+                     style={{ backgroundColor: "rgba(0,0,0,0.05)", color: primaryColor }}>
                   {renderIcon(item, "w-5 h-5")}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{item.title}</h3>
-                <p className="text-slate-600 text-sm leading-relaxed">{item.description}</p>
+                <h3 className="text-lg font-bold">{item.title}</h3>
+                <p className="text-sm leading-relaxed opacity-70">{item.description}</p>
                 <div className="mt-auto pt-2">
                   <Button asChild variant="link" className="p-0 h-auto text-sm font-semibold group-hover:translate-x-1 transition-transform" style={{ color: primaryColor }}>
                     <Link href={getLink(item.link)}>
@@ -67,23 +71,24 @@ export function BloqueCards3({ data, variant = "corporate", estilos }: BloqueCar
     )
   }
 
-  // --- INTERACTIVO (COMPACTO) ---
+  // --- ESTILO 2: INTERACTIVO (Borde al pasar mouse, color bar) ---
   if (variant === "interactive") {
     return (
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor, color: textColor }}>
         <div className="container mx-auto max-w-5xl text-center mb-12">
-            <h2 className="text-3xl font-black text-slate-900 mb-4">{title}</h2>
-            <p className="text-base text-slate-500 max-w-2xl mx-auto">{subtitle}</p>
+            <h2 className="text-3xl font-black mb-4" style={{ color: primaryColor }}>{title}</h2>
+            <p className="text-base opacity-70 max-w-2xl mx-auto">{subtitle}</p>
         </div>
         <div className="container mx-auto max-w-5xl grid md:grid-cols-3 gap-5">
           {rawItems.map((item: any, idx: number) => (
-            <Link href={getLink(item.link)} key={idx} className="group relative p-6 rounded-2xl bg-slate-50 hover:bg-white border hover:border-slate-200 hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left">
-              <div className="mb-4 inline-block p-2.5 rounded-xl bg-white shadow-sm group-hover:scale-105 transition-transform duration-300 w-fit">
+            // Forzamos bg-white aquí para que destaque un poco pero mantenga el estilo interactivo
+            <Link href={getLink(item.link)} key={idx} className="group relative p-6 rounded-2xl border hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left bg-white">
+              <div className="mb-4 inline-block p-2.5 rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300 w-fit bg-slate-50">
                  {renderIcon(item, "w-6 h-6 text-slate-700")}
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
-              <p className="text-slate-500 text-sm mb-6">{item.description}</p>
-              <div className="mt-auto w-full h-1 bg-slate-200 rounded-full overflow-hidden">
+              <h3 className="text-lg font-bold mb-2 text-slate-900">{item.title}</h3>
+              <p className="text-sm mb-6 opacity-70 text-slate-600">{item.description}</p>
+              <div className="mt-auto w-full h-1 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full w-0 group-hover:w-full transition-all duration-500 ease-out" style={{ backgroundColor: primaryColor }} />
               </div>
             </Link>
@@ -93,43 +98,46 @@ export function BloqueCards3({ data, variant = "corporate", estilos }: BloqueCar
     )
   }
 
-  // --- CORPORATIVO (COMPACTO + BOTÓN AZUL) ---
+  // --- ESTILO 3: CORPORATIVO (Default - Con Tarjeta Blanca y Borde) ---
+  // Este es el que querías arreglar para que no se pierda.
   return (
-    <section className="py-16 px-4 bg-slate-50/30">
+    <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor }}>
       <div className="container mx-auto max-w-5xl text-center mb-12">
-        <h2 className="text-3xl font-bold text-slate-900 mb-3">{title}</h2>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto">{subtitle}</p>
+        <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: primaryColor }}>{title}</h2>
+        <p className="text-lg opacity-70 max-w-2xl mx-auto" style={{ color: textColor }}>{subtitle}</p>
       </div>
 
       <div className="container mx-auto max-w-5xl grid md:grid-cols-3 gap-6">
         {rawItems.map((item: any, idx: number) => (
-          // CAMBIOS: p-6 (antes p-8), shadow-md (menos agresiva)
-          <Card key={idx} className="bg-white border-none shadow-md hover:shadow-lg transition-all duration-300 p-6 flex flex-col items-center text-center rounded-xl h-full">
+          <Card 
+            key={idx} 
+            // ✅ AQUÍ ESTÁ EL FIX: bg-white + border + shadow-sm para que no se pierda
+            className="border border-slate-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 p-8 flex flex-col items-center text-center rounded-xl h-full group"
+          >
             
-            {/* CAMBIOS: w-12 h-12 (antes w-16 h-16) */}
             <div 
-              className="w-12 h-12 rounded-full flex items-center justify-center mb-4 text-white shadow-sm shrink-0"
+              className="w-14 h-14 rounded-full flex items-center justify-center mb-6 text-white shadow-md shrink-0 transition-transform group-hover:scale-110"
               style={{ backgroundColor: primaryColor }}
             >
-              {renderIcon(item, "w-6 h-6")}
+              {renderIcon(item, "w-7 h-7")}
             </div>
             
-            {/* CAMBIOS: text-lg (antes xl) */}
-            <h3 className="text-lg font-bold text-blue-900 mb-2">{item.title}</h3>
+            <h3 className="text-xl font-bold mb-3 text-slate-900">
+                {item.title}
+            </h3>
             
-            {/* CAMBIOS: text-sm (antes base) y mb-6 */}
-            <p className="text-slate-600 mb-6 leading-relaxed text-sm">
+            <p className="mb-8 leading-relaxed text-sm text-slate-600 flex-1">
               {item.description}
             </p>
 
-            {/* CAMBIOS: Botón más compacto (h-10, text-xs) */}
             <Button 
               asChild 
-              className="mt-auto rounded-full px-6 h-10 font-bold text-xs tracking-wide shadow hover:shadow-md hover:-translate-y-0.5 transition-all"
-              style={{ backgroundColor: primaryColor }}
+              variant="outline"
+              className="mt-auto rounded-full px-6 h-10 font-bold text-xs tracking-wide hover:-translate-y-0.5 transition-all border-2"
+              style={{ borderColor: primaryColor, color: primaryColor }}
             >
               <Link href={getLink(item.link)}>
-                {(item.buttonText || "ASESORÍA CONTABLE").toUpperCase()}
+                {(item.buttonText || "VER MÁS").toUpperCase()}
               </Link>
             </Button>
           </Card>

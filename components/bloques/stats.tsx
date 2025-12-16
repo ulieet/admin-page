@@ -1,55 +1,45 @@
-import type { StatsBlock, StyleConfig } from "@/lib/types/blocks"
-import { Award, Users, CheckCircle, TrendingUp, Star, type LucideIcon } from "lucide-react"
+"use client"
 
-interface BloqueStatsProps {
-  data: StatsBlock["datos"]
-  estilos?: StyleConfig | null
+interface StatItem {
+  numero: string
+  etiqueta: string
 }
 
-const iconMap: Record<string, LucideIcon> = {
-  award: Award,
-  users: Users,
-  "check-circle": CheckCircle,
-  "trending-up": TrendingUp,
-  star: Star,
+interface StatsData {
+  estadisticas: StatItem[]
+  fondoOscuro?: boolean
 }
 
-export function BloqueStats({ data, estilos }: BloqueStatsProps) {
-  const primaryColor = estilos?.colores.primario || "#1e40af"
-  const textColor = estilos?.colores.texto || "#1f2937"
-  // </CHANGE>
-
+export function BloqueStats({ data }: { data: StatsData }) {
+  // Si elige fondo oscuro, forzamos el color primario como fondo
+  const useDarkBg = data.fondoOscuro
+  
   return (
-    <section className={`py-20 px-4 ${data.fondoOscuro ? "bg-gray-900 text-white" : "bg-background"}`}>
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {data.estadisticas.map((stat, index) => {
-            const Icon = stat.icono ? iconMap[stat.icono] : null
-            return (
-              <div key={index} className="text-center space-y-2">
-                {Icon && (
-                  <div className="flex justify-center mb-4">
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center"
-                      style={{
-                        backgroundColor: data.fondoOscuro ? "rgba(255,255,255,0.1)" : `${primaryColor}15`,
-                      }}
-                    >
-                      <Icon className="w-6 h-6" style={{ color: data.fondoOscuro ? "white" : primaryColor }} />
-                      {/* </CHANGE> */}
-                    </div>
-                  </div>
-                )}
-                <p className="text-4xl md:text-5xl font-bold" style={{ color: data.fondoOscuro ? "white" : textColor }}>
-                  {stat.numero}
-                </p>
-                {/* </CHANGE> */}
-                <p className={`text-lg ${data.fondoOscuro ? "text-white/80" : "text-muted-foreground"}`}>
-                  {stat.label}
-                </p>
+    <section 
+      className="py-16 md:py-24 transition-colors"
+      style={{ 
+        backgroundColor: useDarkBg ? "var(--color-primario)" : "var(--color-fondo)",
+        color: useDarkBg ? "#ffffff" : "var(--color-texto)"
+      }}
+    >
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-white/10">
+          {data.estadisticas.map((stat, index) => (
+            <div key={index} className="p-4">
+              <div 
+                className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2 tracking-tight"
+                style={{ 
+                  // Si el fondo es claro, el número es del color primario. Si es oscuro, es blanco.
+                  color: useDarkBg ? "#ffffff" : "var(--color-primario)" 
+                }}
+              >
+                {stat.numero}
               </div>
-            )
-          })}
+              <div className="text-sm md:text-base font-medium uppercase tracking-wider opacity-80">
+                {stat.etiqueta}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,65 +1,55 @@
-// components/bloques/ImageCardList.tsx
-
 "use client"
 
 import { cn } from "@/lib/utils"
-import type { StyleConfig, ImageCardListBlock } from "@/lib/types/blocks"
+import type { ImageCardListBlock } from "@/lib/types/blocks"
 import { BloqueImageCard } from "./ImageCard" 
 import { Building2 } from "lucide-react"
 
 interface BloqueImageCardListProps {
   data: ImageCardListBlock["datos"]
-  estilos?: StyleConfig | null
   className?: string
 }
 
-export function BloqueImageCardList({ data, estilos, className }: BloqueImageCardListProps) {
-  const userTextColor = estilos?.colores?.texto || "#0f172a"
-  const userTitleSize = estilos?.tipografia?.tamanoTitulo || "2.5rem" 
-  const userSubtitleSize = estilos?.tipografia?.tamanoSubtitulo || "1.25rem"
-  
+export function BloqueImageCardList({ data, className }: BloqueImageCardListProps) {
   const gridClasses = data.columnas === 4 
     ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
     : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
 
   return (
-    <section className={cn("py-16 md:py-24", className)}>
+    <section className={cn("py-20 md:py-24 bg-[var(--color-fondo)] text-[var(--color-texto)]", className)}>
       <div className="container mx-auto px-4">
         
-        {/* Título de la Sección */}
+        {/* Cabecera de Sección */}
         {(data.titulo || data.subtitulo) && (
-            <div className="text-center mb-12 max-w-3xl mx-auto space-y-4">
-                <h2 
-                    style={{ color: userTextColor, fontSize: userTitleSize }} 
-                    className="font-extrabold tracking-tight"
-                >
-                    {data.titulo}
-                </h2>
-                <p 
-                    style={{ color: userTextColor, opacity: 0.7, fontSize: userSubtitleSize }}
-                    className="text-lg"
-                >
-                    {data.subtitulo}
-                </p>
+            <div className="text-center mb-16 max-w-3xl mx-auto space-y-4">
+                {data.titulo && (
+                    <h2 
+                        className="text-4xl font-extrabold tracking-tight"
+                        style={{ color: "var(--color-primario)" }}
+                    >
+                        {data.titulo}
+                    </h2>
+                )}
+                {data.subtitulo && (
+                    <p className="text-xl opacity-70 leading-relaxed">
+                        {data.subtitulo}
+                    </p>
+                )}
             </div>
         )}
 
-
         {/* Grid de Tarjetas */}
-        <div className={cn("grid gap-8", gridClasses)}>
+        <div className={cn("grid gap-8 items-stretch", gridClasses)}>
           {data.cards && data.cards.length > 0 ? (
              data.cards.map((cardData, index) => (
-                <div key={index} className="flex">
-                   <BloqueImageCard 
-                       data={cardData} 
-                       estilos={estilos}
-                   />
+                <div key={index} className="h-full">
+                   <BloqueImageCard data={cardData} />
                 </div>
              ))
           ) : (
-            <div className="col-span-full text-center p-8 border-dashed border-2 text-gray-500 rounded-lg">
-                <Building2 className="w-6 h-6 mx-auto mb-2" />
-                Aún no hay tarjetas añadidas. Usa el editor para agregar contenido.
+            <div className="col-span-full text-center p-12 border-2 border-dashed rounded-2xl opacity-50">
+                <Building2 className="w-10 h-10 mx-auto mb-4" />
+                <p>No hay tarjetas configuradas.</p>
             </div>
           )}
         </div>

@@ -6,24 +6,43 @@ import { BloqueHero } from "@/components/bloques/hero"
 import { BloqueFooter } from "@/components/bloques/footer"
 import { BloqueBanner } from "@/components/bloques/banner"
 import { BloqueCards3 } from "@/components/bloques/cards-3"
-import { BloqueTextImage } from "@/components/bloques/text-image"
 import { BloqueForm } from "@/components/bloques/form"
 import { BloqueGallery } from "@/components/bloques/gallery"
 import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
-import { BloqueImageCard } from "@/components/bloques/ImageCard" // ✅ IMPORTAMOS EL NUEVO BLOQUE
+import { BloqueImageCard } from "@/components/bloques/ImageCard"
+import { BloqueImageCardList } from "@/components/bloques/ImageCardList"
+import { BloqueTituloParrafos } from "@/components/bloques/TitulosParrafos"
+import { BloqueAbout } from "@/components/bloques/about"
+import { BloqueServices } from "@/components/bloques/services"
+import { BloqueFeatures } from "@/components/bloques/features"
+import { BloqueCTA } from "@/components/bloques/cta"
+import { BloqueContactForm } from "@/components/bloques/contact-form"
+import { BloqueStats } from "@/components/bloques/stats"
 
-// Mapeo de tipos de bloque a componentes de React
+// --- CORRECCIÓN ---
+import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
+
 const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   header: BloqueHeader,
   hero: BloqueHero,
   footer: BloqueFooter,
   banner: BloqueBanner,
   "cards-3": BloqueCards3,
-  "text-image": BloqueTextImage,
+  "text-image": BloqueTextoImagen, // Corregido
+  "texto-imagen": BloqueTextoImagen, // Soporte extra
   form: BloqueForm,
   gallery: BloqueGallery,
   "logo-marquee": BloqueLogoMarquee,
-  "image-card": BloqueImageCard, // ✅ AÑADIDO: Mapeamos el nuevo componente
+  "image-card": BloqueImageCard,
+  "image-card-list": BloqueImageCardList,
+  about: BloqueAbout,
+  services: BloqueServices,
+  features: BloqueFeatures,
+  cta: BloqueCTA,
+  "contact-form": BloqueContactForm,
+  stats: BloqueStats,
+  "titulo-parrafos": BloqueTituloParrafos,
+  iconos: BloqueIconos,
 }
 
 interface BlockPreviewProps {
@@ -38,50 +57,33 @@ export function BlockPreview({ bloque, estilos }: BlockPreviewProps) {
     return <div className="p-8 bg-red-100 text-red-700">Componente para el tipo "{bloque.tipo}" no encontrado.</div>
   }
   
-  // 1. CORRECCIÓN DEL TAMAÑO DE FUENTE Y ESCALADO
-  // Para evitar que los estilos globales de rem (que dependen del <html>)
-  // rompan la visualización dentro del iframe del editor (o preview),
-  // forzamos el tamaño base (tamanoBase) al contenedor.
-  // Esto asegura que 1rem sea igual a tamanoBase (ej. 16px) dentro del preview.
-  
   const tamanoBase = estilos.tipografia.tamanoBase || "16px";
 
   const previewStyle: React.CSSProperties = {
-    // Forzamos el tamaño de fuente base para que todas las unidades 'rem'
-    // dentro del preview se escalen correctamente según la configuración del usuario.
     fontSize: tamanoBase, 
-    // Aplicamos la fuente global para una vista previa precisa.
-    fontFamily: estilos.tipografia.fuente || 'inherit', 
-    // Aseguramos que el contenedor no tenga un color de fondo extra
+    fontFamily: estilos.tipografia.fuente || 'inherit',
     backgroundColor: 'transparent',
-  };
+    "--color-primario": estilos.colores.primario,
+    "--color-fondo": estilos.colores.fondo,
+    "--color-texto": estilos.colores.texto,
+  } as React.CSSProperties;
 
-
-  // 2. CORRECCIÓN DE DATOS DE TARJETAS (CARDS-3)
-  // El error "no se ven las cards" ocurre si `bloque.datos.items` no existe o no es un array,
-  // lo cual puede pasar si el bloque se inicializa mal.
-  // Aseguramos que, si es un bloque de cards-3, los datos tengan la estructura correcta.
-
+  // Corrección para evitar fallos en cards vacías
   let datosCorregidos = bloque.datos;
-
   if (bloque.tipo === "cards-3") {
-    // Si la propiedad 'items' no es un array, la inicializamos con 3 elementos por defecto.
     if (!Array.isArray(bloque.datos.items) || bloque.datos.items.length === 0) {
-        console.warn(`[BlockPreview] Inicializando items faltantes para cards-3 en el preview.`)
         datosCorregidos = {
             ...bloque.datos,
             items: [
-                { titulo: "Tarjeta 1", descripcion: "Placeholder", icono: "activity", botonTexto: "Ver", botonUrl: "#" },
-                { titulo: "Tarjeta 2", descripcion: "Placeholder", icono: "settings", botonTexto: "Ver", botonUrl: "#" },
-                { titulo: "Tarjeta 3", descripcion: "Placeholder", icono: "users", botonTexto: "Ver", botonUrl: "#" },
+                { titulo: "Ejemplo 1", descripcion: "Descripción...", icono: "activity", botonTexto: "Ver" },
+                { titulo: "Ejemplo 2", descripcion: "Descripción...", icono: "settings", botonTexto: "Ver" },
+                { titulo: "Ejemplo 3", descripcion: "Descripción...", icono: "users", botonTexto: "Ver" },
             ]
         }
     }
   }
 
-
   return (
-    // Aplicamos los estilos corregidos al contenedor
     <div style={previewStyle}>
       <Component 
         data={datosCorregidos} 

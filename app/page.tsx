@@ -10,16 +10,17 @@ import { BloqueHero } from "@/components/bloques/hero"
 import { BloqueFooter } from "@/components/bloques/footer"
 import { BloqueBanner } from "@/components/bloques/banner"
 import { BloqueCards3 } from "@/components/bloques/cards-3"
-import { BloqueTextImage } from "@/components/bloques/text-image"
 import { BloqueForm } from "@/components/bloques/form"
 import { BloqueGallery } from "@/components/bloques/gallery"
 import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
 import { BloqueImageCard } from "@/components/bloques/ImageCard"
 import { BloqueImageCardList } from "@/components/bloques/ImageCardList"
-import { BloqueTituloParrafos } from "@/components/bloques/TitulosParrafos" // ✅ Importación Correcta
-
-// Importamos el botón de WhatsApp
+import { BloqueTituloParrafos } from "@/components/bloques/TitulosParrafos"
 import { WhatsappFloatingButton } from "@/components/bloques/whatsapp-button"
+
+// --- CORRECCIÓN CLAVE ---
+// Usamos el componente correcto con el nombre en español
+import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
 
 // Mapeo de componentes (nombre en DB -> Componente React)
 const COMPONENTES: Record<string, any> = {
@@ -28,13 +29,17 @@ const COMPONENTES: Record<string, any> = {
   footer: BloqueFooter,
   banner: BloqueBanner,
   "cards-3": BloqueCards3,
-  "text-image": BloqueTextImage,
+  
+  // Mapeamos ambas variantes para que funcione sí o sí
+  "text-image": BloqueTextoImagen, 
+  "texto-imagen": BloqueTextoImagen,
+
   form: BloqueForm,
   gallery: BloqueGallery,
   "logo-marquee": BloqueLogoMarquee,
   "image-card": BloqueImageCard,
   "image-card-list": BloqueImageCardList,
-  "titulo-parrafos": BloqueTituloParrafos, // ✅ Mapeo Correcto
+  "titulo-parrafos": BloqueTituloParrafos,
 }
 
 export default function Home() {
@@ -57,9 +62,6 @@ export default function Home() {
     // Cargar datos de empresa
     if (config.empresa) {
       setEmpresaConfig(config.empresa)
-      
-      // ✅ AHORA SÍ TIENE UTILIDAD:
-      // Actualizamos el título de la pestaña del navegador con el nombre de la empresa
       if (config.empresa.nombre) {
         document.title = config.empresa.nombre
       }
@@ -73,7 +75,6 @@ export default function Home() {
     if (estilos && typeof document !== "undefined") {
       const root = document.documentElement
       root.style.setProperty("--color-primario", estilos.colores.primario)
-      root.style.setProperty("--color-secundario", estilos.colores.secundario)
       root.style.setProperty("--color-fondo", estilos.colores.fondo)
       root.style.setProperty("--color-texto", estilos.colores.texto)
       root.style.setProperty("--fuente-base", estilos.tipografia.fuente)
@@ -102,7 +103,6 @@ export default function Home() {
     if (!Componente) return null
     
     // Inyectamos el nombre global si el bloque no tiene uno específico definido
-    // Esto es un truco útil: Si en el header borras el nombre, usa el de configuración.
     const datosMejorados = {
         ...bloque.datos as any,
         nombreEmpresa: (bloque.datos as any).nombreEmpresa || empresaConfig.nombre

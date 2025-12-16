@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Save } from "lucide-react"
 import { useState, useEffect, useCallback } from "react"
 
-// Importamos todos los editores
+// Importación de editores
 import { HeaderEditor } from "./blocks/HeaderEditor"
 import { HeroEditor } from "./blocks/HeroEditor"
 import { FooterEditor } from "./blocks/FooterEditor"
@@ -21,30 +21,51 @@ import { CtaEditor } from "./blocks/CTAEditor"
 import { ContactFormEditor } from "./blocks/ContactFormEditor"
 import { StatsEditor } from "./blocks/StatsEditor"
 import { GalleryEditor } from "./blocks/GalleryEditor"
-import { ImageCardEditor } from "./blocks/ImageCardEditor" 
 import { ImageCardListEditor } from "./blocks/ImageCardListEditor"
-import { TituloParrafosEditor } from "./blocks/TitulosParrafosEditor" // Importación que debe existir
+import { TituloParrafosEditor } from "./blocks/TitulosParrafosEditor"
 
 const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   header: HeaderEditor,
   hero: HeroEditor,
   footer: FooterEditor,
   banner: BannerEditor,
-  form: FormEditor,
-  "cards-3": Cards3Editor,
-  "text-image": TextImageEditor,
   about: AboutEditor,
+  "text-image": TextImageEditor,
+  "texto-imagen": TextImageEditor,
+  "titulo-parrafos": TituloParrafosEditor,
+  stats: StatsEditor,
+  "cards-3": Cards3Editor,
   services: ServicesEditor,
   features: FeaturesEditor,
-  clients: ClientsEditor,
-  cta: CtaEditor,
+  "image-card-list": ImageCardListEditor,
+  form: FormEditor,
   "contact-form": ContactFormEditor,
-  stats: StatsEditor,
+  cta: CtaEditor,
   gallery: GalleryEditor,
   "logo-marquee": ClientsEditor,
-  "image-card": ImageCardEditor,
-  "image-card-list": ImageCardListEditor,
-  "titulo-parrafos": TituloParrafosEditor, // Mapeo Correcto
+}
+
+// --- DICCIONARIO DE NOMBRES ---
+const NOMBRES_BLOQUES: Record<string, string> = {
+  header: "Encabezado Principal",
+  footer: "Pie de Página",
+  hero: "Portada / Héroe",
+  banner: "Banner Promocional",
+  "cards-3": "Tarjetas de Servicios",
+  "text-image": "Texto + Imagen",
+  "texto-imagen": "Texto + Imagen",
+  form: "Formulario de Contacto",
+  gallery: "Galería de Imágenes",
+  "logo-marquee": "Carrusel de Logos",
+  "image-card-list": "Lista Tarjetas Destacadas",
+  "titulo-parrafos": "Título y Párrafos",
+  stats: "Estadísticas",
+  cta: "Llamada a la Acción",
+  about: "Sobre Nosotros",
+  services: "Lista de Servicios",
+  features: "Características",
+  "contact-form": "Contacto Simple",
+  iconos: "Íconos con Texto"
 }
 
 interface EditorBloqueProps {
@@ -83,20 +104,21 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
   const EditorComponent = BLOCK_EDITORS[bloqueEditado.tipo]
 
   return (
-    <div className="flex flex-col bg-background border rounded-xl shadow-sm overflow-hidden">
+    <div className="flex flex-col bg-background border rounded-xl shadow-sm overflow-hidden h-full">
       
-      {/* CABECERA */}
+      {/* CABECERA DEL EDITOR */}
       <div className="p-6 border-b bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-200">
-                {bloqueEditado.tipo.replace("-", " ")}
+                {/* Nombre amigable */}
+                {NOMBRES_BLOQUES[bloqueEditado.tipo] || bloqueEditado.tipo}
             </span>
             <h2 className="font-semibold text-slate-800">Editando Bloque</h2>
         </div>
       </div>
 
       {/* ÁREA DE EDICIÓN */}
-      <div className="p-6 min-h-[300px]">
+      <div className="p-6 overflow-y-auto flex-1">
         <div className="space-y-6">
           {EditorComponent ? (
             <EditorComponent 
@@ -105,14 +127,14 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
             />
           ) : (
             <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 text-center bg-slate-50">
-              <p>No se encontró un editor configurado para el tipo <strong>{bloqueEditado.tipo}</strong></p>
+              <p>No se encontró un editor configurado para <strong>{bloqueEditado.tipo}</strong></p>
             </div>
           )}
         </div>
       </div>
 
-      {/* PIE DE PÁGINA (BOTONES) */}
-      <div className="border-t p-4 bg-slate-50/50 flex items-center justify-between">
+      {/* BOTONES DE ACCIÓN */}
+      <div className="border-t p-4 bg-slate-50/50 flex items-center justify-between sticky bottom-0 z-10">
         <div className="text-sm font-medium">
           {tieneCambios ? (
             <span className="text-amber-600 flex items-center gap-2">

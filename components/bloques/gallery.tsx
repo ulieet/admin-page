@@ -1,25 +1,26 @@
-import type { GalleryBlock, StyleConfig } from "@/lib/types/blocks"
+"use client"
+
+import type { GalleryBlock } from "@/lib/types/blocks"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 interface BloqueGalleryProps {
   data: GalleryBlock["datos"]
-  estilos?: StyleConfig | null
+  // Sin 'estilos'
 }
 
-export function BloqueGallery({ data, estilos }: BloqueGalleryProps) {
+export function BloqueGallery({ data }: BloqueGalleryProps) {
   const columnas = data.columnas || 3
   const titulo = data.titulo || ""
-  const textColor = estilos?.colores.texto || "#1f2937"
 
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 md:py-24 bg-[var(--color-fondo)] text-[var(--color-texto)]">
       <div className="container mx-auto px-4">
         {titulo && (
           <h2 
-            className="text-3xl font-bold text-center mb-12"
-            style={{ color: textColor }}
+            className="text-3xl md:text-4xl font-bold text-center mb-12 text-balance"
+            style={{ color: "var(--color-primario)" }}
           >
             {titulo}
           </h2>
@@ -33,23 +34,30 @@ export function BloqueGallery({ data, estilos }: BloqueGalleryProps) {
         )}>
           {(data.imagenes || []).map((imagen, index) => {
             
-            // Contenido de la imagen
+            // Renderizado de la imagen
             const ImageContent = (
-              <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-muted group">
+              <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-black/5 group shadow-sm hover:shadow-md transition-all">
                 <Image
                   src={imagen.url || "/placeholder.svg"}
-                  alt={imagen.alt || `Imagen de galería ${index + 1}`}
+                  alt={imagen.alt || `Imagen ${index + 1}`}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                {/* Overlay sutil al hacer hover si es linkeable */}
-                {imagen.link && (
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                
+                {/* Overlay oscuro al pasar el mouse (solo si tiene link o descripción) */}
+                {(imagen.link || imagen.descripcion) && (
+                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                      {imagen.descripcion && (
+                          <p className="text-white text-center font-medium drop-shadow-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                              {imagen.descripcion}
+                          </p>
+                      )}
+                   </div>
                 )}
               </div>
             )
 
-            // Si tiene link, lo envolvemos. Si no, solo mostramos la imagen.
+            // Si es un link, lo envolvemos
             return (
               <div key={index}>
                 {imagen.link ? (

@@ -19,20 +19,39 @@ const ICONOS = {
 }
 
 export function BloqueFeatures({ data }: { data: FeaturesData }) {
+  // Ahora usamos las variables globales que inyecta RenderBlocks
   return (
-    <section className="py-16 bg-background">
+    <section className="py-20 bg-[var(--color-fondo)] text-[var(--color-texto)]">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8">
           {data.caracteristicas.map((caracteristica, index) => {
             const Icono = ICONOS[caracteristica.icono as keyof typeof ICONOS] || Award
+            
             return (
-              <div key={index} className="text-center space-y-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary text-primary-foreground">
-                  <Icono className="h-10 w-10" />
+              <div key={index} className="flex flex-col items-center text-center space-y-4 p-6 rounded-xl border border-transparent hover:border-slate-100 transition-colors">
+                
+                {/* Ícono: Fondo primario, icono blanco */}
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full text-white shadow-sm"
+                     style={{ backgroundColor: "var(--color-primario)" }}>
+                  <Icono className="h-8 w-8" />
                 </div>
-                <h3 className="text-xl font-semibold">{caracteristica.titulo}</h3>
-                <p className="text-muted-foreground">{caracteristica.descripcion}</p>
-                <Button className="bg-primary hover:bg-primary/90">{caracteristica.botonTexto}</Button>
+                
+                <h3 className="text-xl font-bold">
+                    {caracteristica.titulo}
+                </h3>
+                
+                <p className="opacity-80 leading-relaxed max-w-sm">
+                    {caracteristica.descripcion}
+                </p>
+                
+                {caracteristica.botonTexto && (
+                  <Button 
+                    className="mt-4 text-white hover:opacity-90 transition-opacity"
+                    style={{ backgroundColor: "var(--color-primario)" }}
+                  >
+                    {caracteristica.botonTexto}
+                  </Button>
+                )}
               </div>
             )
           })}

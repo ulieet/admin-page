@@ -1,95 +1,156 @@
-// components/admin/blocks/TituloParrafosEditor.tsx
+"use client"
 
 import React from "react"
-import { TituloParrafosBlock } from "@/lib/types/blocks"
+import type { TextImageBlock } from "@/lib/types/blocks"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { ImageUpload } from "@/components/admin/image-upload" 
 import { Separator } from "@/components/ui/separator"
-import ColorPicker from "@/components/admin/color-picker" 
+import { Plus, Trash2, CheckCircle2 } from "lucide-react"
 
-interface TituloParrafosEditorProps {
-  data: TituloParrafosBlock["datos"] & { variant?: string }
-  onChange: (field: keyof TituloParrafosBlock["datos"] | "variant", value: any) => void
+interface TextImageEditorProps {
+  data: TextImageBlock["datos"] & { variant?: string }
+  onChange: (field: keyof TextImageBlock["datos"] | "variant", value: any) => void
 }
 
-export function TextImageEditor({ data, onChange }: TituloParrafosEditorProps) {
-  const handleDataChange = (field: keyof TituloParrafosBlock["datos"], value: any) => {
+export function TextImageEditor({ data, onChange }: TextImageEditorProps) {
+  const handleDataChange = (field: keyof TextImageBlock["datos"], value: any) => {
     onChange(field, value);
+  };
+
+  // Aseguramos que puntos sea un array
+  const puntos = Array.isArray(data.puntos) ? data.puntos : [];
+
+  // Función para cambiar un punto específico
+  const handlePuntoChange = (index: number, value: string) => {
+    const nuevosPuntos = [...puntos];
+    nuevosPuntos[index] = value;
+    handleDataChange("puntos", nuevosPuntos);
+  };
+
+  // Agregar un punto vacío
+  const handleAddPunto = () => {
+    handleDataChange("puntos", [...puntos, ""]);
+  };
+
+  // Eliminar un punto
+  const handleRemovePunto = (index: number) => {
+    const nuevosPuntos = puntos.filter((_, i) => i !== index);
+    handleDataChange("puntos", nuevosPuntos);
   };
 
   return (
     <div className="space-y-6 p-4">
-      <h3 className="text-lg font-semibold border-b pb-2">Contenido de Título y Párrafos</h3>
+      <h3 className="text-lg font-semibold border-b pb-2">Editor Texto + Imagen</h3>
 
-      {/* Título Principal */}
+      {/* Título */}
       <div className="space-y-2">
         <Label htmlFor="titulo">Título Principal</Label>
         <Input
           id="titulo"
-          value={data.titulo}
+          value={data.titulo || ""}
           onChange={(e) => handleDataChange("titulo", e.target.value)}
-          placeholder="Título que usa el color primario"
+          placeholder="Ej: Sobre Nosotros"
         />
       </div>
-      
-      <Separator />
 
-      {/* Alineación */}
+      {/* Imagen */}
       <div className="space-y-2">
-        <Label htmlFor="alineacion">Alineación del Contenido</Label>
-        <Select 
-            value={data.alineacion} 
-            onValueChange={(value) => handleDataChange("alineacion", value as "centrado" | "dividido")}
-        >
-            <SelectTrigger id="alineacion" className="w-[200px]">
-                <SelectValue placeholder="Seleccionar alineación" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="centrado">Centrado (Un solo párrafo)</SelectItem>
-                <SelectItem value="dividido">Dividido (Dos columnas)</SelectItem>
-            </SelectContent>
-        </Select>
-      </div>
-
-      {/* Párrafos */}
-      <div className="space-y-4">
-        <div className="space-y-2">
-            <Label htmlFor="parrafoIzquierda">Párrafo Principal / Izquierda</Label>
-            <Textarea
-              id="parrafoIzquierda"
-              value={data.parrafoIzquierda}
-              onChange={(e) => handleDataChange("parrafoIzquierda", e.target.value)}
-              placeholder="Párrafo que se muestra siempre."
+        <Label>Imagen Destacada</Label>
+        <div className="bg-slate-50 p-4 rounded-lg border border-dashed">
+            <ImageUpload 
+                value={data.imagen || ""} 
+                onChange={(url) => handleDataChange("imagen", url)}
+                placeholder="Subir imagen..."
             />
         </div>
-        
-        {data.alineacion === 'dividido' && (
-            <div className="space-y-2">
-                <Label htmlFor="parrafoDerecha">Párrafo Derecho (Opcional)</Label>
-                <Textarea
-                  id="parrafoDerecha"
-                  value={data.parrafoDerecha}
-                  onChange={(e) => handleDataChange("parrafoDerecha", e.target.value)}
-                  placeholder="Este párrafo solo se muestra en modo 'Dividido'."
-                />
-            </div>
-        )}
       </div>
-      
+
+      {/* Posición Imagen */}
+      <div className="flex items-center justify-between border p-4 rounded-lg bg-white shadow-sm">
+        <div className="space-y-0.5">
+          <Label>Posición de la Imagen</Label>
+          <p className="text-xs text-muted-foreground">
+            {data.imagenDerecha ? "La imagen se muestra a la DERECHA" : "La imagen se muestra a la IZQUIERDA"}
+          </p>
+        </div>
+        <Switch
+          checked={data.imagenDerecha}
+          onCheckedChange={(checked) => handleDataChange("imagenDerecha", checked)}
+        />
+      </div>
+
       <Separator />
 
-      {/* Color de Fondo */}
+      {/* Texto Principal */}
       <div className="space-y-2">
-        <Label>Color de Fondo de la Sección</Label>
-        <ColorPicker 
-          value={data.colorFondo}
-          onChange={(color) => handleDataChange("colorFondo", color)}
+        <Label htmlFor="texto">Contenido de Texto</Label>
+        <Textarea
+          id="texto"
+          value={data.texto || ""}
+          onChange={(e) => handleDataChange("texto", e.target.value)}
+          placeholder="Escribe aquí el contenido..."
+          rows={6}
         />
-        <p className="text-xs text-muted-foreground">
-            Define un color de fondo diferente al fondo global.
-        </p>
+      </div>
+
+      <Separator />
+
+      {/* LISTA DINÁMICA DE PUNTOS */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+            <Label className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                Puntos Destacados / Beneficios
+            </Label>
+            <span className="text-xs text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">
+                {puntos.length} ítems
+            </span>
+        </div>
+        
+        <div className="space-y-2">
+            {puntos.length === 0 && (
+                <div className="text-sm text-muted-foreground text-center py-4 border-2 border-dashed rounded-lg">
+                    No hay puntos agregados.
+                </div>
+            )}
+            
+            {puntos.map((punto, index) => (
+                <div key={index} className="flex gap-2 items-center group">
+                    <div className="shrink-0 text-xs text-slate-400 font-mono w-4">
+                        {index + 1}.
+                    </div>
+                    <Input 
+                        value={punto} 
+                        onChange={(e) => handlePuntoChange(index, e.target.value)}
+                        placeholder="Escribe una característica..."
+                        className="flex-1"
+                    />
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleRemovePunto(index)}
+                        className="opacity-50 hover:opacity-100 hover:bg-red-50 hover:text-red-600 transition-all"
+                        title="Eliminar punto"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
+            ))}
+        </div>
+
+        <Button 
+            type="button" 
+            variant="outline" 
+            size="sm" 
+            onClick={handleAddPunto}
+            className="w-full mt-2 border-dashed border-2 hover:border-solid hover:bg-slate-50"
+        >
+            <Plus className="w-4 h-4 mr-2" /> Agregar Punto
+        </Button>
       </div>
       
     </div>

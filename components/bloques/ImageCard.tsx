@@ -1,79 +1,68 @@
-// components/bloques/ImageCard.tsx
-
 "use client"
 
 import { cn } from "@/lib/utils"
-import type { StyleConfig, ImageCardBlock } from "@/lib/types/blocks" 
 import Link from "next/link"
 import { ArrowRight, Building2 } from "lucide-react"
+import type { ImageCardBlock } from "@/lib/types/blocks" 
 
 interface BloqueImageCardProps {
   data: ImageCardBlock["datos"] 
-  estilos?: StyleConfig | null
   className?: string
 }
 
-export function BloqueImageCard({ data, estilos, className }: BloqueImageCardProps) {
-  const primaryColor = estilos?.colores?.primario || "#3b82f6"
-  const userTextColor = estilos?.colores?.texto || "#0f172a"
-  const cardTitleSize = "1.5rem"
+export function BloqueImageCard({ data, className }: BloqueImageCardProps) {
+  // Variables CSS solo para elementos de color (como el botón o badge)
+  const primaryColor = "var(--color-primario)"
   
-  const titleStyle = { 
-    color: userTextColor,
-    fontSize: cardTitleSize,
-    lineHeight: 1.2
-  }
-  
-  const descriptionStyle = {
-    color: userTextColor,
-    opacity: 0.8,
-    fontSize: "1rem",
-  }
-
   return (
-    <div className={cn("bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100/50 h-full w-full", className)}>
+    // FIX CLAVE: Forzamos 'bg-white' Y 'text-slate-900' (oscuro) 
+    // Esto garantiza contraste perfecto aunque tu web esté en modo oscuro.
+    <div className={cn(
+        "bg-white text-slate-900 rounded-xl shadow-md overflow-hidden border border-slate-100 h-full w-full flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1", 
+        className
+    )}>
       
       {/* Imagen de Portada */}
-      <div className="aspect-video overflow-hidden">
+      <div className="aspect-video overflow-hidden relative bg-slate-100">
         {data.imagenUrl ? (
             <img 
                 src={data.imagenUrl} 
                 alt={data.altTexto || data.titulo} 
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.03]" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
             />
         ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                <Building2 className="w-8 h-8 mr-2"/> Imagen no disponible
+            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                <Building2 className="w-12 h-12 opacity-50"/> 
             </div>
         )}
+        
+        {/* Overlay sutil al hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
       </div>
       
-      {/* Contenido de la Tarjeta */}
-      <div className="p-6 md:p-8 space-y-4">
+      {/* Contenido */}
+      <div className="p-6 md:p-8 space-y-4 flex flex-col flex-1">
         
         {/* Etiqueta / Badge */}
         {data.etiqueta && (
             <div 
-                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold"
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider w-fit shadow-sm"
                 style={{ 
                     backgroundColor: primaryColor, 
                     color: "#ffffff"
                 }}
             >
-                <Building2 className="w-4 h-4" />
-                <span className="text-base font-normal">
-                    {data.etiqueta}
-                </span>
+                {data.etiqueta}
             </div>
         )}
         
-        {/* Título */}
-        <h3 style={titleStyle} className="font-bold tracking-tight">
+        {/* Título (Siempre oscuro) */}
+        <h3 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900">
           {data.titulo}
         </h3>
         
-        {/* Descripción */}
-        <p style={descriptionStyle}>
+        {/* Descripción (Siempre gris medio/oscuro) */}
+        <p className="text-base text-slate-600 flex-1 leading-relaxed">
           {data.descripcion}
         </p>
         
@@ -81,11 +70,11 @@ export function BloqueImageCard({ data, estilos, className }: BloqueImageCardPro
         {data.linkTexto && data.linkUrl && (
             <Link 
                 href={data.linkUrl} 
-                className="flex items-center gap-2 font-semibold pt-2 transition-colors group text-base"
+                className="flex items-center gap-2 font-bold pt-4 mt-auto transition-opacity hover:opacity-80"
                 style={{ color: primaryColor }}
             >
                 {data.linkTexto}
-                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
         )}
 

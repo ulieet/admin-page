@@ -1,3 +1,5 @@
+// lib/types/blocks.ts
+
 export type BlockType =
   | "header"
   | "hero"
@@ -10,6 +12,13 @@ export type BlockType =
   | "logo-marquee"
   | "image-card-list"
   | "titulo-parrafos"
+  | "about"
+  | "services"
+  | "features"
+  | "cta"
+  | "contact-form"
+  | "stats"
+  | "iconos"
 
 // Configuración global de estilos
 export interface StyleConfig {
@@ -36,7 +45,7 @@ export interface BaseBlock {
   variant?: BlockVariant
 }
 
-// SECCIONES FIJAS
+// --- BLOQUES ESTRUCTURALES ---
 
 export interface HeaderBlock extends BaseBlock {
   tipo: "header"
@@ -44,10 +53,7 @@ export interface HeaderBlock extends BaseBlock {
     logoImagen?: string
     logoTexto?: string
     nombreEmpresa: string
-    navegacion: Array<{
-      nombre: string
-      url: string
-    }>
+    navegacion: Array<{ nombre: string; url: string }>
     botonTexto: string
     botonUrl: string
     alineacion?: "izquierda" | "centro" | "derecha"
@@ -93,7 +99,7 @@ export interface FooterBlock extends BaseBlock {
   }
 }
 
-// BLOQUES VARIABLES
+// --- BLOQUES DE CONTENIDO ---
 
 export interface BannerBlock extends BaseBlock {
   tipo: "banner"
@@ -106,6 +112,51 @@ export interface BannerBlock extends BaseBlock {
     alineacion: "izquierda" | "centro" | "derecha"
   }
 }
+
+export interface AboutBlock extends BaseBlock {
+  tipo: "about"
+  datos: {
+    titulo: string
+    subtitulo?: string
+    descripcion: string
+    imagen?: string
+    botonTexto?: string
+    botonUrl?: string
+  }
+}
+
+export interface TextImageBlock extends BaseBlock {
+  tipo: "text-image"
+  datos: {
+    titulo: string
+    texto: string
+    imagen: string
+    imagenDerecha: boolean
+    posicionImagen?: "izquierda" | "derecha"
+    puntos?: string[]
+  }
+}
+
+export interface TituloParrafosBlock extends BaseBlock {
+  tipo: "titulo-parrafos"
+  datos: {
+    titulo: string
+    parrafoIzquierda: string
+    parrafoDerecha: string
+    alineacion: "centrado" | "dividido"
+    colorFondo: string
+  }
+}
+
+export interface StatsBlock extends BaseBlock {
+  tipo: "stats"
+  datos: {
+    fondoOscuro?: boolean
+    estadisticas: Array<{ numero: string; etiqueta: string }>
+  }
+}
+
+// --- TARJETAS Y LISTAS ---
 
 export interface Cards3Block extends BaseBlock {
   tipo: "cards-3"
@@ -121,17 +172,52 @@ export interface Cards3Block extends BaseBlock {
   }
 }
 
-export interface TextImageBlock extends BaseBlock {
-  tipo: "text-image"
+export interface ServicesBlock extends BaseBlock {
+  tipo: "services"
   datos: {
     titulo: string
-    texto: string
-    imagen: string
-    imagenDerecha: boolean
-    posicionImagen?: "izquierda" | "derecha"
-    puntos?: string[]
+    subtitulo: string
+    servicios: Array<{ icono: string; titulo: string; descripcion: string }>
   }
 }
+
+export interface FeaturesBlock extends BaseBlock {
+  tipo: "features"
+  datos: {
+    caracteristicas: Array<{ icono: string; titulo: string; descripcion: string; botonTexto?: string }>
+  }
+}
+
+export interface IconosBlock extends BaseBlock {
+  tipo: "iconos"
+  datos: {
+    titulo: string
+    items: Array<{ icono: string; titulo: string; descripcion: string }>
+  }
+}
+
+// Sub-tipo para ImageCard (no es un bloque root, pero se usa en ImageCardList)
+export interface ImageCardData {
+    imagenUrl: string
+    altTexto: string
+    etiqueta: string
+    titulo: string
+    descripcion: string
+    linkTexto: string
+    linkUrl: string
+}
+
+export interface ImageCardListBlock extends BaseBlock {
+  tipo: "image-card-list"
+  datos: {
+    titulo: string
+    subtitulo: string
+    columnas: 3 | 4
+    cards: ImageCardData[]
+  }
+}
+
+// --- FORMULARIOS Y CTA ---
 
 export interface FormBlock extends BaseBlock {
   tipo: "form"
@@ -155,28 +241,31 @@ export interface FormBlock extends BaseBlock {
   }
 }
 
-export interface ImageCardBlock extends BaseBlock {
-  tipo: "image-card"
+export interface ContactFormBlock extends BaseBlock {
+  tipo: "contact-form"
   datos: {
-    imagenUrl: string
-    altTexto: string
-    etiqueta: string
     titulo: string
     descripcion: string
-    linkTexto: string
-    linkUrl: string
+    telefono: string
+    email: string
+    horario: string
   }
 }
 
-export interface ImageCardListBlock extends BaseBlock {
-  tipo: "image-card-list"
+export interface CtaBlock extends BaseBlock {
+  tipo: "cta"
   datos: {
     titulo: string
     subtitulo: string
-    columnas: 3 | 4
-    cards: ImageCardBlock["datos"][]
+    botonPrimarioTexto: string
+    botonPrimarioUrl: string
+    botonSecundarioTexto: string
+    botonSecundarioUrl: string
+    textoInferior?: string
   }
 }
+
+// --- GALERÍAS Y CLIENTES ---
 
 export interface LogoMarqueeBlock extends BaseBlock {
   tipo: "logo-marquee"
@@ -203,29 +292,13 @@ export interface GalleryBlock extends BaseBlock {
   }
 }
 
-export interface TituloParrafosBlock extends BaseBlock {
-  tipo: "titulo-parrafos"
-  datos: {
-    titulo: string
-    parrafoIzquierda: string
-    parrafoDerecha: string
-    alineacion: "centrado" | "dividido"
-    colorFondo: string
-  }
-}
-
+// UNIÓN DE TODOS LOS BLOQUES
 export type Block =
-  | HeaderBlock
-  | HeroBlock
-  | FooterBlock
-  | BannerBlock
-  | Cards3Block
-  | TextImageBlock
-  | FormBlock
-  | GalleryBlock
-  | LogoMarqueeBlock
-  | ImageCardListBlock
-  | TituloParrafosBlock
+  | HeaderBlock | HeroBlock | FooterBlock | BannerBlock 
+  | AboutBlock | TextImageBlock | TituloParrafosBlock | StatsBlock
+  | Cards3Block | ServicesBlock | FeaturesBlock | IconosBlock | ImageCardListBlock
+  | FormBlock | ContactFormBlock | CtaBlock 
+  | LogoMarqueeBlock | GalleryBlock
 
 export interface PageConfig {
   bloques: Block[]
