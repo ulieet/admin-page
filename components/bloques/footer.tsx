@@ -23,16 +23,12 @@ function getContrastColor(hexColor: string) {
 }
 
 interface BloqueFooterProps {
-  data: FooterBlock["datos"]
+  data: FooterBlock["datos"] & { logoUrl?: string; imagenAdicional?: string }
   navLinks?: Array<{ nombre: string; url: string }>
   estilos?: any
 }
 
-export function BloqueFooter({
-  data,
-  navLinks = [],
-  estilos,
-}: BloqueFooterProps) {
+export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps) {
   const estiloVisual = data.estiloVisual || "completo"
   const personalizacion = data.personalizacion || { tipoFondo: "default" }
   const primaryVar = "var(--color-primario)"
@@ -65,137 +61,102 @@ export function BloqueFooter({
 
     return (
       <>
-        {redes.linkedin && (
-          <Link href={redes.linkedin} target="_blank">
-            <Linkedin className={iconClass} style={style} />
-          </Link>
-        )}
-        {redes.facebook && (
-          <Link href={redes.facebook} target="_blank">
-            <Facebook className={iconClass} style={style} />
-          </Link>
-        )}
-        {redes.instagram && (
-          <Link href={redes.instagram} target="_blank">
-            <Instagram className={iconClass} style={style} />
-          </Link>
-        )}
-        {redes.twitter && (
-          <Link href={redes.twitter} target="_blank">
-            <Twitter className={iconClass} style={style} />
-          </Link>
-        )}
-        {redes.whatsapp && (
-          <Link href={redes.whatsapp} target="_blank">
-            <MessageCircle className={iconClass} style={style} />
-          </Link>
-        )}
+        {redes.linkedin && <Link href={redes.linkedin} target="_blank"><Linkedin className={iconClass} style={style} /></Link>}
+        {redes.facebook && <Link href={redes.facebook} target="_blank"><Facebook className={iconClass} style={style} /></Link>}
+        {redes.instagram && <Link href={redes.instagram} target="_blank"><Instagram className={iconClass} style={style} /></Link>}
+        {redes.twitter && <Link href={redes.twitter} target="_blank"><Twitter className={iconClass} style={style} /></Link>}
+        {redes.whatsapp && <Link href={redes.whatsapp} target="_blank"><MessageCircle className={iconClass} style={style} /></Link>}
       </>
     )
   }
 
   return (
     <footer
-      className={`${hasBorderTop ? "border-t" : ""} pt-14 pb-8`}
-      style={{
-        backgroundColor: finalBgStyle,
-        color: finalTextColor,
-        borderColor,
-      }}
+      className={`${hasBorderTop ? "border-t" : ""} pt-16 pb-8`}
+      style={{ backgroundColor: finalBgStyle, color: finalTextColor, borderColor }}
     >
       <div className="container mx-auto px-4">
-        {/* ================= SIMPLE ================= */}
+
         {estiloVisual === "simple" ? (
           <div className="flex flex-col items-center gap-6 text-center">
-            <h3 className="text-2xl font-bold" style={{ color: primaryVar }}>
-              {data.nombreEmpresa}
-            </h3>
-
-            {data.descripcion && (
-              <p className="text-sm opacity-70 max-w-xl">
-                {data.descripcion}
-              </p>
+            {data.logoUrl ? (
+              <img src={data.logoUrl} alt={data.nombreEmpresa} className="h-16 md:h-20 w-auto object-contain" />
+            ) : (
+              <h3 className="text-2xl font-bold" style={{ color: primaryVar }}>
+                {data.nombreEmpresa}
+              </h3>
             )}
 
-            <div className="flex gap-4">
-              {renderSocialIcons()}
-            </div>
+            {data.descripcion && (
+              <p className="text-sm opacity-70 max-w-xl">{data.descripcion}</p>
+            )}
+
+            {data.imagenAdicional && (
+              <img
+                src={data.imagenAdicional}
+                alt="Extra"
+                className="w-full max-w-md aspect-[3/1] object-cover rounded-xl shadow-sm"
+              />
+            )}
+
+            <div className="flex gap-4">{renderSocialIcons()}</div>
 
             <p className="opacity-60 text-sm">
               © {new Date().getFullYear()} {data.nombreEmpresa}
             </p>
           </div>
         ) : (
-          /* ================= COMPLETO ================= */
           <>
             <div className="grid gap-12 lg:grid-cols-4 mb-14">
-              {/* Empresa */}
-              <div className="space-y-4 lg:col-span-1">
-                <h3 className="text-3xl font-bold" style={{ color: primaryVar }}>
-                  {data.nombreEmpresa}
-                </h3>
-                <p className="opacity-80 text-base leading-relaxed">
-                  {data.descripcion}
-                </p>
-                <div className="flex gap-4">
-                  {renderSocialIcons("h-6 w-6")}
-                </div>
+              <div className="flex flex-col gap-6">
+                {data.logoUrl ? (
+                  <img src={data.logoUrl} alt={data.nombreEmpresa} className="h-16 md:h-20 w-auto object-contain" />
+                ) : (
+                  <h3 className="text-3xl font-bold" style={{ color: primaryVar }}>
+                    {data.nombreEmpresa}
+                  </h3>
+                )}
+
+                <p className="opacity-80">{data.descripcion}</p>
+                <div className="flex gap-4">{renderSocialIcons()}</div>
+
+                {data.imagenAdicional && (
+                  <img
+                    src={data.imagenAdicional}
+                    alt="Imagen adicional"
+                    className="w-full aspect-[3/1] max-h-[120px] object-cover rounded-xl shadow-sm border border-slate-200/20"
+                  />
+                )}
               </div>
 
-              {/* Enlaces */}
-              <div className="space-y-4">
-                <h4 className="font-semibold text-xl" style={{ color: primaryVar }}>
-                  Enlaces
-                </h4>
-                <ul className="space-y-2 text-base opacity-80">
-                  {navLinks.length ? (
-                    navLinks.map((l, i) => (
-                      <li key={i}>
-                        <Link href={l.url} className="hover:underline">
-                          {l.nombre}
-                        </Link>
-                      </li>
-                    ))
-                  ) : (
-                    <li>
-                      <Link href="/" className="hover:underline">
-                        Inicio
-                      </Link>
+              <div>
+                <h4 className="font-semibold text-xl mb-4" style={{ color: primaryVar }}>Enlaces</h4>
+                <ul className="space-y-2 opacity-80">
+                  {navLinks.map((l, i) => (
+                    <li key={i}>
+                      <Link href={l.url} className="hover:underline">{l.nombre}</Link>
                     </li>
-                  )}
+                  ))}
                 </ul>
               </div>
 
-              {/* Contacto */}
-              <div className="space-y-4">
-                <h4 className="font-semibold text-xl" style={{ color: primaryVar }}>
-                  Contacto
-                </h4>
-                <ul className="space-y-3 text-base opacity-80">
+              <div>
+                <h4 className="font-semibold text-xl mb-4" style={{ color: primaryVar }}>Contacto</h4>
+                <ul className="space-y-3 opacity-80">
                   {data.telefono && (
                     <li className="flex gap-2 items-center">
                       <Phone className="h-5 w-5" style={{ color: primaryVar }} />
-                      <a
-                        href={`tel:${data.telefono}`}
-                        className="hover:underline"
-                      >
-                        {data.telefono}
-                      </a>
+                      <a href={`tel:${data.telefono}`} className="hover:underline">{data.telefono}</a>
                     </li>
                   )}
                   {data.email && (
                     <li className="flex gap-2 items-center">
                       <Mail className="h-5 w-5" style={{ color: primaryVar }} />
-                      <a
-                        href={`mailto:${data.email}`}
-                        className="hover:underline"
-                      >
-                        {data.email}
-                      </a>
+                      <a href={`mailto:${data.email}`} className="hover:underline">{data.email}</a>
                     </li>
                   )}
                   {data.direccion && (
-                    <li className="flex gap-2 items-start">
+                    <li className="flex gap-2">
                       <MapPin className="h-5 w-5 mt-1" style={{ color: primaryVar }} />
                       {data.direccion}
                     </li>
@@ -203,23 +164,18 @@ export function BloqueFooter({
                 </ul>
               </div>
 
-              {/* Mapa */}
               {data.lat && data.lng && (
-                <div className="w-full h-[320px] lg:h-full rounded-xl overflow-hidden shadow-md lg:col-span-1">
+                <div className="rounded-xl overflow-hidden shadow-lg">
                   <iframe
                     title="Mapa"
-                    loading="lazy"
-                    className="w-full h-full border-0"
-                    src={`https://maps.google.com/maps?q=${data.lat},${data.lng}&hl=es&z=15&output=embed`}
+                    className="w-full h-full min-h-[220px] border-0"
+                    src={`https://maps.google.com/maps?q=${data.lat},${data.lng}&z=15&output=embed`}
                   />
                 </div>
               )}
             </div>
 
-            <div
-              className="pt-8 border-t text-center text-sm opacity-60"
-              style={{ borderColor }}
-            >
+            <div className="border-t pt-6 text-center text-sm opacity-60">
               © {new Date().getFullYear()} {data.nombreEmpresa}. Todos los derechos reservados.
             </div>
           </>

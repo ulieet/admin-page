@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ImageUpload } from "../image-upload" // Importamos el componente de carga
 import dynamic from "next/dynamic"
 
 // Importar el mapa dinámicamente con ssr: false es VITAL
@@ -33,20 +34,50 @@ export function FooterEditor({ data, onChange }: any) {
         </TabsList>
 
         <TabsContent value="contenido" className="space-y-5 pt-4">
-          <div className="space-y-2">
-            <Label>Nombre Empresa</Label>
-            <Input value={data.nombreEmpresa || ""} onChange={(e) => onChange("nombreEmpresa", e.target.value)} />
+          
+          {/* IDENTIDAD: Nombre y Logo */}
+          <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Nombre Empresa</Label>
+                <Input value={data.nombreEmpresa || ""} onChange={(e) => onChange("nombreEmpresa", e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Logo Footer (Opcional)</Label>
+                <div className="h-10">
+                    {/* Reutilizamos el ImageUpload pequeño o puedes usar uno normal */}
+                    <div className="flex gap-2 items-center">
+                         <div className="w-full">
+                            <ImageUpload 
+                                value={data.logoUrl || ""} 
+                                onChange={(val) => onChange("logoUrl", val)} 
+                            />
+                         </div>
+                    </div>
+                </div>
+              </div>
           </div>
+
           <div className="space-y-2">
             <Label>Descripción</Label>
             <Textarea 
                 value={data.descripcion || ""} 
                 onChange={(e) => onChange("descripcion", e.target.value)} 
-                className="h-24 resize-none"
+                className="h-20 resize-none"
             />
+          </div>
+
+          {/* IMAGEN ADICIONAL */}
+          <div className="space-y-2 p-3 bg-slate-50 rounded-lg border">
+            <Label>Imagen Adicional (Ej: Foto equipo, premio, sello)</Label>
+            <ImageUpload 
+                value={data.imagenAdicional || ""} 
+                onChange={(val) => onChange("imagenAdicional", val)} 
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">Se mostrará debajo de la descripción de la empresa.</p>
           </div>
           
           <Separator />
+          
           <h4 className="font-medium text-sm">Contacto</h4>
           <div className="grid grid-cols-2 gap-4">
              <div className="space-y-2">
@@ -134,10 +165,10 @@ export function FooterEditor({ data, onChange }: any) {
               {data.personalizacion?.tipoFondo === "custom" && (
                   <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border mt-2">
                       <Input 
-                         type="color" 
-                         className="w-10 h-10 p-1 rounded cursor-pointer border-0 bg-white" 
-                         value={data.personalizacion?.colorPersonalizado || "#000000"} 
-                         onChange={(e) => updatePersonalizacion("colorPersonalizado", e.target.value)}
+                          type="color" 
+                          className="w-10 h-10 p-1 rounded cursor-pointer border-0 bg-white" 
+                          value={data.personalizacion?.colorPersonalizado || "#000000"} 
+                          onChange={(e) => updatePersonalizacion("colorPersonalizado", e.target.value)}
                       />
                       <div className="flex-1">
                           <Label className="text-xs mb-1 block">Color Hex</Label>
