@@ -9,47 +9,36 @@ interface BannerData {
   imagenFondo?: string
   botonTexto?: string
   botonUrl?: string
-  altura?: "pequeno" | "medio" | "grande"
 }
 
 export function BloqueBanner({ data }: { data: BannerData }) {
-  // Alturas configurables
-  const heightClass = {
-    pequeno: "py-24",
-    medio: "py-32 md:py-40",
-    grande: "py-48 md:py-64"
-  }[data.altura || "medio"]
-
   return (
-    <section className={`relative ${heightClass} flex items-center justify-center text-center overflow-hidden`}>
+    <section className="relative h-[500px] flex items-center justify-center text-center text-white overflow-hidden">
       
-      {/* IMAGEN DE FONDO */}
+      {/* 1. IMAGEN DE FONDO (Limpia, sin efectos) */}
       <div className="absolute inset-0 z-0">
         {data.imagenFondo ? (
           <img 
             src={data.imagenFondo} 
-            alt="Fondo" 
+            alt="Banner" 
             className="w-full h-full object-cover" 
           />
         ) : (
           <div className="w-full h-full bg-slate-900" />
         )}
-        {/* Overlay degradado usando el color primario */}
-        <div className="absolute inset-0 opacity-90 mix-blend-multiply" 
-             style={{ 
-               background: `linear-gradient(to bottom right, var(--color-primario), #000)` 
-             }} 
-        />
+        
+        {/* 2. OVERLAY NEGRO SIMPLE (50% opacidad para leer el texto) */}
+        <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      {/* CONTENIDO */}
-      <div className="relative z-10 container px-4 mx-auto text-white">
-        <h2 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight text-balance">
+      {/* 3. CONTENIDO (Centrado y directo) */}
+      <div className="relative z-10 container px-4 mx-auto max-w-4xl">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
           {data.titulo}
         </h2>
         
         {data.descripcion && (
-          <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-10 text-balance font-light">
+          <p className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto leading-relaxed">
             {data.descripcion}
           </p>
         )}
@@ -58,7 +47,7 @@ export function BloqueBanner({ data }: { data: BannerData }) {
           <Button 
             asChild 
             size="lg" 
-            className="bg-white text-black hover:bg-white/90 border-0 font-bold px-8 py-6 text-lg shadow-xl"
+            className="bg-white text-black hover:bg-slate-200 border-0 font-semibold px-8"
           >
             <Link href={data.botonUrl || "#"}>
               {data.botonTexto}
@@ -68,4 +57,4 @@ export function BloqueBanner({ data }: { data: BannerData }) {
       </div>
     </section>
   )
-} 
+}

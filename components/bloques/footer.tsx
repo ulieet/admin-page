@@ -175,13 +175,23 @@ export function BloqueFooter({
                   {data.telefono && (
                     <li className="flex gap-2 items-center">
                       <Phone className="h-5 w-5" style={{ color: primaryVar }} />
-                      {data.telefono}
+                      <a
+                        href={`tel:${data.telefono}`}
+                        className="hover:underline"
+                      >
+                        {data.telefono}
+                      </a>
                     </li>
                   )}
                   {data.email && (
                     <li className="flex gap-2 items-center">
                       <Mail className="h-5 w-5" style={{ color: primaryVar }} />
-                      {data.email}
+                      <a
+                        href={`mailto:${data.email}`}
+                        className="hover:underline"
+                      >
+                        {data.email}
+                      </a>
                     </li>
                   )}
                   {data.direccion && (

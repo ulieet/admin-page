@@ -38,7 +38,7 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
 
   const getLink = (link?: string) => link && link.trim() !== "" ? link : "#"
 
-  // --- ESTILO 1: MINIMALISTA (Limpio, sin bordes pesados) ---
+  // --- ESTILO 1: MINIMALISTA (Sin bordes, limpio) ---
   if (variant === "minimal") {
     return (
       <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -50,12 +50,17 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
           <div className="grid md:grid-cols-3 gap-8">
             {rawItems.map((item: any, idx: number) => (
               <div key={idx} className="group flex flex-col items-start gap-3 h-full">
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-1 transition-colors" 
-                     style={{ backgroundColor: "rgba(0,0,0,0.05)", color: primaryColor }}>
-                  {renderIcon(item, "w-5 h-5")}
+                {/* Icono con fondo suave para contraste seguro */}
+                <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-1 transition-colors bg-slate-100" 
+                    style={{ color: primaryColor }}
+                >
+                  {renderIcon(item, "w-6 h-6")}
                 </div>
+                
                 <h3 className="text-lg font-bold">{item.title}</h3>
                 <p className="text-sm leading-relaxed opacity-70">{item.description}</p>
+                
                 <div className="mt-auto pt-2">
                   <Button asChild variant="link" className="p-0 h-auto text-sm font-semibold group-hover:translate-x-1 transition-transform" style={{ color: primaryColor }}>
                     <Link href={getLink(item.link)}>
@@ -71,7 +76,7 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
     )
   }
 
-  // --- ESTILO 2: INTERACTIVO (Borde al pasar mouse, color bar) ---
+  // --- ESTILO 2: INTERACTIVO (Borde al pasar mouse) ---
   if (variant === "interactive") {
     return (
       <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -81,14 +86,21 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
         </div>
         <div className="container mx-auto max-w-5xl grid md:grid-cols-3 gap-5">
           {rawItems.map((item: any, idx: number) => (
-            // Forzamos bg-white aquí para que destaque un poco pero mantenga el estilo interactivo
-            <Link href={getLink(item.link)} key={idx} className="group relative p-6 rounded-2xl border hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left bg-white">
-              <div className="mb-4 inline-block p-2.5 rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300 w-fit bg-slate-50">
-                 {renderIcon(item, "w-6 h-6 text-slate-700")}
+            // FIX: Agregamos shadow-sm por defecto y border-slate-200 para que se note sobre blanco
+            <Link 
+                href={getLink(item.link)} 
+                key={idx} 
+                className="group relative p-6 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full text-left"
+            >
+              <div className="mb-4 inline-block p-3 rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300 w-fit bg-slate-50">
+                 <div style={{ color: primaryColor }}>
+                    {renderIcon(item, "w-6 h-6")}
+                 </div>
               </div>
               <h3 className="text-lg font-bold mb-2 text-slate-900">{item.title}</h3>
               <p className="text-sm mb-6 opacity-70 text-slate-600">{item.description}</p>
-              <div className="mt-auto w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+              
+              <div className="mt-auto w-full h-1 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full w-0 group-hover:w-full transition-all duration-500 ease-out" style={{ backgroundColor: primaryColor }} />
               </div>
             </Link>
@@ -98,8 +110,7 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
     )
   }
 
-  // --- ESTILO 3: CORPORATIVO (Default - Con Tarjeta Blanca y Borde) ---
-  // Este es el que querías arreglar para que no se pierda.
+  // --- ESTILO 3: CORPORATIVO (Default) ---
   return (
     <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor }}>
       <div className="container mx-auto max-w-5xl text-center mb-12">
@@ -111,15 +122,19 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
         {rawItems.map((item: any, idx: number) => (
           <Card 
             key={idx} 
-            // ✅ AQUÍ ESTÁ EL FIX: bg-white + border + shadow-sm para que no se pierda
-            className="border border-slate-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300 p-8 flex flex-col items-center text-center rounded-xl h-full group"
+            // ✅ FIX VISIBILIDAD: 
+            // 1. 'shadow-md': Sombra más fuerte para despegarla del fondo blanco.
+            // 2. 'border-slate-200': Mantenemos el borde sutil pero la sombra ayuda.
+            // 3. 'bg-white': Fondo blanco puro.
+            className="border border-slate-200 bg-white shadow-md hover:shadow-xl transition-all duration-300 p-8 flex flex-col items-center text-center rounded-xl h-full group"
           >
             
+            {/* Icono sobre círculo gris claro (siempre visible) */}
             <div 
-              className="w-14 h-14 rounded-full flex items-center justify-center mb-6 text-white shadow-md shrink-0 transition-transform group-hover:scale-110"
-              style={{ backgroundColor: primaryColor }}
+              className="w-16 h-16 rounded-full flex items-center justify-center mb-6 shadow-sm shrink-0 transition-transform group-hover:scale-110 bg-slate-100"
+              style={{ color: primaryColor }}
             >
-              {renderIcon(item, "w-7 h-7")}
+              {renderIcon(item, "w-8 h-8")}
             </div>
             
             <h3 className="text-xl font-bold mb-3 text-slate-900">
@@ -133,7 +148,7 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
             <Button 
               asChild 
               variant="outline"
-              className="mt-auto rounded-full px-6 h-10 font-bold text-xs tracking-wide hover:-translate-y-0.5 transition-all border-2"
+              className="mt-auto rounded-full px-6 h-10 font-bold text-xs tracking-wide hover:-translate-y-0.5 transition-all border-2 bg-transparent hover:bg-slate-50"
               style={{ borderColor: primaryColor, color: primaryColor }}
             >
               <Link href={getLink(item.link)}>
