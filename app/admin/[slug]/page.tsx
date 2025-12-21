@@ -1,30 +1,29 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useParams, notFound } from "next/navigation"
 import { cargarConfiguracion } from "@/lib/blocks-storage"
 import { RenderBlocks } from "@/components/page-builder/render-blocks"
+
+// Bloques globales
 import { BloqueHeader } from "@/components/bloques/header"
 import { BloqueFooter } from "@/components/bloques/footer"
 import { WhatsappFloatingButton } from "@/components/bloques/whatsapp-button"
 import type { SiteConfig } from "@/lib/types/blocks"
 
-export default function Home() {
+export default function DynamicPage() {
+  const params = useParams()
   const [config, setConfig] = useState<SiteConfig | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // 1. Cargar la configuración desde LocalStorage
   useEffect(() => {
     const data = cargarConfiguracion()
     setConfig(data)
-    
-    // Establecer título de la pestaña
-    if (data.empresa?.nombre) {
-      document.title = data.empresa.nombre
-    }
-    
     setLoading(false)
   }, [])
 
-  // Aplicar variables CSS de tema
+  // 2. Aplicar variables CSS (Temas)
   useEffect(() => {
     if (config?.estilos && typeof document !== "undefined") {
       const root = document.documentElement
@@ -38,25 +37,37 @@ export default function Home() {
     }
   }, [config])
 
-  if (loading || !config) {
+  if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
   }
 
-  // Buscar la página de inicio específica
-  const homePage = config.pages.find((p) => p.slug === "home")
+  if (!config) return null
 
-  // Si por alguna razón no existe la home (migración fallida), mostramos mensaje
-  if (!homePage) {
+  // 3. Buscar la página correspondiente al SLUG actual
+  // El slug viene de la URL (ej: 'contacto' o 'servicios')
+  const slug = typeof params?.slug === 'string' ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : ''
+  const page = config.pages.find((p) => p.slug === slug)
+
+  // Si la página no existe en nuestra "base de datos", mostramos 404
+  if (!page) {
     return (
-      <div className="min-h-screen flex items-center justify-center flex-col gap-4">
-        <h1 className="text-xl font-bold">Bienvenido</h1>
-        <p>No se encontró la página de inicio. Ve al panel de administración para configurarla.</p>
-        <a href="/admin" className="text-blue-600 underline">Ir al Admin</a>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
+        <h1 className="text-4xl font-bold">404</h1>
+        <p className="text-xl">Página no encontrada</p>
+        <p className="text-muted-foreground">La ruta <span className="font-mono bg-muted px-1 rounded">/{slug}</span> no existe.</p>
+        <a href="/" className="bg-primary text-white px-4 py-2 rounded hover:opacity-90 transition-opacity">
+          Volver al Inicio
+        </a>
       </div>
     )
   }
 
-  // Preparar datos para header/footer (inyectar nombre empresa si falta)
+  // 4. Actualizar título de la pestaña
+  if (typeof document !== "undefined") {
+    document.title = `${page.title} | ${config.empresa.nombre}`
+  }
+
+  // Preparar datos globales
   const headerData = { 
     ...config.header.datos, 
     nombreEmpresa: config.header.datos.nombreEmpresa || config.empresa.nombre 
@@ -79,9 +90,9 @@ export default function Home() {
         />
       )}
 
-      {/* CONTENIDO DE LA PÁGINA HOME */}
+      {/* CONTENIDO DE LA PÁGINA ESPECÍFICA */}
       <main className="flex-1 flex flex-col w-full">
-        <RenderBlocks blocks={homePage.blocks} />
+        <RenderBlocks blocks={page.blocks} />
       </main>
 
       {/* FOOTER GLOBAL */}

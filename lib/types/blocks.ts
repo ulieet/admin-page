@@ -35,7 +35,7 @@ export interface StyleConfig {
   }
 }
 
-export type BlockVariant = "default" | "modern" | "minimal" | "bold"
+export type BlockVariant = "default" | "modern" | "minimal" | "bold" | "centered"
 
 export interface BaseBlock {
   id: string
@@ -306,8 +306,21 @@ export type Block =
   | FormBlock | ContactFormBlock | CtaBlock 
   | LogoMarqueeBlock | GalleryBlock
 
-export interface PageConfig {
-  bloques: Block[]
+// --- NUEVA ESTRUCTURA MULTI-PAGE ---
+
+export interface PageData {
+  id: string
+  slug: string
+  title: string
+  seoTitle?: string
+  seoDescription?: string
+  blocks: Block[]
+}
+
+export interface SiteConfig {
+  header: HeaderBlock
+  footer: FooterBlock
+  pages: PageData[]
   estilos: StyleConfig
   empresa: {
     nombre: string

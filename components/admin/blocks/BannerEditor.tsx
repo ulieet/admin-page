@@ -23,7 +23,6 @@ export function BannerEditor({ data, onChange }: BannerEditorProps) {
         />
       </div>
       
-      {/* DESCRIPCIÓN (Arreglado: usa 'descripcion' para coincidir con el bloque) */}
       <div className="space-y-2">
         <Label>Descripción</Label>
         <Textarea

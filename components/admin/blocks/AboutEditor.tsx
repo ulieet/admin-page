@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Trash2, Plus } from "lucide-react"
 
-// Importamos el componente compartido
 import { ImageUpload } from "../image-upload"
 
 interface AboutEditorProps {

@@ -2,17 +2,14 @@
 
 import { useEffect } from "react"
 import { cargarConfiguracion } from "@/lib/blocks-storage"
-import type { HeaderBlock } from "@/lib/types/blocks"
 
 export default function DynamicFavicon() {
   useEffect(() => {
     const config = cargarConfiguracion()
 
-    const header = config.bloques.find(
-      (b): b is HeaderBlock => b.tipo === "header"
-    )
-
-    const logo = header?.datos?.logoImagen
+    // CORRECCIÓN: Ahora accedemos directamente al header global
+    // ya no hace falta buscarlo en un array de bloques.
+    const logo = config?.header?.datos?.logoImagen
 
     if (!logo) return
 

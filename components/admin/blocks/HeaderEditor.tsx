@@ -4,158 +4,171 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { 
-  Plus, Trash2, CheckCircle2, 
-  LayoutList, MousePointer2, AlignCenter,
-  AlignLeft, AlignRight, AlignJustify
-} from "lucide-react"
-import { ImageUpload } from "../image-upload"
+import { Plus, Trash2, Layout, MousePointerClick, AlignCenter } from "lucide-react"
+import { ImageUpload } from "@/components/admin/image-upload" 
+import { cn } from "@/lib/utils"
 
 interface HeaderEditorProps {
   data: any
-  onChange: (campo: string, valor: any) => void
+  onChange: (key: string, value: any) => void
+  variant?: string 
+  onVariantChange?: (variant: string) => void
 }
 
-export function HeaderEditor({ data, onChange }: HeaderEditorProps) {
-  const estiloActual = data.variant || "default"
-  // Recuperamos la alineación (por defecto 'derecha' que es lo más común)
-  const alineacion = data.alineacion || "derecha"
-  const navegacion = data.navegacion || []
+export function HeaderEditor({ data, onChange, variant = "default", onVariantChange }: HeaderEditorProps) {
+  
+  // Opciones de diseño definidas aquí mismo
+  const headerVariants = [
+    { 
+      value: "default", 
+      label: "Clásico", 
+      description: "Logo izquierda, Menú derecha",
+      icon: Layout 
+    },
+    { 
+      value: "modern", 
+      label: "Moderno", 
+      description: "Flotante tipo píldora",
+      icon: MousePointerClick
+    },
+    { 
+      value: "centered", 
+      label: "Editorial", 
+      description: "Logo centrado, menú abajo",
+      icon: AlignCenter
+    },
+  ]
 
-  const handleEstiloChange = (nuevoEstilo: string) => {
-    onChange("variant", nuevoEstilo)
-  }
-
-  // Gestión de enlaces
-  const addLink = () => {
-    const newNav = [...navegacion, { nombre: "Link", url: "#" }]
-    onChange("navegacion", newNav)
-  }
-
-  const removeLink = (index: number) => {
-    const newNav = navegacion.filter((_: any, i: number) => i !== index)
-    onChange("navegacion", newNav)
-  }
-
-  const updateLink = (index: number, field: string, value: string) => {
-    const newNav = [...navegacion]
+  const updateNavLink = (index: number, field: string, value: string) => {
+    const newNav = [...(data.navegacion || [])]
     newNav[index] = { ...newNav[index], [field]: value }
     onChange("navegacion", newNav)
   }
 
+  const addNavLink = () => {
+    const newNav = [...(data.navegacion || []), { nombre: "Nuevo Link", url: "#" }]
+    onChange("navegacion", newNav)
+  }
+
+  const removeNavLink = (index: number) => {
+    const newNav = [...(data.navegacion || [])].filter((_, i) => i !== index)
+    onChange("navegacion", newNav)
+  }
+
   return (
-    <div className="space-y-8 bg-white p-6 rounded-lg border shadow-sm">
+    <div className="space-y-8">
       
-      {/* 1. SELECCIÓN DE ESTILO */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Diseño Visual</Label>
-        <div className="grid gap-3">
-            <div onClick={() => handleEstiloChange("default")} className={`relative flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-slate-50 ${estiloActual === 'default' ? 'border-blue-600 bg-blue-50/20' : 'border-slate-200'}`}>
-                <LayoutList className="w-5 h-5 text-slate-500" />
-                <div className="flex-1"><p className="font-medium text-sm">Clásico (Línea)</p></div>
-                {estiloActual === 'default' && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
-            </div>
-
-            <div onClick={() => handleEstiloChange("modern")} className={`relative flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-slate-50 ${estiloActual === 'modern' ? 'border-blue-600 bg-blue-50/20' : 'border-slate-200'}`}>
-                <MousePointer2 className="w-5 h-5 text-slate-500" />
-                <div className="flex-1"><p className="font-medium text-sm">Moderno (Píldora)</p></div>
-                {estiloActual === 'modern' && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
-            </div>
-
-            <div onClick={() => handleEstiloChange("centered")} className={`relative flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-slate-50 ${estiloActual === 'centered' ? 'border-blue-600 bg-blue-50/20' : 'border-slate-200'}`}>
-                <AlignCenter className="w-5 h-5 text-slate-500" />
-                <div className="flex-1"><p className="font-medium text-sm">Editorial (Centrado)</p></div>
-                {estiloActual === 'centered' && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
+      {/* --- SELECTOR DE DISEÑO INTEGRADO (A PRUEBA DE FALLOS) --- */}
+      {onVariantChange ? (
+        <div className="space-y-4">
+            <Label className="text-base font-semibold">Diseño del Encabezado</Label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {headerVariants.map((item) => {
+                    const Icon = item.icon
+                    const isSelected = variant === item.value
+                    return (
+                        <div 
+                            key={item.value}
+                            onClick={() => onVariantChange(item.value)}
+                            className={cn(
+                                "cursor-pointer rounded-xl border-2 p-4 transition-all hover:border-primary/50 flex flex-col gap-2",
+                                isSelected ? "border-primary bg-primary/5" : "border-muted bg-white"
+                            )}
+                        >
+                            <div className="flex items-center gap-2">
+                                <div className={cn("p-2 rounded-lg", isSelected ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
+                                    <Icon className="w-5 h-5" />
+                                </div>
+                                <span className={cn("font-semibold text-sm", isSelected ? "text-primary" : "text-foreground")}>
+                                    {item.label}
+                                </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground leading-tight">
+                                {item.description}
+                            </p>
+                        </div>
+                    )
+                })}
             </div>
         </div>
-      </div>
-
-      <Separator />
-
-      {/* 2. ALINEACIÓN DEL MENÚ (RECUPERADO) */}
-      {/* Solo mostramos esto si NO es el estilo centrado (que ya está centrado por defecto) */}
-      {estiloActual !== "centered" && (
-        <div className="space-y-4">
-            <Label className="text-base font-semibold">Posición del Menú</Label>
-            <div className="flex gap-2">
-                <Button 
-                    variant={alineacion === "izquierda" ? "default" : "outline"} 
-                    className="flex-1"
-                    onClick={() => onChange("alineacion", "izquierda")}
-                >
-                    <AlignLeft className="w-4 h-4 mr-2" /> Izquierda
-                </Button>
-                <Button 
-                    variant={alineacion === "centro" ? "default" : "outline"} 
-                    className="flex-1"
-                    onClick={() => onChange("alineacion", "centro")}
-                >
-                    <AlignJustify className="w-4 h-4 mr-2" /> Centro
-                </Button>
-                <Button 
-                    variant={alineacion === "derecha" ? "default" : "outline"} 
-                    className="flex-1"
-                    onClick={() => onChange("alineacion", "derecha")}
-                >
-                    <AlignRight className="w-4 h-4 mr-2" /> Derecha
-                </Button>
-            </div>
-            <Separator />
+      ) : (
+        <div className="p-4 bg-red-50 text-red-600 rounded text-sm border border-red-200">
+            ⚠️ Error: Falta la función "onVariantChange" en AdminPage.tsx
         </div>
       )}
 
-      {/* 3. LOGO */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Identidad</Label>
-        <div className="grid gap-4">
-            <div>
-                <Label className="text-xs mb-1.5 block">Nombre</Label>
-                <Input value={data.nombreEmpresa || ""} onChange={(e) => onChange("nombreEmpresa", e.target.value)} />
-            </div>
-            <div>
-                <Label className="text-xs mb-1.5 block">Logo</Label>
-                <ImageUpload value={data.logoImagen || ""} onChange={(val) => onChange("logoImagen", val)} />
-            </div>
-        </div>
-      </div>
+      <div className="h-px bg-border my-6" />
 
-      <Separator />
-
-      {/* 4. MENÚ */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-            <Label className="text-base font-semibold">Enlaces</Label>
-            <Button variant="outline" size="sm" onClick={addLink} className="text-xs h-8"><Plus className="w-3 h-3 mr-1" /> Agregar</Button>
-        </div>
+      {/* --- CAMPOS DE DATOS --- */}
+      <div className="grid gap-6">
         
-        <div className="space-y-2">
-            {navegacion.map((link: any, index: number) => (
-                <div key={index} className="flex gap-2 items-center bg-slate-50 p-2 rounded border">
-                    <Input value={link.nombre} onChange={(e) => updateLink(index, "nombre", e.target.value)} className="h-8 text-xs bg-white flex-1" placeholder="Nombre" />
-                    <Input value={link.url} onChange={(e) => updateLink(index, "url", e.target.value)} className="h-8 text-xs bg-white w-1/3 font-mono" placeholder="#" />
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => removeLink(index)}><Trash2 className="w-3 h-3" /></Button>
-                </div>
-            ))}
+        {/* LOGO */}
+        <div className="space-y-3">
+          <Label>Logo del Sitio</Label>
+          <div className="p-1 border rounded-lg bg-slate-50">
+             <ImageUpload 
+                value={data.logoImagen || ""} 
+                onChange={(url) => onChange("logoImagen", url)} 
+             />
+          </div>
+          <p className="text-xs text-muted-foreground">Sube un PNG transparente. Se ajustará automáticamente.</p>
         </div>
-      </div>
 
-      <Separator />
-
-      {/* 5. CTA Y FONDO */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Opciones Extra</Label>
-        <div className="grid grid-cols-2 gap-4">
-            <div><Label className="text-xs mb-1.5 block">Texto Botón</Label><Input value={data.botonTexto || ""} onChange={(e) => onChange("botonTexto", e.target.value)} /></div>
-            <div><Label className="text-xs mb-1.5 block">URL Botón</Label><Input value={data.botonUrl || ""} onChange={(e) => onChange("botonUrl", e.target.value)} /></div>
+        {/* TRANSPARENCIA */}
+        <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/20">
+          <div className="space-y-0.5">
+            <Label className="text-base">Fondo Transparente</Label>
+            <p className="text-xs text-muted-foreground">El header será transparente al inicio.</p>
+          </div>
+          <Switch 
+            checked={data.transparente} 
+            onCheckedChange={(checked) => onChange("transparente", checked)} 
+          />
         </div>
-         <div className="flex items-center justify-between p-3 border rounded-lg bg-slate-50 mt-2">
-            <div className="space-y-0.5">
-                <Label className="text-sm">Fondo Transparente</Label>
-                <p className="text-xs text-muted-foreground">Header sobre el Hero.</p>
+
+        {/* EDITOR DE MENÚ */}
+        <div className="space-y-3 pt-2">
+            <div className="flex justify-between items-center">
+                <Label>Enlaces del Menú</Label>
+                <Button variant="outline" size="sm" onClick={addNavLink} className="h-8">
+                    <Plus className="w-3 h-3 mr-2" /> Agregar
+                </Button>
             </div>
-            <Switch checked={data.transparente || false} onCheckedChange={(val) => onChange("transparente", val)} />
-         </div>
+            
+            <div className="space-y-2">
+                {data.navegacion?.map((link: any, i: number) => (
+                    <div key={i} className="flex gap-2 items-center bg-card p-2 rounded border shadow-sm">
+                        <Input 
+                            value={link.nombre} 
+                            onChange={(e) => updateNavLink(i, "nombre", e.target.value)} 
+                            className="flex-1 h-9" 
+                            placeholder="Nombre"
+                        />
+                        <Input 
+                            value={link.url} 
+                            onChange={(e) => updateNavLink(i, "url", e.target.value)} 
+                            className="flex-1 h-9 font-mono text-xs text-muted-foreground" 
+                            placeholder="URL"
+                        />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-red-500" onClick={() => removeNavLink(i)}>
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        {/* BOTÓN CTA */}
+        <div className="grid grid-cols-2 gap-4 border-t pt-4">
+            <div className="space-y-2">
+                <Label>Texto Botón</Label>
+                <Input value={data.botonTexto || ""} onChange={(e) => onChange("botonTexto", e.target.value)} />
+            </div>
+            <div className="space-y-2">
+                <Label>URL Botón</Label>
+                <Input value={data.botonUrl || ""} onChange={(e) => onChange("botonUrl", e.target.value)} />
+            </div>
+        </div>
       </div>
     </div>
   )

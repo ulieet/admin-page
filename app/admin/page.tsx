@@ -4,654 +4,327 @@ import { useEffect, useState } from "react"
 import {
   cargarConfiguracion,
   guardarConfiguracion,
-  eliminarBloque,
-  esBloqueFijo,
-  actualizarEstilos,
 } from "@/lib/blocks-storage"
-import type { Block, PageConfig } from "@/lib/types/blocks"
+import type { Block, SiteConfig, PageData } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
 import {
-  Plus,
-  Trash2,
-  Home,
-  ImageIcon,
-  Type,
-  Grid3x3,
-  ChevronUp,
-  ChevronDown,
-  EyeOff,
-  Eye,
-  Settings,
-  Palette,
-  CreditCard,
-  FileText,
-  FormInput,
-  MoveHorizontal, // Icono para el carrusel
+  Plus, Trash2, Settings, Palette,
+  File, Layout, Monitor, LayoutTemplate,
+  ChevronUp, ChevronDown, Eye, EyeOff, Save
 } from "lucide-react"
 import Link from "next/link"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { EditorBloque } from "@/components/admin/editor-bloque"
 import { NuevoBloqueDialog } from "@/components/admin/nuevo-bloque-dialog"
 import { EditorEstilos } from "@/components/admin/editor-estilos"
+import { HeaderEditor } from "@/components/admin/blocks/HeaderEditor"
+import { FooterEditor } from "@/components/admin/blocks/FooterEditor"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
-const getBlockIcon = (tipo: string) => {
-  switch (tipo) {
-    case "header":
-      return Settings
-    case "hero":
-      return ImageIcon
-    case "footer":
-      return Type
-    case "banner":
-      return ImageIcon
-    case "cards-3":
-      return CreditCard
-    case "text-image":
-      return FileText
-    case "form":
-      return FormInput
-    case "gallery":
-      return Grid3x3
-    case "logo-marquee":
-      return MoveHorizontal
-    default:
-      return Type
-  }
-}
-
-const getBlockName = (tipo: string) => {
-  const names = {
-    header: "Header / Navegación",
-    hero: "Hero / Portada",
-    footer: "Footer / Pie de Página",
-    banner: "Banner",
-    "cards-3": "Tarjetas (3 columnas)",
-    "text-image": "Texto + Imagen",
-    form: "Formulario",
-    gallery: "Galería",
-    "image-card-list": "Lista Tarjetas Destacadas",
-
-    "logo-marquee": "Carrusel de Logos",
-  }
-  return names[tipo as keyof typeof names] || tipo
-}
-
 export default function AdminPage() {
-  const [config, setConfig] = useState<PageConfig | null>(null)
-  const [bloqueSeleccionado, setBloqueSeleccionado] = useState<string | null>(null)
-  const [dialogNuevoAbierto, setDialogNuevoAbierto] = useState(false)
-  const [vistaActual, setVistaActual] = useState<"bloques" | "configuracion" | "estilos">("bloques")
+  const [config, setConfig] = useState<SiteConfig | null>(null)
+  
+  const [activeSection, setActiveSection] = useState<string>("home-page") 
+  const [bloqueSeleccionadoId, setBloqueSeleccionadoId] = useState<string | null>(null)
+  
+  const [tempHeaderData, setTempHeaderData] = useState<any>(null)
+  const [tempFooterData, setTempFooterData] = useState<any>(null)
 
-  // Efecto de carga inicial y recuperación de estado
+  const [dialogNewBlockOpen, setDialogNewBlockOpen] = useState(false)
+  const [dialogNewPageOpen, setDialogNewPageOpen] = useState(false)
+  const [newPageName, setNewPageName] = useState("")
+
   useEffect(() => {
-    const configuracion = cargarConfiguracion()
-    setConfig(configuracion)
-
-    const savedState = localStorage.getItem("admin_last_state")
-    let estadoRestaurado = false
-
-    if (savedState) {
-      try {
-        const parsedState = JSON.parse(savedState)
-        const bloqueExiste = parsedState.bloqueSeleccionado 
-          ? configuracion.bloques.some(b => b.id === parsedState.bloqueSeleccionado) 
-          : false
-
-        if (parsedState.vistaActual) {
-          setVistaActual(parsedState.vistaActual)
-        }
-
-        if (bloqueExiste) {
-          setBloqueSeleccionado(parsedState.bloqueSeleccionado)
-          estadoRestaurado = true
-        } else if (parsedState.vistaActual !== "bloques") {
-          estadoRestaurado = true
-        }
-      } catch (e) {
-        console.error("Error al restaurar estado del admin:", e)
-      }
-    }
-
-    if (!estadoRestaurado) {
-      const bloquesFijos = configuracion.bloques.filter((b) => esBloqueFijo(b.tipo))
-      if (bloquesFijos.length > 0) {
-        setBloqueSeleccionado(bloquesFijos[0].id)
-      }
-    }
+    const data = cargarConfiguracion()
+    setConfig(data)
+    setTempHeaderData(data.header.datos)
+    setTempFooterData(data.footer.datos)
+    
+    const home = data.pages.find(p => p.slug === "home")
+    if (home) setActiveSection(home.id)
+    else if (data.pages.length > 0) setActiveSection(data.pages[0].id)
+    else setActiveSection("global-settings")
   }, [])
 
-  // Efecto para guardar configuración
   useEffect(() => {
     if (config) {
-      guardarConfiguracion(config)
+        guardarConfiguracion(config)
     }
   }, [config])
 
-  // Guardar posición actual
-  useEffect(() => {
-    if (config) { 
-      const stateToSave = {
-        vistaActual,
-        bloqueSeleccionado
-      }
-      localStorage.setItem("admin_last_state", JSON.stringify(stateToSave))
+  if (!config) return <div className="min-h-screen flex items-center justify-center">Cargando Admin...</div>
+
+  const activePage = config.pages.find(p => p.id === activeSection)
+  const currentBlocks = activePage ? activePage.blocks : []
+
+  const handleCreatePage = () => {
+    if (!newPageName) return
+    const slug = newPageName.toLowerCase().trim().replace(/\s+/g, '-')
+    if (config.pages.some(p => p.slug === slug)) {
+        alert("Ya existe una página con ese nombre/slug")
+        return
     }
-  }, [vistaActual, bloqueSeleccionado, config])
-
-  if (!config) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
-  }
-
-  const handleToggleActivo = (id: string) => {
-    const nuevosBloqueo = config.bloques.map((b) => (b.id === id ? { ...b, activo: !b.activo } : b))
-    setConfig({ ...config, bloques: nuevosBloqueo })
-  }
-
-  const handleEliminar = (id: string) => {
-    const bloque = config.bloques.find((b) => b.id === id)
-    if (bloque && esBloqueFijo(bloque.tipo)) {
-      alert("No puedes eliminar bloques fijos como Header, Hero o Footer")
-      return
+    const newPage: PageData = {
+      id: Math.random().toString(36).substr(2, 9),
+      slug,
+      title: newPageName,
+      blocks: []
     }
+    const newConfig = { ...config, pages: [...config.pages, newPage] }
+    setConfig(newConfig)
+    setDialogNewPageOpen(false)
+    setNewPageName("")
+    setActiveSection(newPage.id)
+  }
 
-    if (confirm("¿Estás seguro de eliminar este bloque?")) {
-      const nuevosBloqueo = config.bloques.filter((b) => b.id !== id)
-      setConfig({ ...config, bloques: nuevosBloqueo })
-      eliminarBloque(id)
-      if (bloqueSeleccionado === id) {
-        const bloquesFijos = nuevosBloqueo.filter((b) => esBloqueFijo(b.tipo))
-        setBloqueSeleccionado(bloquesFijos.length > 0 ? bloquesFijos[0].id : null)
-      }
+  const handleDeletePage = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (confirm("¿Borrar página?")) {
+        const newPages = config.pages.filter(p => p.id !== id)
+        setConfig({ ...config, pages: newPages })
+        if (activeSection === id) {
+            const home = newPages.find(p => p.slug === "home")
+            setActiveSection(home ? home.id : "global-settings")
+        }
     }
   }
 
-  const handleMoverArriba = (id: string) => {
-    const index = config.bloques.findIndex((b) => b.id === id)
-    if (index <= 0) return
-
-    const bloque = config.bloques[index]
-    const bloqueAnterior = config.bloques[index - 1]
-
-    if (esBloqueFijo(bloqueAnterior.tipo)) return
-
-    const nuevosBloqueo = [...config.bloques]
-    ;[nuevosBloqueo[index - 1], nuevosBloqueo[index]] = [nuevosBloqueo[index], nuevosBloqueo[index - 1]]
-    nuevosBloqueo.forEach((b, i) => (b.orden = i))
-    setConfig({ ...config, bloques: nuevosBloqueo })
+  const handleAddBlock = (bloque: Block) => {
+    if (!activePage) return
+    const newBlocks = [...activePage.blocks, bloque]
+    newBlocks.forEach((b, i) => b.orden = i)
+    const updatedPages = config.pages.map(p => 
+        p.id === activeSection ? { ...p, blocks: newBlocks } : p
+    )
+    setConfig({ ...config, pages: updatedPages })
+    setDialogNewBlockOpen(false)
+    setBloqueSeleccionadoId(bloque.id)
   }
 
-  const handleMoverAbajo = (id: string) => {
-    const index = config.bloques.findIndex((b) => b.id === id)
-    if (index === config.bloques.length - 1) return
-
-    const bloque = config.bloques[index]
-    const bloqueSiguiente = config.bloques[index + 1]
-
-    if (esBloqueFijo(bloqueSiguiente.tipo)) return
-
-    const nuevosBloqueo = [...config.bloques]
-    ;[nuevosBloqueo[index + 1], nuevosBloqueo[index]] = [nuevosBloqueo[index], nuevosBloqueo[index + 1]]
-    nuevosBloqueo.forEach((b, i) => (b.orden = i))
-    setConfig({ ...config, bloques: nuevosBloqueo })
+  const handleUpdateBlock = (bloqueActualizado: Block) => {
+    if (activePage) {
+        const updatedBlocks = activePage.blocks.map(b => b.id === bloqueActualizado.id ? bloqueActualizado : b)
+        const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: updatedBlocks } : p)
+        setConfig({ ...config, pages: updatedPages })
+    }
   }
 
-  const handleAgregarBloque = (bloque: Block) => {
-    const footerIndex = config.bloques.findIndex((b) => b.tipo === "footer")
-    const nuevosBloqueo = [...config.bloques]
+  const handleDeleteBlock = (blockId: string) => {
+    if (!activePage) return
+    if(confirm("¿Eliminar bloque?")) {
+        const filtered = activePage.blocks.filter(b => b.id !== blockId)
+        const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: filtered } : p)
+        setConfig({ ...config, pages: updatedPages })
+        setBloqueSeleccionadoId(null)
+    }
+  }
 
-    if (footerIndex !== -1) {
-      nuevosBloqueo.splice(footerIndex, 0, bloque)
-    } else {
-      nuevosBloqueo.push(bloque)
+  const handleMoveBlock = (blockId: string, direction: 'up' | 'down', e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!activePage) return
+    const index = activePage.blocks.findIndex(b => b.id === blockId)
+    if (index === -1) return
+    if (direction === 'up' && index === 0) return
+    if (direction === 'down' && index === activePage.blocks.length - 1) return
+
+    const newBlocks = [...activePage.blocks]
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]]
+    newBlocks.forEach((b, i) => b.orden = i)
+
+    const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: newBlocks } : p)
+    setConfig({ ...config, pages: updatedPages })
+  }
+
+  const handleToggleVisibility = (blockId: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!activePage) return
+    const updatedBlocks = activePage.blocks.map(b => b.id === blockId ? { ...b, activo: !b.activo } : b)
+    const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: updatedBlocks } : p)
+    setConfig({ ...config, pages: updatedPages })
+  }
+
+  const saveHeader = () => {
+     setConfig({ ...config, header: { ...config.header, datos: tempHeaderData } })
+     alert("Header guardado")
+  }
+
+  const saveFooter = () => {
+     setConfig({ ...config, footer: { ...config.footer, datos: tempFooterData } })
+     alert("Footer guardado")
+  }
+
+  let bloqueEditando: Block | undefined
+  if (bloqueSeleccionadoId && activePage) bloqueEditando = activePage.blocks.find(b => b.id === bloqueSeleccionadoId)
+
+  const renderMainEditor = () => {
+    if (activeSection === "global-settings") {
+        return (
+            <div className="max-w-3xl mx-auto space-y-6 pb-20">
+                <Card>
+                    <CardHeader><CardTitle>Configuración de la Empresa</CardTitle></CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2"><Label>Nombre</Label><Input value={config.empresa.nombre} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, nombre: e.target.value } })} /></div>
+                        <div className="space-y-2"><Label>WhatsApp</Label><Input value={config.empresa.whatsapp || ""} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, whatsapp: e.target.value } })} /></div>
+                    </CardContent>
+                </Card>
+            </div>
+        )
     }
 
-    nuevosBloqueo.forEach((b, i) => (b.orden = i))
+    if (activeSection === "styles") {
+        return (
+            <div className="max-w-3xl mx-auto pb-20">
+                 <h2 className="text-2xl font-bold mb-6">Estilos Globales</h2>
+                 <EditorEstilos estilos={config.estilos} onGuardar={(nuevos) => setConfig({ ...config, estilos: nuevos })} />
+            </div>
+        )
+    }
 
-    setConfig({ ...config, bloques: nuevosBloqueo })
-    setDialogNuevoAbierto(false)
-    setBloqueSeleccionado(bloque.id)
-    setVistaActual("bloques")
+    // --- CORRECCIÓN: SECCIÓN HEADER QUE PASA LOS DATOS CORRECTOS ---
+    if (activeSection === "header") {
+        return (
+            <div className="max-w-4xl mx-auto pb-20">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold">Editar Header</h2>
+                    <Button onClick={saveHeader} className="bg-green-600 hover:bg-green-700"><Save className="w-4 h-4 mr-2" /> Guardar Cambios</Button>
+                </div>
+                <div className="bg-white p-6 rounded-lg border shadow-sm">
+                    <HeaderEditor 
+                        data={tempHeaderData} 
+                        onChange={(campo, valor) => setTempHeaderData({ ...tempHeaderData, [campo]: valor })} 
+                        // ESTO ES LO QUE HACE LA MAGIA:
+                        variant={config.header.variant}
+                        onVariantChange={(newVariant) => {
+                            setConfig({
+                                ...config,
+                                header: { ...config.header, variant: newVariant as any }
+                            })
+                        }}
+                    />
+                </div>
+            </div>
+        )
+    }
+
+    if (activeSection === "footer") {
+        return (
+            <div className="max-w-4xl mx-auto pb-20">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold">Editar Footer</h2>
+                    <Button onClick={saveFooter} className="bg-green-600 hover:bg-green-700"><Save className="w-4 h-4 mr-2" /> Guardar Cambios</Button>
+                </div>
+                <div className="bg-white p-6 rounded-lg border shadow-sm">
+                    <FooterEditor data={tempFooterData} onChange={(campo, valor) => setTempFooterData({ ...tempFooterData, [campo]: valor })} />
+                </div>
+            </div>
+        )
+    }
+
+    if (bloqueEditando) {
+        return (
+            <div className="max-w-4xl mx-auto pb-20">
+                <div className="flex items-center justify-between mb-6">
+                    <Button variant="ghost" className="pl-0" onClick={() => setBloqueSeleccionadoId(null)}>← Volver</Button>
+                    <Button variant="destructive" size="sm" onClick={() => handleDeleteBlock(bloqueEditando!.id)}><Trash2 className="w-4 h-4 mr-2" /> Eliminar</Button>
+                </div>
+                <EditorBloque bloque={bloqueEditando} onGuardar={handleUpdateBlock} onCancelar={() => setBloqueSeleccionadoId(null)} />
+            </div>
+        )
+    }
+
+    if (activePage) {
+        return (
+            <div className="max-w-3xl mx-auto text-center py-20">
+                <div className="w-20 h-20 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-6"><LayoutTemplate className="w-10 h-10 text-muted-foreground" /></div>
+                <h2 className="text-2xl font-bold mb-2">Editando: {activePage.title}</h2>
+                <Button size="lg" onClick={() => setDialogNewBlockOpen(true)}><Plus className="w-5 h-5 mr-2" /> Agregar Nuevo Bloque</Button>
+            </div>
+        )
+    }
+    return null
   }
-
-  const handleActualizarBloque = (bloqueActualizado: Block) => {
-    setConfig((prev) => {
-      if (!prev) return prev
-      return {
-        ...prev,
-        bloques: prev.bloques.map((b) => (b.id === bloqueActualizado.id ? bloqueActualizado : b)),
-      }
-    })
-  }
-
-  const handleGuardarEstilos = (estilos: typeof config.estilos) => {
-    setConfig({ ...config, estilos })
-    actualizarEstilos(estilos)
-  }
-
-  const bloquesFijos = config.bloques.filter((b) => esBloqueFijo(b.tipo))
-  const bloquesVariables = config.bloques.filter((b) => !esBloqueFijo(b.tipo))
-
-  const bloqueActual = config.bloques.find((b) => b.id === bloqueSeleccionado)
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-primary shadow-sm">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-              <Grid3x3 className="w-6 h-6 text-white" />
+    <div className="flex h-screen bg-background overflow-hidden">
+      <aside className="w-72 border-r bg-white flex flex-col h-full shadow-sm z-10">
+        <div className="p-4 border-b">
+          <h1 className="font-bold text-lg flex items-center gap-2 text-primary"><Layout className="w-5 h-5" /> Admin Panel</h1>
+        </div>
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-6">
+            <div>
+              <p className="text-xs font-bold text-muted-foreground mb-3 px-2">GLOBALES</p>
+              <nav className="space-y-1">
+                <Button variant={activeSection === "global-settings" ? "secondary" : "ghost"} className="w-full justify-start" onClick={() => { setActiveSection("global-settings"); setBloqueSeleccionadoId(null) }}><Settings className="w-4 h-4 mr-2" /> Configuración</Button>
+                <Button variant={activeSection === "styles" ? "secondary" : "ghost"} className="w-full justify-start" onClick={() => { setActiveSection("styles"); setBloqueSeleccionadoId(null) }}><Palette className="w-4 h-4 mr-2" /> Estilos</Button>
+                <Button variant={activeSection === "header" ? "secondary" : "ghost"} className="w-full justify-start" onClick={() => { setActiveSection("header"); setBloqueSeleccionadoId(null) }}><LayoutTemplate className="w-4 h-4 mr-2 rotate-180" /> Header</Button>
+                <Button variant={activeSection === "footer" ? "secondary" : "ghost"} className="w-full justify-start" onClick={() => { setActiveSection("footer"); setBloqueSeleccionadoId(null) }}><LayoutTemplate className="w-4 h-4 mr-2" /> Footer</Button>
+              </nav>
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">Page Builder</h1>
-              <p className="text-xs text-white/70">Panel de Administración</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <Button asChild variant="secondary" size="sm" className="bg-white/10 text-white hover:bg-white/20 border-0">
-              <Link href="/">
-                <Home className="w-4 h-4 mr-2" />
-                Ver Sitio
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <div className="flex h-[calc(100vh-4rem)]">
-        <aside className="w-80 border-r bg-sidebar/50 flex flex-col">
-          <div className="p-5 border-b bg-background/50">
-            <h2 className="font-semibold text-base mb-3 text-foreground/80">Estructura de Página</h2>
-            <Button onClick={() => setDialogNuevoAbierto(true)} className="w-full" size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              Agregar Bloque
-            </Button>
-          </div>
-
-          <ScrollArea className="flex-1">
-            <div className="p-3 space-y-4">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground mb-2 px-2">SECCIONES FIJAS</p>
-                <div className="space-y-2">
-                  {bloquesFijos.map((bloque) => {
-                    const Icon = getBlockIcon(bloque.tipo)
-                    const isSelected = bloqueSeleccionado === bloque.id && vistaActual === "bloques"
-
-                    return (
-                      <div
-                        key={bloque.id}
-                        className={cn(
-                          "rounded-lg border transition-all",
-                          isSelected ? "bg-primary shadow-sm" : "bg-background hover:bg-muted/50",
+              <div className="flex items-center justify-between mb-2 px-2">
+                <p className="text-xs font-bold text-muted-foreground">PÁGINAS</p>
+                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setDialogNewPageOpen(true)}><Plus className="w-4 h-4" /></Button>
+              </div>
+              <nav className="space-y-1">
+                {config.pages.map(page => (
+                    <div key={page.id} className="group relative">
+                        <Button variant={activeSection === page.id ? "secondary" : "ghost"} className="w-full justify-start pr-8" onClick={() => { setActiveSection(page.id); setBloqueSeleccionadoId(null) }}>
+                            <File className="w-4 h-4 mr-2 opacity-70" /> <span className="truncate">{page.title}</span>
+                        </Button>
+                        {page.slug !== "home" && (
+                            <button onClick={(e) => handleDeletePage(page.id, e)} className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 hover:text-red-500"><Trash2 className="w-3.5 h-3.5" /></button>
                         )}
-                      >
-                        <button
-                          onClick={() => {
-                            setBloqueSeleccionado(bloque.id)
-                            setVistaActual("bloques")
-                          }}
-                          className="w-full text-left p-3"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={cn(
-                                "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-                                isSelected ? "bg-white/20" : "bg-primary/10",
-                              )}
-                            >
-                              <Icon
-                                className={cn(
-                                  "w-5 h-5",
-                                  isSelected ? "text-white" : "text-primary",
-                                  !bloque.activo && "opacity-50",
-                                )}
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <p
-                                  className={cn(
-                                    "font-medium text-sm truncate",
-                                    isSelected ? "text-white" : "text-foreground",
-                                    !bloque.activo && "opacity-50",
-                                  )}
-                                >
-                                  {getBlockName(bloque.tipo)}
-                                </p>
-                                {!bloque.activo ? (
-                                  <EyeOff
-                                    className={cn(
-                                      "w-3.5 h-3.5 flex-shrink-0",
-                                      isSelected ? "text-white/70" : "text-muted-foreground",
-                                    )}
-                                  />
-                                ) : (
-                                  <Eye
-                                    className={cn(
-                                      "w-3.5 h-3.5 flex-shrink-0",
-                                      isSelected ? "text-white/70" : "text-muted-foreground",
-                                    )}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </button>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {bloquesVariables.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground mb-2 px-2">CONTENIDO PERSONALIZADO</p>
-                  <div className="space-y-2">
-                    {bloquesVariables.map((bloque) => {
-                      const Icon = getBlockIcon(bloque.tipo)
-                      const isSelected = bloqueSeleccionado === bloque.id && vistaActual === "bloques"
-                      const indexEnBloquesVariables = bloquesVariables.findIndex((b) => b.id === bloque.id)
-
-                      return (
-                        <div
-                          key={bloque.id}
-                          className={cn(
-                            "rounded-lg border transition-all",
-                            isSelected ? "bg-primary shadow-sm" : "bg-background hover:bg-muted/50",
-                          )}
-                        >
-                          <button
-                            onClick={() => {
-                              setBloqueSeleccionado(bloque.id)
-                              setVistaActual("bloques")
-                            }}
-                            className="w-full text-left p-3"
-                          >
-                            <div className="flex items-start gap-3">
-                              <div
-                                className={cn(
-                                  "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-                                  isSelected ? "bg-white/20" : "bg-primary/10",
-                                )}
-                              >
-                                <Icon
-                                  className={cn(
-                                    "w-5 h-5",
-                                    isSelected ? "text-white" : "text-primary",
-                                    !bloque.activo && "opacity-50",
-                                  )}
-                                />
-                              </div>
-                              <div className="flex-1 min-w-0 pt-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <p
-                                    className={cn(
-                                      "font-medium text-sm truncate",
-                                      isSelected ? "text-white" : "text-foreground",
-                                      !bloque.activo && "opacity-50",
-                                    )}
-                                  >
-                                    {getBlockName(bloque.tipo)}
-                                  </p>
-                                  {!bloque.activo ? (
-                                    <EyeOff
-                                      className={cn(
-                                        "w-3.5 h-3.5 flex-shrink-0",
-                                        isSelected ? "text-white/70" : "text-muted-foreground",
-                                      )}
-                                    />
-                                  ) : (
-                                    <Eye
-                                      className={cn(
-                                        "w-3.5 h-3.5 flex-shrink-0",
-                                        isSelected ? "text-white/70" : "text-muted-foreground",
-                                      )}
-                                    />
-                                  )}
+                    </div>
+                ))}
+              </nav>
+            </div>
+            {activePage && (
+                <div className="pt-4 border-t mt-2">
+                    <div className="flex items-center justify-between mb-2 px-2">
+                        <p className="text-xs font-bold text-primary truncate max-w-[120px]">{activePage.title.toUpperCase()}</p>
+                        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setDialogNewBlockOpen(true)}><Plus className="w-3 h-3" /></Button>
+                    </div>
+                    <div className="space-y-1">
+                        {activePage.blocks.length === 0 && <p className="text-xs text-muted-foreground px-2">Sin bloques</p>}
+                        {activePage.blocks.map((bloque, idx) => (
+                            <div key={bloque.id} onClick={() => setBloqueSeleccionadoId(bloque.id)} className={cn("flex items-center justify-between p-2 rounded-md text-sm cursor-pointer hover:bg-muted/50 border border-transparent", bloqueSeleccionadoId === bloque.id ? "bg-muted border-border shadow-sm" : "")}>
+                                <div className="flex items-center gap-2 overflow-hidden"><span className="text-xs text-muted-foreground w-4">{idx + 1}</span><span className="truncate capitalize">{bloque.tipo}</span></div>
+                                <div className="flex gap-1">
+                                    <button onClick={(e) => handleMoveBlock(bloque.id, 'up', e)}><ChevronUp className="w-3 h-3 text-muted-foreground hover:text-foreground" /></button>
+                                    <button onClick={(e) => handleToggleVisibility(bloque.id, e)}>{bloque.activo ? <Eye className="w-3 h-3 text-muted-foreground hover:text-foreground"/> : <EyeOff className="w-3 h-3 text-muted-foreground/50"/>}</button>
                                 </div>
-                                <p className={cn("text-xs", isSelected ? "text-white/70" : "text-muted-foreground")}>
-                                  Posición {indexEnBloquesVariables + 1}
-                                </p>
-                              </div>
                             </div>
-                          </button>
-
-                          <div className="px-3 pb-3 flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleMoverArriba(bloque.id)}
-                              disabled={indexEnBloquesVariables === 0}
-                              className={cn("h-8 flex-1", isSelected && "text-white hover:bg-white/10")}
-                            >
-                              <ChevronUp className="w-4 h-4 mr-1" />
-                              <span className="text-xs">Subir</span>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleMoverAbajo(bloque.id)}
-                              disabled={indexEnBloquesVariables === bloquesVariables.length - 1}
-                              className={cn("h-8 flex-1", isSelected && "text-white hover:bg-white/10")}
-                            >
-                              <ChevronDown className="w-4 h-4 mr-1" />
-                              <span className="text-xs">Bajar</span>
-                            </Button>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
+                        ))}
+                    </div>
                 </div>
-              )}
-
-              {config.bloques.length === 0 && (
-                <div className="text-center py-12 px-4">
-                  <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                    <Grid3x3 className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium text-foreground mb-1">Sin bloques</p>
-                  <p className="text-xs text-muted-foreground">Agrega tu primer bloque para comenzar</p>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-
-          <div className="p-4 border-t bg-background space-y-2">
-            <button
-              onClick={() => {
-                setVistaActual("configuracion")
-                setBloqueSeleccionado(null)
-              }}
-              className={cn(
-                "w-full p-3 rounded-lg border transition-colors text-left",
-                vistaActual === "configuracion" ? "bg-primary text-white" : "bg-background hover:bg-muted/50",
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center",
-                    vistaActual === "configuracion" ? "bg-white/20" : "bg-primary/10",
-                  )}
-                >
-                  <Settings
-                    className={cn("w-5 h-5", vistaActual === "configuracion" ? "text-white" : "text-primary")}
-                  />
-                </div>
-                <div>
-                  <p
-                    className={cn(
-                      "font-medium text-sm",
-                      vistaActual === "configuracion" ? "text-white" : "text-foreground",
-                    )}
-                  >
-                    Configuración
-                  </p>
-                  <p
-                    className={cn(
-                      "text-xs",
-                      vistaActual === "configuracion" ? "text-white/70" : "text-muted-foreground",
-                    )}
-                  >
-                    Datos de empresa
-                  </p>
-                </div>
-              </div>
-            </button>
-
-            <button
-              onClick={() => {
-                setVistaActual("estilos")
-                setBloqueSeleccionado(null)
-              }}
-              className={cn(
-                "w-full p-3 rounded-lg border transition-colors text-left",
-                vistaActual === "estilos" ? "bg-primary text-white" : "bg-background hover:bg-muted/50",
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center",
-                    vistaActual === "estilos" ? "bg-white/20" : "bg-primary/10",
-                  )}
-                >
-                  <Palette className={cn("w-5 h-5", vistaActual === "estilos" ? "text-white" : "text-primary")} />
-                </div>
-                <div>
-                  <p
-                    className={cn("font-medium text-sm", vistaActual === "estilos" ? "text-white" : "text-foreground")}
-                  >
-                    Estilos
-                  </p>
-                  <p className={cn("text-xs", vistaActual === "estilos" ? "text-white/70" : "text-muted-foreground")}>
-                    Colores y fuentes
-                  </p>
-                </div>
-              </div>
-            </button>
+            )}
           </div>
-        </aside>
-
-        <main className="flex-1 overflow-auto bg-muted/20">
-          {vistaActual === "configuracion" ? (
-            <div className="container max-w-3xl mx-auto p-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Configuración General</CardTitle>
-                  <CardDescription>Información básica de tu empresa</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Nombre de la Empresa */}
-                  <div className="space-y-2">
-                    <Label>Nombre de la Empresa</Label>
-                    <Input
-                      placeholder="Ej: Mi Empresa S.A."
-                      value={config.empresa.nombre || ""}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          empresa: { ...config.empresa, nombre: e.target.value },
-                        })
-                      }
-                    />
-                  </div>
-
-                  {/* WhatsApp Flotante */}
-                  <div className="space-y-2">
-                    <Label>WhatsApp Flotante</Label>
-                    <Input
-                      placeholder="Ej: 5491112345678 (Código país + Número)"
-                      value={config.empresa.whatsapp || ""}
-                      onChange={(e) =>
-                        setConfig({
-                          ...config,
-                          empresa: { ...config.empresa, whatsapp: e.target.value },
-                        })
-                      }
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Ingresa el número completo solo con dígitos. Aparecerá un botón flotante en tu web.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : vistaActual === "estilos" ? (
-            <div className="container max-w-3xl mx-auto p-8">
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-foreground mb-2">Estilos Globales</h2>
-                <p className="text-sm text-muted-foreground">
-                  Personaliza los colores, fuentes y tamaños de tu sitio web
-                </p>
-              </div>
-              <EditorEstilos estilos={config.estilos} onGuardar={handleGuardarEstilos} />
-            </div>
-          ) : bloqueActual ? (
-            <div className="container max-w-3xl mx-auto p-8">
-              <div className="mb-6">
-                <div className="flex items-start justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-foreground mb-2">{getBlockName(bloqueActual.tipo)}</h2>
-                    <p className="text-sm text-muted-foreground">Personaliza el contenido de este bloque</p>
-                  </div>
-                  {!esBloqueFijo(bloqueActual.tipo) && (
-                    <Button variant="destructive" size="sm" onClick={() => handleEliminar(bloqueActual.id)}>
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Eliminar
-                    </Button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3 p-4 bg-card border rounded-lg mb-6">
-                  <Switch checked={bloqueActual.activo} onCheckedChange={() => handleToggleActivo(bloqueActual.id)} />
-                  <div>
-                    <p className="font-medium text-sm">Mostrar en página</p>
-                    <p className="text-xs text-muted-foreground">
-                      {bloqueActual.activo ? "Visible para los visitantes" : "Oculto temporalmente"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <EditorBloque
-                bloque={bloqueActual}
-                onGuardar={handleActualizarBloque}
-                onCancelar={() => setBloqueSeleccionado(null)}
-              />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
-                  <Grid3x3 className="w-10 h-10 text-muted-foreground" />
-                </div>
-                <p className="text-lg font-medium text-foreground mb-2">Selecciona un bloque</p>
-                <p className="text-sm text-muted-foreground">
-                  Elige un bloque de la barra lateral para comenzar a editar
-                </p>
-              </div>
-            </div>
-          )}
-        </main>
-      </div>
-
-      <Dialog open={dialogNuevoAbierto} onOpenChange={setDialogNuevoAbierto}>
+        </ScrollArea>
+        <div className="p-4 border-t bg-gray-50">
+             <Link href="/"><Button variant="default" className="w-full"><Monitor className="w-4 h-4 mr-2" /> Ver Sitio Web</Button></Link>
+        </div>
+      </aside>
+      <main className="flex-1 overflow-auto bg-slate-50 p-8">{renderMainEditor()}</main>
+      
+      <Dialog open={dialogNewBlockOpen} onOpenChange={setDialogNewBlockOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Agregar Nuevo Bloque</DialogTitle>
-            <DialogDescription>Elige el tipo de bloque que deseas agregar a tu página</DialogDescription>
-          </DialogHeader>
-          <NuevoBloqueDialog
-            onAgregar={handleAgregarBloque}
-            siguienteOrden={config.bloques.length > 0 ? Math.max(...config.bloques.map((b) => b.orden)) + 1 : 0}
-          />
+          <DialogHeader><DialogTitle>Agregar Bloque</DialogTitle></DialogHeader>
+          <NuevoBloqueDialog onAgregar={handleAddBlock} siguienteOrden={currentBlocks.length} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={dialogNewPageOpen} onOpenChange={setDialogNewPageOpen}>
+        <DialogContent>
+            <DialogHeader><DialogTitle>Crear Nueva Página</DialogTitle></DialogHeader>
+            <div className="space-y-4 py-4">
+                <div className="space-y-2"><label className="text-sm font-medium">Nombre</label><Input value={newPageName} onChange={(e) => setNewPageName(e.target.value)} placeholder="Ej: Contacto" /></div>
+                <Button onClick={handleCreatePage} disabled={!newPageName}>Crear</Button>
+            </div>
         </DialogContent>
       </Dialog>
     </div>

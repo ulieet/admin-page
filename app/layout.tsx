@@ -1,15 +1,14 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
+import { Inter } from "next/font/google"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 import DynamicFavicon from "@/components/DynamicFavicon"
 
-const geist = Geist({ subsets: ["latin"] })
-const geistMono = Geist_Mono({ subsets: ["latin"] }) // queda importada pero NO global
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Landing page con Admin CMS",
-  description: "Creado por Ulieet",
+  title: "Mi Sitio Web",
+  description: "Powered by Page Builder",
 }
 
 export default function RootLayout({
@@ -18,13 +17,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geist.className} font-sans antialiased min-h-screen flex flex-col`}
-      >
+    <html lang="es">
+      <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-background text-foreground`}>
         <DynamicFavicon />
         {children}
-        <Analytics />
+        <Toaster />
       </body>
     </html>
   )

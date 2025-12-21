@@ -19,7 +19,6 @@ import { BloqueCTA } from "@/components/bloques/cta"
 import { BloqueContactForm } from "@/components/bloques/contact-form"
 import { BloqueStats } from "@/components/bloques/stats"
 
-// --- CORRECCIÓN ---
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
 
 const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
@@ -28,8 +27,8 @@ const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   footer: BloqueFooter,
   banner: BloqueBanner,
   "cards-3": BloqueCards3,
-  "text-image": BloqueTextoImagen, // Corregido
-  "texto-imagen": BloqueTextoImagen, // Soporte extra
+  "text-image": BloqueTextoImagen, 
+  "texto-imagen": BloqueTextoImagen, 
   form: BloqueForm,
   gallery: BloqueGallery,
   "logo-marquee": BloqueLogoMarquee,
