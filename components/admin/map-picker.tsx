@@ -11,21 +11,33 @@ import {
 import "leaflet/dist/leaflet.css"
 
 // --------------------
+// Componente para actualizar la vista cuando cambia la posición
+// Reemplaza el uso de la 'key' dinámica
+// --------------------
+function MapUpdater({ position }: { position: [number, number] | null }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (position) {
+      map.flyTo(position, map.getZoom())
+    }
+  }, [position, map])
+
+  return null
+}
+
+// --------------------
 // Arregla resize cuando el mapa aparece
 // --------------------
 function MapResizer() {
   const map = useMap()
 
   useEffect(() => {
-    // invalida tamaño inicial
     map.invalidateSize()
-
-    // fuerza resize global (tabs / display:none)
     const timer = setTimeout(() => {
       window.dispatchEvent(new Event("resize"))
       map.invalidateSize()
     }, 300)
-
     return () => clearTimeout(timer)
   }, [map])
 
@@ -59,11 +71,12 @@ function LocationMarker({
   position: [number, number] | null
   setPosition: (pos: [number, number]) => void
 }) {
-  const map = useMapEvents({
+  useMapEvents({
     click(e) {
       const pos: [number, number] = [e.latlng.lat, e.latlng.lng]
       setPosition(pos)
-      map.flyTo(e.latlng, map.getZoom())
+      // Ya no hacemos map.flyTo aquí manualmente,
+      // MapUpdater lo hará al detectar el cambio de 'position'
     },
   })
 
@@ -94,6 +107,7 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
     setMounted(true)
   }, [])
 
+  // Sincronizar props externas con estado interno
   useEffect(() => {
     if (lat && lng) setPosition([lat, lng])
   }, [lat, lng])
@@ -114,12 +128,15 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
   return (
     <div className="h-[300px] w-full rounded-md overflow-hidden border bg-slate-50 relative">
       <MapContainer
-        key={`${position?.[0] ?? "x"}-${position?.[1] ?? "y"}`}
+        // IMPORTANTE: Eliminada la prop 'key' dinámica que causaba el crash
         center={position || defaultCenter}
         zoom={13}
         style={{ height: "100%", width: "100%" }}
       >
         <MapResizer />
+        
+        {/* Este componente se encarga de mover el mapa suavemente */}
+        <MapUpdater position={position} />
 
         <TileLayer
           attribution='&copy; OpenStreetMap'

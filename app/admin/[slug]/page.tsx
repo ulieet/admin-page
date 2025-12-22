@@ -1,29 +1,26 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, notFound } from "next/navigation"
+import { useParams } from "next/navigation"
 import { cargarConfiguracion } from "@/lib/blocks-storage"
 import { RenderBlocks } from "@/components/page-builder/render-blocks"
-
-// Bloques globales
 import { BloqueHeader } from "@/components/bloques/header"
 import { BloqueFooter } from "@/components/bloques/footer"
 import { WhatsappFloatingButton } from "@/components/bloques/whatsapp-button"
 import type { SiteConfig } from "@/lib/types/blocks"
 
-export default function DynamicPage() {
+export default function PublicDynamicPage() {
   const params = useParams()
   const [config, setConfig] = useState<SiteConfig | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // 1. Cargar la configuración desde LocalStorage
   useEffect(() => {
     const data = cargarConfiguracion()
     setConfig(data)
     setLoading(false)
   }, [])
 
-  // 2. Aplicar variables CSS (Temas)
+  // Aplicar estilos globales del tema
   useEffect(() => {
     if (config?.estilos && typeof document !== "undefined") {
       const root = document.documentElement
@@ -37,24 +34,21 @@ export default function DynamicPage() {
     }
   }, [config])
 
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
-  }
-
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Cargando...</div>
   if (!config) return null
 
-  // 3. Buscar la página correspondiente al SLUG actual
-  // El slug viene de la URL (ej: 'contacto' o 'servicios')
-  const slug = typeof params?.slug === 'string' ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : ''
-  const page = config.pages.find((p) => p.slug === slug)
+  // Obtener slug de la URL
+  const slug = typeof params?.slug === 'string' ? params.slug : ''
+  
+  // Buscar página (Excluir 'home' ya que tiene su propio archivo page.tsx en la raíz)
+  const page = config.pages.find((p) => p.slug === slug && p.slug !== 'home')
 
-  // Si la página no existe en nuestra "base de datos", mostramos 404
+  // Si la página no existe, mostrar 404
   if (!page) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
         <h1 className="text-4xl font-bold">404</h1>
         <p className="text-xl">Página no encontrada</p>
-        <p className="text-muted-foreground">La ruta <span className="font-mono bg-muted px-1 rounded">/{slug}</span> no existe.</p>
         <a href="/" className="bg-primary text-white px-4 py-2 rounded hover:opacity-90 transition-opacity">
           Volver al Inicio
         </a>
@@ -62,12 +56,12 @@ export default function DynamicPage() {
     )
   }
 
-  // 4. Actualizar título de la pestaña
+  // Actualizar título del documento
   if (typeof document !== "undefined") {
     document.title = `${page.title} | ${config.empresa.nombre}`
   }
 
-  // Preparar datos globales
+  // Preparar datos para header/footer
   const headerData = { 
     ...config.header.datos, 
     nombreEmpresa: config.header.datos.nombreEmpresa || config.empresa.nombre 
@@ -90,7 +84,7 @@ export default function DynamicPage() {
         />
       )}
 
-      {/* CONTENIDO DE LA PÁGINA ESPECÍFICA */}
+      {/* CONTENIDO DE LA PÁGINA */}
       <main className="flex-1 flex flex-col w-full">
         <RenderBlocks blocks={page.blocks} />
       </main>

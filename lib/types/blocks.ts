@@ -20,7 +20,10 @@ export type BlockType =
   | "stats"
   | "iconos"
 
-// Configuración global de estilos
+// =====================
+// CONFIGURACIÓN GLOBAL
+// =====================
+
 export interface StyleConfig {
   colores: {
     primario: string
@@ -35,7 +38,16 @@ export interface StyleConfig {
   }
 }
 
-export type BlockVariant = "default" | "modern" | "minimal" | "bold" | "centered"
+export type BlockVariant =
+  | "default"
+  | "modern"
+  | "minimal"
+  | "bold"
+  | "centered"
+
+// =====================
+// BLOQUE BASE
+// =====================
 
 export interface BaseBlock {
   id: string
@@ -43,9 +55,14 @@ export interface BaseBlock {
   orden: number
   activo: boolean
   variant?: BlockVariant
+
+  // 🔒 BLOQUE FIJO (Hero Home, etc.)
+  locked?: boolean
 }
 
-// --- BLOQUES ESTRUCTURALES ---
+// =====================
+// BLOQUES ESTRUCTURALES
+// =====================
 
 export interface HeaderBlock extends BaseBlock {
   tipo: "header"
@@ -82,12 +99,10 @@ export interface FooterBlock extends BaseBlock {
     email: string
     telefono: string
     direccion: string
-    
-    // --- NUEVO: Coordenadas para el mapa ---
+
     lat?: number
     lng?: number
-    // -------------------------------------
-    
+
     imagenMapa?: string
     redesSociales: {
       linkedin: string
@@ -105,7 +120,9 @@ export interface FooterBlock extends BaseBlock {
   }
 }
 
-// --- BLOQUES DE CONTENIDO ---
+// =====================
+// BLOQUES DE CONTENIDO
+// =====================
 
 export interface BannerBlock extends BaseBlock {
   tipo: "banner"
@@ -162,7 +179,9 @@ export interface StatsBlock extends BaseBlock {
   }
 }
 
-// --- TARJETAS Y LISTAS ---
+// =====================
+// TARJETAS Y LISTAS
+// =====================
 
 export interface Cards3Block extends BaseBlock {
   tipo: "cards-3"
@@ -183,14 +202,23 @@ export interface ServicesBlock extends BaseBlock {
   datos: {
     titulo: string
     subtitulo: string
-    servicios: Array<{ icono: string; titulo: string; descripcion: string }>
+    servicios: Array<{
+      icono: string
+      titulo: string
+      descripcion: string
+    }>
   }
 }
 
 export interface FeaturesBlock extends BaseBlock {
   tipo: "features"
   datos: {
-    caracteristicas: Array<{ icono: string; titulo: string; descripcion: string; botonTexto?: string }>
+    caracteristicas: Array<{
+      icono: string
+      titulo: string
+      descripcion: string
+      botonTexto?: string
+    }>
   }
 }
 
@@ -198,19 +226,26 @@ export interface IconosBlock extends BaseBlock {
   tipo: "iconos"
   datos: {
     titulo: string
-    items: Array<{ icono: string; titulo: string; descripcion: string }>
+    items: Array<{
+      icono: string
+      titulo: string
+      descripcion: string
+    }>
   }
 }
 
-// Sub-tipo para ImageCard (no es un bloque root, pero se usa en ImageCardList)
+// =====================
+// IMAGE CARD LIST
+// =====================
+
 export interface ImageCardData {
-    imagenUrl: string
-    altTexto: string
-    etiqueta: string
-    titulo: string
-    descripcion: string
-    linkTexto: string
-    linkUrl: string
+  imagenUrl: string
+  altTexto: string
+  etiqueta: string
+  titulo: string
+  descripcion: string
+  linkTexto: string
+  linkUrl: string
 }
 
 export interface ImageCardListBlock extends BaseBlock {
@@ -223,7 +258,9 @@ export interface ImageCardListBlock extends BaseBlock {
   }
 }
 
-// --- FORMULARIOS Y CTA ---
+// =====================
+// FORMULARIOS Y CTA
+// =====================
 
 export interface FormBlock extends BaseBlock {
   tipo: "form"
@@ -271,7 +308,9 @@ export interface CtaBlock extends BaseBlock {
   }
 }
 
-// --- GALERÍAS Y CLIENTES ---
+// =====================
+// GALERÍAS Y CLIENTES
+// =====================
 
 export interface LogoMarqueeBlock extends BaseBlock {
   tipo: "logo-marquee"
@@ -298,15 +337,33 @@ export interface GalleryBlock extends BaseBlock {
   }
 }
 
-// UNIÓN DE TODOS LOS BLOQUES
-export type Block =
-  | HeaderBlock | HeroBlock | FooterBlock | BannerBlock 
-  | AboutBlock | TextImageBlock | TituloParrafosBlock | StatsBlock
-  | Cards3Block | ServicesBlock | FeaturesBlock | IconosBlock | ImageCardListBlock
-  | FormBlock | ContactFormBlock | CtaBlock 
-  | LogoMarqueeBlock | GalleryBlock
+// =====================
+// UNIÓN DE BLOQUES
+// =====================
 
-// --- NUEVA ESTRUCTURA MULTI-PAGE ---
+export type Block =
+  | HeaderBlock
+  | HeroBlock
+  | FooterBlock
+  | BannerBlock
+  | AboutBlock
+  | TextImageBlock
+  | TituloParrafosBlock
+  | StatsBlock
+  | Cards3Block
+  | ServicesBlock
+  | FeaturesBlock
+  | IconosBlock
+  | ImageCardListBlock
+  | FormBlock
+  | ContactFormBlock
+  | CtaBlock
+  | LogoMarqueeBlock
+  | GalleryBlock
+
+// =====================
+// MULTI PAGE
+// =====================
 
 export interface PageData {
   id: string
@@ -325,6 +382,6 @@ export interface SiteConfig {
   empresa: {
     nombre: string
     logo?: string
-    whatsapp?: string 
+    whatsapp?: string
   }
 }
