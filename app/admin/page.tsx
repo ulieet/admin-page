@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import {
   Plus, Trash2, Settings, Palette,
   File, Layout, Monitor, LayoutTemplate,
-  ChevronUp, ChevronDown, Eye, EyeOff, Save
+  ChevronUp, Eye, EyeOff, Save, ImageIcon
 } from "lucide-react"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -20,9 +20,10 @@ import { NuevoBloqueDialog } from "@/components/admin/nuevo-bloque-dialog"
 import { EditorEstilos } from "@/components/admin/editor-estilos"
 import { HeaderEditor } from "@/components/admin/blocks/HeaderEditor"
 import { FooterEditor } from "@/components/admin/blocks/FooterEditor"
+import { HeroEditor } from "@/components/admin/blocks/HeroEditor"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
 export default function AdminPage() {
@@ -31,12 +32,40 @@ export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<string>("home-page") 
   const [bloqueSeleccionadoId, setBloqueSeleccionadoId] = useState<string | null>(null)
   
+  // Estados temporales para edición segura
   const [tempHeaderData, setTempHeaderData] = useState<any>(null)
   const [tempFooterData, setTempFooterData] = useState<any>(null)
+  const [tempHeroData, setTempHeroData] = useState<any>(null)
+  const [tempHeroVariant, setTempHeroVariant] = useState<string>("default")
 
   const [dialogNewBlockOpen, setDialogNewBlockOpen] = useState(false)
   const [dialogNewPageOpen, setDialogNewPageOpen] = useState(false)
   const [newPageName, setNewPageName] = useState("")
+
+  // --- FIX: RESETEAR ESTILOS AL ENTRAR AL ADMIN ---
+  // Esto evita que si cambias la fuente o el tamaño base del sitio, se rompa el Admin.
+  useEffect(() => {
+    const root = document.documentElement
+
+    // 1. Limpiamos las variables que afectan el layout
+    root.style.removeProperty("--tamano-base")
+    root.style.removeProperty("--fuente-base")
+    
+    // 2. Forzamos estilos seguros para el Admin Panel
+    root.style.fontSize = "16px" 
+    root.style.fontFamily = "ui-sans-serif, system-ui, sans-serif" // Fuente del sistema
+    root.style.backgroundColor = "#ffffff"
+    root.style.color = "#09090b"
+    
+    return () => {
+      // Limpieza al salir (opcional, la página destino sobreescribirá esto)
+      root.style.removeProperty("font-size")
+      root.style.removeProperty("font-family")
+      root.style.removeProperty("background-color")
+      root.style.removeProperty("color")
+    }
+  }, [])
+  // ------------------------------------------------
 
   useEffect(() => {
     const data = cargarConfiguracion()
@@ -44,6 +73,25 @@ export default function AdminPage() {
     setTempHeaderData(data.header.datos)
     setTempFooterData(data.footer.datos)
     
+    // Inicializar datos del Hero (si existe en Home)
+    const homePage = data.pages.find(p => p.slug === "home")
+    const heroBlock = homePage?.blocks.find(b => b.tipo === "hero")
+    
+    if (heroBlock) {
+      setTempHeroData(heroBlock.datos)
+      setTempHeroVariant(heroBlock.variant || "default")
+    } else {
+      // Datos por defecto si no existe
+      setTempHeroData({
+        titulo: "Título Principal",
+        subtitulo: "Texto de ejemplo",
+        imagenes: [],
+        botonPrimarioTexto: "Ver más",
+        botonPrimarioUrl: "#"
+      })
+      setTempHeroVariant("default")
+    }
+
     const home = data.pages.find(p => p.slug === "home")
     if (home) setActiveSection(home.id)
     else if (data.pages.length > 0) setActiveSection(data.pages[0].id)
@@ -61,19 +109,14 @@ export default function AdminPage() {
   const activePage = config.pages.find(p => p.id === activeSection)
   const currentBlocks = activePage ? activePage.blocks : []
 
+  const isHomePage = activePage?.slug === "home"
+
+  // ... Funciones de páginas y bloques ...
   const handleCreatePage = () => {
     if (!newPageName) return
     const slug = newPageName.toLowerCase().trim().replace(/\s+/g, '-')
-    if (config.pages.some(p => p.slug === slug)) {
-        alert("Ya existe una página con ese nombre/slug")
-        return
-    }
-    const newPage: PageData = {
-      id: Math.random().toString(36).substr(2, 9),
-      slug,
-      title: newPageName,
-      blocks: []
-    }
+    if (config.pages.some(p => p.slug === slug)) { alert("Ya existe una página con ese nombre/slug"); return }
+    const newPage: PageData = { id: Math.random().toString(36).substr(2, 9), slug, title: newPageName, blocks: [] }
     const newConfig = { ...config, pages: [...config.pages, newPage] }
     setConfig(newConfig)
     setDialogNewPageOpen(false)
@@ -97,9 +140,7 @@ export default function AdminPage() {
     if (!activePage) return
     const newBlocks = [...activePage.blocks, bloque]
     newBlocks.forEach((b, i) => b.orden = i)
-    const updatedPages = config.pages.map(p => 
-        p.id === activeSection ? { ...p, blocks: newBlocks } : p
-    )
+    const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: newBlocks } : p)
     setConfig({ ...config, pages: updatedPages })
     setDialogNewBlockOpen(false)
     setBloqueSeleccionadoId(bloque.id)
@@ -130,12 +171,10 @@ export default function AdminPage() {
     if (index === -1) return
     if (direction === 'up' && index === 0) return
     if (direction === 'down' && index === activePage.blocks.length - 1) return
-
     const newBlocks = [...activePage.blocks]
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]]
     newBlocks.forEach((b, i) => b.orden = i)
-
     const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: newBlocks } : p)
     setConfig({ ...config, pages: updatedPages })
   }
@@ -158,20 +197,49 @@ export default function AdminPage() {
      alert("Footer guardado")
   }
 
+  const saveHero = () => {
+    if (!activePage) return
+    
+    let newBlocks = [...activePage.blocks]
+    const heroIndex = newBlocks.findIndex(b => b.tipo === "hero")
+    
+    const newHeroBlock: Block = {
+        id: heroIndex >= 0 ? newBlocks[heroIndex].id : "hero-home-fixed",
+        tipo: "hero",
+        activo: true,
+        orden: 0, 
+        variant: tempHeroVariant, 
+        datos: tempHeroData       
+    }
+
+    if (heroIndex >= 0) {
+        newBlocks[heroIndex] = newHeroBlock
+    } else {
+        newBlocks.unshift(newHeroBlock)
+    }
+    
+    // Reordenar
+    newBlocks.forEach((b, i) => b.orden = i)
+
+    const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: newBlocks } : p)
+    setConfig({ ...config, pages: updatedPages })
+    alert("Portada guardada correctamente")
+  }
+
   let bloqueEditando: Block | undefined
-  if (bloqueSeleccionadoId && activePage) bloqueEditando = activePage.blocks.find(b => b.id === bloqueSeleccionadoId)
+  if (bloqueSeleccionadoId && bloqueSeleccionadoId !== "fixed-hero-home" && activePage) {
+      bloqueEditando = activePage.blocks.find(b => b.id === bloqueSeleccionadoId)
+  }
 
   const renderMainEditor = () => {
     if (activeSection === "global-settings") {
         return (
             <div className="max-w-3xl mx-auto space-y-6 pb-20">
-                <Card>
-                    <CardHeader><CardTitle>Configuración de la Empresa</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2"><Label>Nombre</Label><Input value={config.empresa.nombre} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, nombre: e.target.value } })} /></div>
-                        <div className="space-y-2"><Label>WhatsApp</Label><Input value={config.empresa.whatsapp || ""} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, whatsapp: e.target.value } })} /></div>
-                    </CardContent>
-                </Card>
+                <Card><CardHeader><CardTitle>Configuración de la Empresa</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2"><Label>Nombre</Label><Input value={config.empresa.nombre} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, nombre: e.target.value } })} /></div>
+                    <div className="space-y-2"><Label>WhatsApp</Label><Input value={config.empresa.whatsapp || ""} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, whatsapp: e.target.value } })} /></div>
+                </CardContent></Card>
             </div>
         )
     }
@@ -185,7 +253,6 @@ export default function AdminPage() {
         )
     }
 
-    // --- CORRECCIÓN: SECCIÓN HEADER QUE PASA LOS DATOS CORRECTOS ---
     if (activeSection === "header") {
         return (
             <div className="max-w-4xl mx-auto pb-20">
@@ -197,14 +264,8 @@ export default function AdminPage() {
                     <HeaderEditor 
                         data={tempHeaderData} 
                         onChange={(campo, valor) => setTempHeaderData({ ...tempHeaderData, [campo]: valor })} 
-                        // ESTO ES LO QUE HACE LA MAGIA:
                         variant={config.header.variant}
-                        onVariantChange={(newVariant) => {
-                            setConfig({
-                                ...config,
-                                header: { ...config.header, variant: newVariant as any }
-                            })
-                        }}
+                        onVariantChange={(newVariant) => setConfig({ ...config, header: { ...config.header, variant: newVariant as any } })}
                     />
                 </div>
             </div>
@@ -220,6 +281,50 @@ export default function AdminPage() {
                 </div>
                 <div className="bg-white p-6 rounded-lg border shadow-sm">
                     <FooterEditor data={tempFooterData} onChange={(campo, valor) => setTempFooterData({ ...tempFooterData, [campo]: valor })} />
+                </div>
+            </div>
+        )
+    }
+
+    // --- EDITOR PARA HERO FIJO ---
+    if (activeSection && isHomePage && bloqueSeleccionadoId === "fixed-hero-home") {
+        return (
+            <div className="max-w-4xl mx-auto pb-20">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <Button variant="ghost" className="pl-0" onClick={() => setBloqueSeleccionadoId(null)}>← Volver</Button>
+                        <h2 className="text-2xl font-bold flex items-center gap-2">
+                            <ImageIcon className="w-6 h-6"/> Editar Portada (Hero)
+                        </h2>
+                    </div>
+                    <Button onClick={saveHero} className="bg-green-600 hover:bg-green-700">
+                        <Save className="w-4 h-4 mr-2" /> Guardar Cambios
+                    </Button>
+                </div>
+                
+                <div className="bg-white p-6 rounded-lg border shadow-sm">
+                    <HeroEditor 
+                        data={tempHeroData} 
+                        variant={tempHeroVariant}
+                        onChange={(campo, valor) => setTempHeroData({ ...tempHeroData, [campo]: valor })} 
+                    />
+                    
+                    <div className="mt-6 pt-6 border-t">
+                        <Label className="mb-2 block">Estilo de Portada</Label>
+                        <div className="flex gap-2">
+                            {["default", "modern", "minimal"].map(v => (
+                                <Button 
+                                    key={v}
+                                    variant={tempHeroVariant === v ? "default" : "outline"}
+                                    onClick={() => setTempHeroVariant(v)}
+                                    size="sm"
+                                    className="capitalize"
+                                >
+                                    {v}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         )
@@ -291,8 +396,24 @@ export default function AdminPage() {
                         <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setDialogNewBlockOpen(true)}><Plus className="w-3 h-3" /></Button>
                     </div>
                     <div className="space-y-1">
-                        {activePage.blocks.length === 0 && <p className="text-xs text-muted-foreground px-2">Sin bloques</p>}
-                        {activePage.blocks.map((bloque, idx) => (
+                        
+                        {/* HERO FIJO EN HOME */}
+                        {isHomePage && (
+                             <div 
+                                onClick={() => setBloqueSeleccionadoId("fixed-hero-home")} 
+                                className={cn("flex items-center justify-between p-2 rounded-md text-sm cursor-pointer hover:bg-muted/50 border border-transparent", bloqueSeleccionadoId === "fixed-hero-home" ? "bg-purple-50 border-purple-200 text-purple-900 font-medium" : "text-slate-600")}
+                             >
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    <ImageIcon className="w-4 h-4 opacity-70" />
+                                    <span className="truncate">Portada (Hero)</span>
+                                </div>
+                                <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 border">Fijo</span>
+                             </div>
+                        )}
+
+                        {activePage.blocks
+                            .filter(b => !(isHomePage && b.tipo === "hero")) 
+                            .map((bloque, idx) => (
                             <div key={bloque.id} onClick={() => setBloqueSeleccionadoId(bloque.id)} className={cn("flex items-center justify-between p-2 rounded-md text-sm cursor-pointer hover:bg-muted/50 border border-transparent", bloqueSeleccionadoId === bloque.id ? "bg-muted border-border shadow-sm" : "")}>
                                 <div className="flex items-center gap-2 overflow-hidden"><span className="text-xs text-muted-foreground w-4">{idx + 1}</span><span className="truncate capitalize">{bloque.tipo}</span></div>
                                 <div className="flex gap-1">

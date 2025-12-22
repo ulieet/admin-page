@@ -2,13 +2,13 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ImageUpload } from "../image-upload" // Importamos el componente de carga
+import { ImageUpload } from "../image-upload"
+import { LayoutTemplate, Map, AlignCenter } from "lucide-react" // Iconos para los botones
 import dynamic from "next/dynamic"
 
-// Importar el mapa dinámicamente con ssr: false es VITAL
+// Importar el mapa dinámicamente
 const MapPicker = dynamic(() => import("@/components/admin/map-picker"), { 
   ssr: false,
   loading: () => <div className="h-[300px] w-full bg-slate-100 flex items-center justify-center text-slate-400">Cargando mapa...</div>
@@ -24,6 +24,9 @@ export function FooterEditor({ data, onChange }: any) {
     onChange("personalizacion", { ...data.personalizacion, [key]: value })
   }
 
+  // Si no hay estilo definido, usamos el clásico por defecto
+  const estiloActual = data.estiloVisual || "clasico"
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue="contenido" className="w-full">
@@ -35,7 +38,7 @@ export function FooterEditor({ data, onChange }: any) {
 
         <TabsContent value="contenido" className="space-y-5 pt-4">
           
-          {/* IDENTIDAD: Nombre y Logo */}
+          {/* IDENTIDAD */}
           <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Nombre Empresa</Label>
@@ -44,15 +47,10 @@ export function FooterEditor({ data, onChange }: any) {
               <div className="space-y-2">
                 <Label>Logo Footer (Opcional)</Label>
                 <div className="h-10">
-                    {/* Reutilizamos el ImageUpload pequeño o puedes usar uno normal */}
-                    <div className="flex gap-2 items-center">
-                         <div className="w-full">
-                            <ImageUpload 
-                                value={data.logoUrl || ""} 
-                                onChange={(val) => onChange("logoUrl", val)} 
-                            />
-                         </div>
-                    </div>
+                    <ImageUpload 
+                        value={data.logoUrl || ""} 
+                        onChange={(val) => onChange("logoUrl", val)} 
+                    />
                 </div>
               </div>
           </div>
@@ -68,49 +66,50 @@ export function FooterEditor({ data, onChange }: any) {
 
           {/* IMAGEN ADICIONAL */}
           <div className="space-y-2 p-3 bg-slate-50 rounded-lg border">
-            <Label>Imagen Adicional (Ej: Foto equipo, premio, sello)</Label>
+            <Label>Imagen Adicional (Ej: QR DataFiscal, premios)</Label>
             <ImageUpload 
                 value={data.imagenAdicional || ""} 
                 onChange={(val) => onChange("imagenAdicional", val)} 
             />
-            <p className="text-[10px] text-muted-foreground mt-1">Se mostrará debajo de la descripción de la empresa.</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Se mostrará debajo de la descripción.</p>
           </div>
           
           <Separator />
           
           <h4 className="font-medium text-sm">Contacto</h4>
           <div className="grid grid-cols-2 gap-4">
-             <div className="space-y-2">
+              <div className="space-y-2">
                 <Label>Teléfono</Label>
                 <Input value={data.telefono || ""} onChange={(e) => onChange("telefono", e.target.value)} />
-             </div>
-             <div className="space-y-2">
+              </div>
+              <div className="space-y-2">
                 <Label>Email</Label>
                 <Input value={data.email || ""} onChange={(e) => onChange("email", e.target.value)} />
-             </div>
+              </div>
           </div>
           
           <Separator />
           <h4 className="font-medium text-sm">Redes Sociales</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-             <Input placeholder="Instagram" value={data.redesSociales?.instagram || ""} onChange={(e) => updateRedes("instagram", e.target.value)} />
-             <Input placeholder="Facebook" value={data.redesSociales?.facebook || ""} onChange={(e) => updateRedes("facebook", e.target.value)} />
-             <Input placeholder="LinkedIn" value={data.redesSociales?.linkedin || ""} onChange={(e) => updateRedes("linkedin", e.target.value)} />
-             <Input placeholder="WhatsApp" value={data.redesSociales?.whatsapp || ""} onChange={(e) => updateRedes("whatsapp", e.target.value)} />
+              <Input placeholder="Instagram URL" value={data.redesSociales?.instagram || ""} onChange={(e) => updateRedes("instagram", e.target.value)} />
+              <Input placeholder="Facebook URL" value={data.redesSociales?.facebook || ""} onChange={(e) => updateRedes("facebook", e.target.value)} />
+              <Input placeholder="LinkedIn URL" value={data.redesSociales?.linkedin || ""} onChange={(e) => updateRedes("linkedin", e.target.value)} />
+              <Input placeholder="WhatsApp URL" value={data.redesSociales?.whatsapp || ""} onChange={(e) => updateRedes("whatsapp", e.target.value)} />
+              <Input placeholder="Twitter / X URL" value={data.redesSociales?.twitter || ""} onChange={(e) => updateRedes("twitter", e.target.value)} />
           </div>
         </TabsContent>
 
         <TabsContent value="ubicacion" className="space-y-4 pt-4">
             <div className="space-y-2">
-                <Label>Dirección (Texto)</Label>
+                <Label>Dirección (Texto a mostrar)</Label>
                 <Input value={data.direccion || ""} onChange={(e) => onChange("direccion", e.target.value)} />
             </div>
 
             <div className="space-y-2 pt-2">
                 <div className="flex justify-between items-center mb-1">
-                    <Label>Seleccionar punto en el mapa</Label>
-                    <span className="text-[10px] text-muted-foreground bg-slate-100 px-2 py-1 rounded">
-                        {data.lat ? "Ubicación fijada" : "Sin ubicación"}
+                    <Label>Punto exacto en el mapa</Label>
+                    <span className={`text-[10px] px-2 py-1 rounded border ${data.lat ? "bg-green-50 text-green-600 border-green-200" : "bg-slate-50 text-slate-500"}`}>
+                        {data.lat ? "✓ Ubicación activa" : "Sin definir"}
                     </span>
                 </div>
                 <MapPicker 
@@ -125,19 +124,44 @@ export function FooterEditor({ data, onChange }: any) {
         </TabsContent>
 
         <TabsContent value="estilo" className="space-y-6 pt-4">
-           <div className="flex items-center justify-between border p-4 rounded-lg bg-white">
-              <div className="space-y-0.5">
-                 <Label className="text-base">Modo Simple</Label>
-                 <p className="text-xs text-muted-foreground">Centrado, sin columnas de enlaces</p>
+           
+           {/* --- SELECTOR DE DISEÑO VISUAL --- */}
+           <div className="space-y-3">
+              <Label className="text-base font-medium">Distribución del Footer</Label>
+              <div className="grid grid-cols-3 gap-3">
+                  <button 
+                    type="button"
+                    onClick={() => onChange("estiloVisual", "clasico")}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${estiloActual === "clasico" || estiloActual === "completo" ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-slate-50"}`}
+                  >
+                    <LayoutTemplate className="w-6 h-6 text-slate-600" />
+                    <span className="text-xs font-medium">Clásico</span>
+                  </button>
+
+                  <button 
+                    type="button"
+                    onClick={() => onChange("estiloVisual", "minimal")}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${estiloActual === "minimal" || estiloActual === "simple" ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-slate-50"}`}
+                  >
+                    <AlignCenter className="w-6 h-6 text-slate-600" />
+                    <span className="text-xs font-medium">Minimalista</span>
+                  </button>
+
+                  <button 
+                    type="button"
+                    onClick={() => onChange("estiloVisual", "split")}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${estiloActual === "split" ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:bg-slate-50"}`}
+                  >
+                    <Map className="w-6 h-6 text-slate-600" />
+                    <span className="text-xs font-medium">Mapa Grande</span>
+                  </button>
               </div>
-              <Switch 
-                checked={data.estiloVisual === "simple"} 
-                onCheckedChange={(checked) => onChange("estiloVisual", checked ? "simple" : "completo")} 
-              />
            </div>
            
+           <Separator />
+
            <div className="space-y-3">
-              <Label>Fondo del Footer</Label>
+              <Label>Color de Fondo</Label>
               <div className="grid grid-cols-3 gap-2">
                  <button 
                     type="button"
