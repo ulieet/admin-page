@@ -7,8 +7,6 @@ export default function DynamicFavicon() {
   useEffect(() => {
     const config = cargarConfiguracion()
 
-    // CORRECCIÓN: Ahora accedemos directamente al header global
-    // ya no hace falta buscarlo en un array de bloques.
     const logo = config?.header?.datos?.logoImagen
 
     if (!logo) return

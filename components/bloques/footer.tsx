@@ -19,6 +19,8 @@ interface BloqueFooterProps {
     imagenAdicional?: string
     lat?: number | string | null
     lng?: number | string | null
+    ubicacion?: { lat: number; lng: number }
+    mostrarMapa?: boolean // Nueva propiedad
     estiloVisual?: "clasico" | "minimal" | "split" | "simple" | "completo"
   }
   navLinks?: Array<{ nombre: string; url: string }>
@@ -50,14 +52,25 @@ export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps
   const finalTextColor = getContrastColor(bgToCheck)
   const borderColor = finalTextColor === "#0f172a" ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.2)"
 
-  // --- LÓGICA DE MAPA (CORREGIDA) ---
-  const lat = Number(data.lat)
-  const lng = Number(data.lng)
-  // Validamos que sean números reales distintos de cero
-  const hasMap = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0
+  // --- LÓGICA DE MAPA ---
+  const rawLat = data.ubicacion?.lat ?? data.lat
+  const rawLng = data.ubicacion?.lng ?? data.lng
+  const lat = Number(rawLat)
+  const lng = Number(rawLng)
   
-  // 🔥 URL INFALIBLE: Usamos el embed clásico de Google Maps con HTTPS
-  const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}&hl=es&z=15&output=embed`
+  // 1. Verificamos si hay coordenadas válidas
+  const hasCoordinates = !isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0
+  
+  // 2. Verificamos la preferencia del usuario (switch). Default true.
+  const userWantsMap = data.mostrarMapa !== false
+
+  // 3. Regla: Si es "Split", forzamos el mapa (si hay coords). Si no, respetamos el switch.
+  const isSplit = estiloVisual === "split"
+  const hasMap = hasCoordinates && (isSplit || userWantsMap)
+  
+  const nombreCodificado = encodeURIComponent(data.nombreEmpresa || "Ubicación")
+  // URL corregida con '$' y puntero desactivado
+  const mapUrl = `https://maps.google.com/maps?q=$${lat},${lng}+(${nombreCodificado})&hl=es&z=15&output=embed&iwloc=near`
 
   const renderSocialIcons = (iconClass = "h-5 w-5") => {
     const redes = data.redesSociales || {}
@@ -73,7 +86,7 @@ export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps
     )
   }
 
-  // --- DISEÑO 1: MINIMALISTA (Sin Mapa) ---
+  // --- DISEÑO 1: MINIMALISTA ---
   if (estiloVisual === "minimal") {
     return (
       <footer className={`${hasBorderTop ? "border-t" : ""} py-16`} style={{ backgroundColor: finalBgStyle, color: finalTextColor, borderColor }}>
@@ -99,7 +112,7 @@ export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps
     )
   }
 
-  // --- DISEÑO 2: SPLIT (Mapa Grande) ---
+  // --- DISEÑO 2: SPLIT ---
   if (estiloVisual === "split") {
     return (
       <footer className={`${hasBorderTop ? "border-t" : ""}`} style={{ backgroundColor: finalBgStyle, color: finalTextColor, borderColor }}>
@@ -126,7 +139,7 @@ export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps
               {hasMap ? (
                  <iframe 
                     title="Mapa Grande" 
-                    className="absolute inset-0 w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-700" 
+                    className="absolute inset-0 w-full h-full border-0 pointer-events-none" 
                     loading="lazy" 
                     src={mapUrl} 
                     allowFullScreen 
@@ -145,20 +158,19 @@ export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps
     )
   }
 
-  // --- DISEÑO 3: CLÁSICO (Mapa Pequeño) ---
+  // --- DISEÑO 3: CLÁSICO ---
   return (
     <footer className={`${hasBorderTop ? "border-t" : ""} pt-16 pb-8`} style={{ backgroundColor: finalBgStyle, color: finalTextColor, borderColor }}>
       <div className="container mx-auto px-4">
-        <div className="grid gap-12 lg:grid-cols-4 mb-14">
-          <div className="flex flex-col gap-6">
+        <div className="grid gap-12 lg:grid-cols-5 mb-14">
+          <div className="flex flex-col gap-6 lg:col-span-1">
             {data.logoUrl ? <img src={data.logoUrl} alt={data.nombreEmpresa} className="h-16 md:h-20 w-auto object-contain" /> : <h3 className="text-3xl font-bold" style={{ color: primaryVar }}>{data.nombreEmpresa}</h3>}
             <p className="opacity-80">{data.descripcion}</p>
             {renderSocialIcons()}
             {data.imagenAdicional && <img src={data.imagenAdicional} alt="Imagen adicional" className="w-full aspect-[3/1] max-h-[120px] object-cover rounded-xl shadow-sm" />}
           </div>
           
-          {/* ENLACES */}
-          <div>
+          <div className="lg:col-span-1">
             <h4 className="font-semibold text-xl mb-4" style={{ color: primaryVar }}>Enlaces</h4>
             {navLinks && navLinks.length > 0 ? (
                 <ul className="space-y-2 opacity-80">
@@ -171,8 +183,7 @@ export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps
             )}
           </div>
           
-          {/* CONTACTO */}
-          <div>
+          <div className="lg:col-span-1">
             <h4 className="font-semibold text-xl mb-4" style={{ color: primaryVar }}>Contacto</h4>
             <ul className="space-y-3 opacity-80">
               {data.telefono && <li className="flex gap-2 items-center"><Phone className="h-5 w-5" style={{ color: primaryVar }} /><a href={`tel:${data.telefono}`} className="hover:underline">{data.telefono}</a></li>}
@@ -181,15 +192,21 @@ export function BloqueFooter({ data, navLinks = [], estilos }: BloqueFooterProps
             </ul>
           </div>
           
-          {/* MAPA PEQUEÑO */}
           {hasMap && (
-            <div className="rounded-xl overflow-hidden shadow-lg h-64 lg:h-auto">
+            <div className="rounded-xl overflow-hidden shadow-lg h-96 lg:col-span-2 relative">
               <iframe 
                  title="Mapa Pequeño" 
-                 className="w-full h-full border-0" 
+                 className="w-full h-full border-0 pointer-events-none" 
                  loading="lazy" 
                  src={mapUrl} 
                  allowFullScreen
+              />
+              <a 
+                 href={`https://maps.google.com/maps?q=$${lat},${lng}`} 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="absolute inset-0 z-10"
+                 aria-label="Abrir mapa en Google Maps"
               />
             </div>
           )}

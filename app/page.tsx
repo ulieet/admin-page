@@ -53,7 +53,7 @@ export default function HomePage() {
       )}
 
       {/* MAIN */}
-      <main className="flex-1 flex flex-col w-full pt-24">
+      <main className="flex-1 flex flex-col w-full pt-10">
         {!homePage || homePage.blocks.length === 0 ? (
           <div className="py-20 text-center space-y-4">
              <h1 className="text-4xl font-bold">¡Bienvenido!</h1>
@@ -69,7 +69,7 @@ export default function HomePage() {
       {config.footer.activo && (
         <BloqueFooter
           data={footerData}
-          navLinks={config.header.datos.navegacion} // <--- ESTO PASA LOS LINKS AL FOOTER
+          navLinks={config.header.datos.navegacion} 
           estilos={config.estilos}
         />
       )}

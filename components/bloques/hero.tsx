@@ -3,12 +3,20 @@
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import type { HeroBlock, BlockVariant, StyleConfig } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react"
+import { Geist } from "next/font/google"
+
+const geistFont = Geist({ subsets: ["latin"] })
 
 interface HeroProps {
-  data: HeroBlock["datos"] & { soloSlider?: boolean; mostrarIndicadores?: boolean }
+  data: HeroBlock["datos"] & { 
+    soloSlider?: boolean; 
+    mostrarIndicadores?: boolean;
+    alineacion?: "left" | "center" | "right"; // Nueva prop
+  }
   variant?: BlockVariant
   estilos?: StyleConfig | null
 }
@@ -22,6 +30,9 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
   const hasMultipleImages = imagenes.length > 1
   const showDots = data.mostrarIndicadores !== false
   const showContent = !data.soloSlider
+  
+  // ALINEACIÓN: Default a 'center' si no existe
+  const alineacion = data.alineacion || "center"
 
   const nextImage = useCallback(() => {
     if (imagenes.length === 0) return
@@ -54,24 +65,12 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
 
   // VARIABLES
   const primaryColor = "var(--color-primario)"
-  const bgColor = "var(--color-fondo)" // Variable CSS del fondo global
+  const bgColor = "var(--color-fondo)"
   const textColor = "var(--color-texto)"
 
   const tituloSize = estilos?.tipografia.tamanoTitulo || "48px"
   const subtituloSize = estilos?.tipografia.tamanoSubtitulo || "20px"
   const currentImage = imagenes[currentImageIndex] || imagenes[0] || ""
-
-  // Contenido reutilizable
-  const HeroContent = () => (
-    <>
-      <h1 className="font-bold mb-6 text-balance" style={{ fontSize: tituloSize }}>{data.titulo}</h1>
-      <p className="mb-8 text-balance max-w-2xl mx-auto" style={{ fontSize: subtituloSize }}>{data.subtitulo}</p>
-      <div className="flex gap-4 justify-center flex-wrap">
-        {data.botonPrimarioTexto && <Button size="lg" asChild style={{ backgroundColor: primaryColor }}><a href={data.botonPrimarioUrl}>{data.botonPrimarioTexto}</a></Button>}
-        {data.botonSecundarioTexto && <Button size="lg" variant="outline" asChild className={variant === "default" ? "bg-white/10 hover:bg-white/20 text-white border-white" : ""} style={variant !== "default" ? { borderColor: primaryColor, color: primaryColor } : {}}><a href={data.botonSecundarioUrl}>{data.botonSecundarioTexto}</a></Button>}
-      </div>
-    </>
-  )
 
   const Indicators = () => {
     if (!hasMultipleImages || !showDots) return null
@@ -84,13 +83,27 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
     )
   }
 
-  // MODERN
+  // --- HELPER PARA CLASES DE ALINEACIÓN ---
+  const getAlignmentClasses = (isFlex = false) => {
+    if (alineacion === "left") return isFlex ? "items-start text-left" : "text-left"
+    if (alineacion === "right") return isFlex ? "items-end text-right" : "text-right"
+    return isFlex ? "items-center text-center" : "text-center" // Center by default
+  }
+
+  const getContainerJustify = () => {
+    if (alineacion === "left") return "justify-start md:pl-20" // Un poco de padding extra para que no pegue al borde
+    if (alineacion === "right") return "justify-end md:pr-20"
+    return "justify-center"
+  }
+
+  // --- DISEÑO 1: MODERN (Split) ---
   if (variant === "modern" && showContent) {
     return (
       <section className="py-20 px-4" style={{ backgroundColor: bgColor }}>
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
+            {/* Aplicamos alineación dinámica aquí */}
+            <div className={`space-y-6 flex flex-col ${getAlignmentClasses(true)}`}>
               <h1 className="font-bold text-balance" style={{ fontSize: tituloSize, color: textColor }}>{data.titulo}</h1>
               <p className="text-balance opacity-80" style={{ fontSize: subtituloSize, color: textColor }}>{data.subtitulo}</p>
               <div className="flex gap-4">
@@ -118,7 +131,7 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
     )
   }
 
-  // MINIMAL
+  // --- DISEÑO 2: MINIMAL (Siempre Centrado) ---
   if (variant === "minimal" && showContent) {
     return (
       <section className="relative py-32 px-4" style={{ background: `linear-gradient(135deg, ${primaryColor}15, var(--color-fondo), transparent)` }}>
@@ -134,23 +147,82 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
     )
   }
 
-  // DEFAULT
+  // --- DISEÑO 3: CLÁSICO (DEFAULT) - Estilo BOCETO con GEIST y Alineación ---
   return (
-    <section className="relative h-[600px] flex items-center justify-center overflow-hidden" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+    <section 
+      className={`relative h-96 md:h-[500px] w-full flex items-center overflow-hidden ${geistFont.className} ${getContainerJustify()}`} 
+      onMouseEnter={() => setIsPaused(true)} 
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Slider de Imágenes */}
       <AnimatePresence initial={false} custom={direction}>
-        <motion.div key={currentImageIndex} custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }} className="absolute w-full h-full">
-          <Image src={currentImage || "/placeholder.svg"} alt={data.titulo || "Hero"} fill className="object-cover" priority={currentImageIndex === 0} />
+        <motion.div 
+            key={currentImageIndex} 
+            custom={direction} 
+            variants={slideVariants} 
+            initial="enter" 
+            animate="center" 
+            exit="exit" 
+            transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }} 
+            className="absolute w-full h-full"
+        >
+          <Image 
+            src={currentImage || "/placeholder.svg"} 
+            alt={data.titulo || "Hero"} 
+            fill 
+            className="object-cover" 
+            priority={currentImageIndex === 0} 
+          />
           {showContent && <div className="absolute inset-0 bg-black/40" />}
         </motion.div>
       </AnimatePresence>
+
+      {/* Flechas */}
       {hasMultipleImages && (
         <>
-          <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white hover:bg-black/50"><ChevronLeft className="h-5 w-5" /></button>
-          <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white hover:bg-black/50"><ChevronRight className="h-5 w-5" /></button>
+          <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white hover:bg-black/50 transition-colors"><ChevronLeft className="h-5 w-5" /></button>
+          <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white hover:bg-black/50 transition-colors"><ChevronRight className="h-5 w-5" /></button>
         </>
       )}
+
       <Indicators />
-      {showContent && <div className="relative z-10 container mx-auto px-4 text-center text-white"><HeroContent /></div>}
+
+      {/* Contenido Central con Alineación Dinámica */}
+      {showContent && (
+        <div className="relative z-10 container mx-auto px-6 h-full flex items-center w-full">
+             {/* Contenedor de texto con ancho limitado pero flexible en posicionamiento.
+                 'w-full' permite que flexbox del padre lo ubique.
+             */}
+            <div className={`w-full max-w-3xl text-white flex flex-col ${getAlignmentClasses(true)} ${alineacion === "center" ? "mx-auto" : ""} ${alineacion === "right" ? "ml-auto" : ""}`}>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                    {data.titulo}
+                </h1>
+                <p className="text-lg md:text-xl mb-8 text-gray-100">
+                    {data.subtitulo}
+                </p>
+                <div className={`flex flex-col sm:flex-row gap-4 ${alineacion === "center" ? "justify-center" : alineacion === "right" ? "justify-end" : "justify-start"}`}>
+                    {data.botonPrimarioTexto && (
+                        <Link href={data.botonPrimarioUrl || "#"}>
+                            <button 
+                                className="px-8 py-3 text-white font-medium rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 justify-center w-full sm:w-auto"
+                                style={{ backgroundColor: primaryColor }}
+                            >
+                                {data.botonPrimarioTexto}
+                                <ArrowRight className="h-4 w-4" />
+                            </button>
+                        </Link>
+                    )}
+                    {data.botonSecundarioTexto && (
+                        <Link href={data.botonSecundarioUrl || "#"}>
+                            <button className="px-8 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white/10 transition-colors w-full sm:w-auto">
+                                {data.botonSecundarioTexto}
+                            </button>
+                        </Link>
+                    )}
+                </div>
+            </div>
+        </div>
+      )}
     </section>
   )
 }

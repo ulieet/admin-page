@@ -5,10 +5,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ImageUpload } from "../image-upload"
-import { LayoutTemplate, Map, AlignCenter } from "lucide-react" // Iconos para los botones
+import { LayoutTemplate, Map, AlignCenter } from "lucide-react"
 import dynamic from "next/dynamic"
 
-// Importar el mapa dinámicamente
 const MapPicker = dynamic(() => import("@/components/admin/map-picker"), { 
   ssr: false,
   loading: () => <div className="h-[300px] w-full bg-slate-100 flex items-center justify-center text-slate-400">Cargando mapa...</div>
@@ -24,7 +23,11 @@ export function FooterEditor({ data, onChange }: any) {
     onChange("personalizacion", { ...data.personalizacion, [key]: value })
   }
 
-  // Si no hay estilo definido, usamos el clásico por defecto
+  // LECTURA INTELIGENTE: Lee del nuevo formato (ubicacion) o del viejo (lat/lng)
+  const latValue = data.ubicacion?.lat || data.lat
+  const lngValue = data.ubicacion?.lng || data.lng
+  const tieneUbicacion = latValue && lngValue
+
   const estiloActual = data.estiloVisual || "clasico"
 
   return (
@@ -108,23 +111,26 @@ export function FooterEditor({ data, onChange }: any) {
             <div className="space-y-2 pt-2">
                 <div className="flex justify-between items-center mb-1">
                     <Label>Punto exacto en el mapa</Label>
-                    <span className={`text-[10px] px-2 py-1 rounded border ${data.lat ? "bg-green-50 text-green-600 border-green-200" : "bg-slate-50 text-slate-500"}`}>
-                        {data.lat ? "✓ Ubicación activa" : "Sin definir"}
+                    <span className={`text-[10px] px-2 py-1 rounded border ${tieneUbicacion ? "bg-green-50 text-green-600 border-green-200" : "bg-slate-50 text-slate-500"}`}>
+                        {tieneUbicacion ? "✓ Ubicación activa" : "Sin definir"}
                     </span>
                 </div>
+                {/* SOLUCIÓN DEFINITIVA: 
+                   Actualizamos "ubicacion" como un único objeto. 
+                   Esto evita el conflicto de actualizaciones (race condition) 
+                   que hacía que desapareciera el punto.
+                */}
                 <MapPicker 
-                    lat={data.lat} 
-                    lng={data.lng} 
+                    lat={latValue} 
+                    lng={lngValue} 
                     onChange={(lat, lng) => {
-                        onChange("lat", lat)
-                        onChange("lng", lng)
+                        onChange("ubicacion", { lat, lng })
                     }} 
                 />
             </div>
         </TabsContent>
 
         <TabsContent value="estilo" className="space-y-6 pt-4">
-           
            {/* --- SELECTOR DE DISEÑO VISUAL --- */}
            <div className="space-y-3">
               <Label className="text-base font-medium">Distribución del Footer</Label>

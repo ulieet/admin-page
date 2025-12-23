@@ -8,7 +8,6 @@ interface ColorPickerProps {
 }
 
 export default function ColorPicker({ value, onChange, className }: ColorPickerProps) {
-    // Si el valor es undefined, nulo o vacío, usamos blanco por defecto
     const safeValue = value || "#ffffff";
 
     return (

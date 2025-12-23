@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet"
 import L from "leaflet"
-import "leaflet/dist/leaflet.css" // Importamos CSS directamente
+import "leaflet/dist/leaflet.css"
 
 // --- CONFIGURACIÓN DE ICONOS ---
-// Esto soluciona el problema de los marcadores invisibles en Next.js
 const fixLeafletIcons = () => {
   // @ts-ignore
   delete L.Icon.Default.prototype._getIconUrl
@@ -18,7 +17,6 @@ const fixLeafletIcons = () => {
 }
 
 // --- COMPONENTE CONTROLADOR ---
-// Maneja los clics y asegura que el mapa se redibuje correctamente
 function MapController({ 
   position, 
   onLocationSelect 
@@ -28,44 +26,43 @@ function MapController({
 }) {
   const map = useMap()
 
-  // 1. Invalidar tamaño al montar para evitar el cuadro gris
   useEffect(() => {
-    map.invalidateSize()
-  }, [map])
+    // CORRECCIÓN: Timeout para esperar a que el Tab se muestre y el contenedor tenga tamaño real
+    const timer = setTimeout(() => {
+      map.invalidateSize()
+      if (position) {
+        map.flyTo(position, 13, { animate: false })
+      }
+    }, 200) // 200ms de retraso es suficiente
 
-  // 2. Mover el mapa si cambia la posición externa (ej: al cargar datos guardados)
-  useEffect(() => {
-    if (position) {
-      map.flyTo(position, 13, { animate: true })
-    }
-  }, [position, map])
+    return () => clearTimeout(timer)
+  }, [map, position])
 
-  // 3. Escuchar clics para poner el marcador
   useMapEvents({
     click(e) {
       const { lat, lng } = e.latlng
       onLocationSelect(lat, lng)
-      map.flyTo([lat, lng], map.getZoom())
     },
   })
 
   return position ? <Marker position={position} /> : null
 }
 
-// --- PROPS ---
 interface MapPickerProps {
-  lat?: number | null
-  lng?: number | null
+  lat?: number | string | null
+  lng?: number | string | null
   onChange: (lat: number, lng: number) => void
 }
 
-// --- COMPONENTE PRINCIPAL ---
 export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
   const [isMounted, setIsMounted] = useState(false)
   
-  // Coordenadas por defecto (CABA, Argentina) o las que vienen por props
+  // CORRECCIÓN: Validación más robusta. lat !== "" previene NaN si viene string vacío.
+  const numLat = (lat !== undefined && lat !== null && lat !== "") ? Number(lat) : null
+  const numLng = (lng !== undefined && lng !== null && lng !== "") ? Number(lng) : null
+  
   const defaultCenter: [number, number] = [-34.6037, -58.3816]
-  const position: [number, number] | null = (lat && lng) ? [lat, lng] : null
+  const position: [number, number] | null = (numLat !== null && numLng !== null) ? [numLat, numLng] : null
 
   useEffect(() => {
     fixLeafletIcons()
@@ -74,22 +71,22 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
 
   if (!isMounted) {
     return (
-      <div className="h-[300px] w-full rounded-md border bg-slate-100 flex items-center justify-center text-slate-400 animate-pulse">
+      <div className="h-[300px] w-full bg-slate-100 flex items-center justify-center text-slate-400">
         Cargando mapa...
       </div>
     )
   }
 
   return (
-    <div className="h-[300px] w-full rounded-md overflow-hidden border bg-slate-50 relative z-0">
+    <div className="h-[300px] w-full rounded-md overflow-hidden border bg-slate-50 relative z-0 isolate">
       <MapContainer
         center={position || defaultCenter}
         zoom={13}
-        scrollWheelZoom={false} // Evita scroll accidental al bajar por la página
+        scrollWheelZoom={true}
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
