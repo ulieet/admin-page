@@ -34,9 +34,7 @@ const NavItem = ({ href, children, className, variant = "default", onClick, font
         className
       )}
       style={{ 
-        // CORRECCIÓN: Usamos var(--) directas
         color: isHovered ? "var(--color-primario)" : "var(--color-texto)",
-        // Para la transparencia del hover usamos color-mix (moderno y compatible)
         backgroundColor: isModern && isHovered ? "color-mix(in srgb, var(--color-primario), transparent 90%)" : "transparent", 
       }}
       onMouseEnter={() => setIsHovered(true)}
@@ -57,9 +55,6 @@ export function BloqueHeader({ data, navLinks, variant = "default" }: BloqueHead
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
-  // ELIMINADO: Ya no usamos useEffect para leer estilos. 
-  // Usamos CSS variables directas para evitar el "flash" blanco.
-
   const nombreEmpresa = data.nombreEmpresa || "Mi Empresa"
   const logoImagen = data.logoImagen
   const navegacion = navLinks || data.navegacion || []
@@ -95,20 +90,22 @@ export function BloqueHeader({ data, navLinks, variant = "default" }: BloqueHead
   const isTransparentState = esTransparente && !scrolled
 
   const headerClass = cn(
-    "fixed top-0 left-0 right-0 z-50 transition-all duration-300 w-full",
+    // 🔥 CAMBIO CRÍTICO: De 'fixed' a 'sticky'
+    // 'sticky' permite que el header respete el espacio de la barra de anuncios arriba.
+    // 'z-40' para que esté por debajo de la barra de anuncios (que suele ser z-50 o z-100).
+    "sticky top-0 left-0 right-0 z-40 transition-all duration-300 w-full",
+    
     !isTransparentState && "shadow-sm backdrop-blur-md",
     isTransparentState ? "py-4" : "py-2",
     variant === "centered" && "py-4"
   )
 
-  // CORRECCIÓN CLAVE: Estilos con variables CSS directas
   const containerStyle = {
-    // Si no es transparente, usa el color de fondo personalizado directamente
     backgroundColor: isTransparentState 
         ? "transparent" 
         : (variant === "modern" 
-            ? "color-mix(in srgb, var(--color-fondo), transparent 5%)" // Efecto "vidrio" para moderno
-            : "var(--color-fondo)" // Color sólido normal
+            ? "color-mix(in srgb, var(--color-fondo), transparent 5%)" 
+            : "var(--color-fondo)"
           ),
     color: "var(--color-texto)",
     borderBottom: (!isTransparentState && variant === "centered") ? "1px solid rgba(0,0,0,0.05)" : "none"
@@ -171,10 +168,10 @@ export function BloqueHeader({ data, navLinks, variant = "default" }: BloqueHead
         </div>
         {mobileMenuOpen && (
           <div className="md:hidden fixed inset-0 z-40 pt-24 px-8 flex flex-col items-center gap-6" style={{ backgroundColor: "var(--color-fondo)" }}>
-             <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="absolute top-6 left-4" style={{ color: "var(--color-texto)" }}><X /></Button>
-             {navegacion.map((item: any, idx: number) => (
+              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="absolute top-6 left-4" style={{ color: "var(--color-texto)" }}><X /></Button>
+              {navegacion.map((item: any, idx: number) => (
                 <NavItem key={idx} href={item.url} className="text-2xl" onClick={() => setMobileMenuOpen(false)} fontClass={fontClassName} isBold={isBold}>{item.nombre}</NavItem>
-             ))}
+              ))}
           </div>
         )}
       </header>

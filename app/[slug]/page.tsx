@@ -65,10 +65,21 @@ export default function DynamicPage() {
   const headerData = { ...config.header.datos, nombreEmpresa: config.header.datos.nombreEmpresa || config.empresa.nombre }
   const footerData = { ...config.footer.datos, nombreEmpresa: config.footer.datos.nombreEmpresa || config.empresa.nombre }
 
+  // --- LÓGICA DE SEPARACIÓN ---
+  const announcementBlocks = currentPage.blocks.filter(b => b.tipo === "announcement" && b.activo)
+  const contentBlocks = currentPage.blocks.filter(b => b.tipo !== "announcement")
+
   return (
     <div className="min-h-screen flex flex-col w-full font-[family-name:var(--fuente-base)] bg-[var(--color-fondo)] text-[var(--color-texto)]">
 
-      {/* HEADER */}
+      {/* 1. TOP BAR (Antes del Header) */}
+      {announcementBlocks.length > 0 && (
+        <div className="relative z-[100] w-full">
+          <RenderBlocks blocks={announcementBlocks} />
+        </div>
+      )}
+
+      {/* 2. HEADER */}
       {config.header.activo && (
         <BloqueHeader
           data={headerData}
@@ -77,22 +88,22 @@ export default function DynamicPage() {
         />
       )}
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col w-full pt-24">
-        {currentPage.blocks.length === 0 ? (
-            <div className="py-20 text-center text-muted-foreground bg-muted/20 m-8 rounded-lg border border-dashed">
+      {/* 3. MAIN CONTENT (Resto de bloques) */}
+      <main className="flex-1 flex flex-col w-full">
+        {contentBlocks.length === 0 ? (
+            <div className="py-20 text-center text-muted-foreground bg-muted/20 m-8 rounded-lg border border-dashed pt-32">
                 <p>Esta página está vacía.</p>
             </div>
         ) : (
-            <RenderBlocks blocks={currentPage.blocks} />
+            <RenderBlocks blocks={contentBlocks} />
         )}
       </main>
 
-      {/* FOOTER */}
+      {/* 4. FOOTER */}
       {config.footer.activo && (
         <BloqueFooter
           data={footerData}
-          navLinks={config.header.datos.navegacion} // <--- ¡AQUÍ ESTÁ LA SOLUCIÓN DE LOS ENLACES!
+          navLinks={config.header.datos.navegacion}
           estilos={config.estilos}
         />
       )}

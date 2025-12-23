@@ -1,3 +1,5 @@
+// lib/block-metadata.ts
+
 export interface BlockMetadata {
   type: string
   name: string
@@ -326,7 +328,6 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
       },
     ],
   },
-  // NUEVO BLOQUE FAQ
   faq: {
     type: "faq",
     name: "Preguntas Frecuentes",
@@ -340,6 +341,23 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
         name: "Clásico",
         description: "Acordeón limpio con fondo blanco",
         previewImage: "/placeholder.svg?text=FAQ+Clasico",
+      },
+    ],
+  },
+  // NUEVO BLOQUE: BARRA DE ANUNCIOS
+  announcement: {
+    type: "announcement",
+    name: "Barra de Anuncios",
+    description: "Cinta superior para ofertas, avisos o envíos",
+    icon: "Megaphone",
+    category: "content",
+    previewImage: "/placeholder.svg?text=Top+Bar",
+    variants: [
+      {
+        id: "default",
+        name: "Estándar",
+        description: "Barra de color sólido",
+        previewImage: "/placeholder.svg?text=Barra+Solida",
       },
     ],
   },

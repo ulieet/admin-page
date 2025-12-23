@@ -3,6 +3,7 @@
 import React from "react"
 import type { Block } from "@/lib/types/blocks"
 
+// Imports de componentes
 import { BloqueHero } from "@/components/bloques/hero"
 import { BloqueBanner } from "@/components/bloques/banner"
 import { BloqueFeatures } from "@/components/bloques/features"
@@ -18,7 +19,8 @@ import { BloqueForm } from "@/components/bloques/form"
 import { BloqueContactForm } from "@/components/bloques/contact-form"
 import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
-import { BloqueFaq } from "@/components/bloques/faq" 
+import { BloqueFaq } from "@/components/bloques/faq"
+import { BloqueAnnouncement } from "@/components/bloques/announcement"
 
 interface RenderBlocksProps {
   blocks: Block[]
@@ -36,70 +38,24 @@ export function RenderBlocks({ blocks }: RenderBlocksProps) {
           const key = block.id
 
           switch (block.tipo) {
-            case "hero":
-              return (
-                <BloqueHero
-                  key={key}
-                  data={block.datos}
-                  variant={block.variant}
-                />
-              )
-
-            case "banner":
-              return (
-                <BloqueBanner
-                  key={key}
-                  data={block.datos}
-                />
-              )
-
-            case "features":
-              return <BloqueFeatures key={key} data={block.datos} />
-
-            case "services":
-              return <BloqueServices key={key} data={block.datos} />
-
-            case "about":
-              return <BloqueAbout key={key} data={block.datos} />
-
-            case "titulo-parrafos":
-              return <BloqueTituloParrafos key={key} data={block.datos} />
-
-            case "image-card-list":
-              return <BloqueImageCardList key={key} data={block.datos} />
-
-            case "cards-3":
-              return <BloqueCards3 key={key} data={block.datos} />
-
-            case "gallery":
-              return <BloqueGallery key={key} data={block.datos} />
-
-            case "logo-marquee":
-              return <BloqueLogoMarquee key={key} data={block.datos} />
-
-            case "stats":
-              return <BloqueStats key={key} data={block.datos} />
-
-            case "cta":
-              return <BloqueCTA key={key} data={block.datos} />
-
-            case "form":
-              return <BloqueForm key={key} data={block.datos} />
-
-            case "contact-form":
-              return <BloqueContactForm key={key} data={block.datos} />
-
-            case "text-image":
-              return <BloqueTextoImagen key={key} data={block.datos} />
-
-            case "faq": // Nuevo Caso
-              return <BloqueFaq key={key} data={block.datos} />
-
-            default:
-              if (process.env.NODE_ENV === "development") {
-                console.warn("Bloque no soportado:", block)
-              }
-              return null
+            case "hero": return <BloqueHero key={key} data={block.datos} variant={block.variant} />
+            case "banner": return <BloqueBanner key={key} data={block.datos} />
+            case "features": return <BloqueFeatures key={key} data={block.datos} />
+            case "services": return <BloqueServices key={key} data={block.datos} />
+            case "about": return <BloqueAbout key={key} data={block.datos} />
+            case "titulo-parrafos": return <BloqueTituloParrafos key={key} data={block.datos} />
+            case "image-card-list": return <BloqueImageCardList key={key} data={block.datos} />
+            case "cards-3": return <BloqueCards3 key={key} data={block.datos} />
+            case "gallery": return <BloqueGallery key={key} data={block.datos} />
+            case "logo-marquee": return <BloqueLogoMarquee key={key} data={block.datos} />
+            case "stats": return <BloqueStats key={key} data={block.datos} />
+            case "cta": return <BloqueCTA key={key} data={block.datos} />
+            case "form": return <BloqueForm key={key} data={block.datos} />
+            case "contact-form": return <BloqueContactForm key={key} data={block.datos} />
+            case "text-image": return <BloqueTextoImagen key={key} data={block.datos} />
+            case "faq": return <BloqueFaq key={key} data={block.datos} />
+            case "announcement": return <BloqueAnnouncement key={key} data={block.datos} />
+            default: return null
           }
         })}
     </div>

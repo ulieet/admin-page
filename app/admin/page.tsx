@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input"
 import {
   Plus, Trash2, Settings, Palette,
   File, Layout, Monitor, LayoutTemplate,
-  ChevronUp, Eye, EyeOff, Save, ImageIcon
+  ChevronUp, Eye, EyeOff, Save, ImageIcon,
+  Megaphone 
 } from "lucide-react"
 import Link from "next/link"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -32,7 +33,7 @@ export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<string>("home-page") 
   const [bloqueSeleccionadoId, setBloqueSeleccionadoId] = useState<string | null>(null)
   
-  // Estados temporales para edición segura
+  // Estados temporales
   const [tempHeaderData, setTempHeaderData] = useState<any>(null)
   const [tempFooterData, setTempFooterData] = useState<any>(null)
   const [tempHeroData, setTempHeroData] = useState<any>(null)
@@ -42,30 +43,22 @@ export default function AdminPage() {
   const [dialogNewPageOpen, setDialogNewPageOpen] = useState(false)
   const [newPageName, setNewPageName] = useState("")
 
-  // --- FIX: RESETEAR ESTILOS AL ENTRAR AL ADMIN ---
-  // Esto evita que si cambias la fuente o el tamaño base del sitio, se rompa el Admin.
   useEffect(() => {
     const root = document.documentElement
-
-    // 1. Limpiamos las variables que afectan el layout
     root.style.removeProperty("--tamano-base")
     root.style.removeProperty("--fuente-base")
-    
-    // 2. Forzamos estilos seguros para el Admin Panel
     root.style.fontSize = "16px" 
-    root.style.fontFamily = "ui-sans-serif, system-ui, sans-serif" // Fuente del sistema
+    root.style.fontFamily = "ui-sans-serif, system-ui, sans-serif"
     root.style.backgroundColor = "#ffffff"
     root.style.color = "#09090b"
     
     return () => {
-      // Limpieza al salir (opcional, la página destino sobreescribirá esto)
       root.style.removeProperty("font-size")
       root.style.removeProperty("font-family")
       root.style.removeProperty("background-color")
       root.style.removeProperty("color")
     }
   }, [])
-  // ------------------------------------------------
 
   useEffect(() => {
     const data = cargarConfiguracion()
@@ -73,7 +66,6 @@ export default function AdminPage() {
     setTempHeaderData(data.header.datos)
     setTempFooterData(data.footer.datos)
     
-    // Inicializar datos del Hero (si existe en Home)
     const homePage = data.pages.find(p => p.slug === "home")
     const heroBlock = homePage?.blocks.find(b => b.tipo === "hero")
     
@@ -81,7 +73,6 @@ export default function AdminPage() {
       setTempHeroData(heroBlock.datos)
       setTempHeroVariant(heroBlock.variant || "default")
     } else {
-      // Datos por defecto si no existe
       setTempHeroData({
         titulo: "Título Principal",
         subtitulo: "Texto de ejemplo",
@@ -108,10 +99,9 @@ export default function AdminPage() {
 
   const activePage = config.pages.find(p => p.id === activeSection)
   const currentBlocks = activePage ? activePage.blocks : []
-
   const isHomePage = activePage?.slug === "home"
 
-  // ... Funciones de páginas y bloques ...
+  // Funciones de manejo
   const handleCreatePage = () => {
     if (!newPageName) return
     const slug = newPageName.toLowerCase().trim().replace(/\s+/g, '-')
@@ -169,8 +159,10 @@ export default function AdminPage() {
     if (!activePage) return
     const index = activePage.blocks.findIndex(b => b.id === blockId)
     if (index === -1) return
+    
     if (direction === 'up' && index === 0) return
     if (direction === 'down' && index === activePage.blocks.length - 1) return
+    
     const newBlocks = [...activePage.blocks]
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]]
@@ -199,7 +191,6 @@ export default function AdminPage() {
 
   const saveHero = () => {
     if (!activePage) return
-    
     let newBlocks = [...activePage.blocks]
     const heroIndex = newBlocks.findIndex(b => b.tipo === "hero")
     
@@ -217,8 +208,6 @@ export default function AdminPage() {
     } else {
         newBlocks.unshift(newHeroBlock)
     }
-    
-    // Reordenar
     newBlocks.forEach((b, i) => b.orden = i)
 
     const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: newBlocks } : p)
@@ -240,10 +229,48 @@ export default function AdminPage() {
                     <div className="space-y-2"><Label>Nombre</Label><Input value={config.empresa.nombre} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, nombre: e.target.value } })} /></div>
                     <div className="space-y-2"><Label>WhatsApp</Label><Input value={config.empresa.whatsapp || ""} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, whatsapp: e.target.value } })} /></div>
                 </CardContent></Card>
+
+                {/* --- SECCIÓN DE TRANSICIONES (CON SELECTOR) --- */}
+                <Card>
+                    <CardHeader><CardTitle>Experiencia de Usuario</CardTitle></CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col gap-4 p-4 border rounded-lg bg-slate-50">
+                            <div className="space-y-1">
+                                <Label className="text-base font-semibold">Transiciones entre Páginas</Label>
+                                <p className="text-sm text-muted-foreground">Elige cómo se anima la web al navegar de una página a otra.</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-xs uppercase font-bold text-slate-500">Tipo de Animación</Label>
+                                    <select
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        value={config.tipoAnimacion || "none"}
+                                        onChange={(e) => setConfig({ ...config, tipoAnimacion: e.target.value as any })}
+                                    >
+                                        <option value="none">🚫 Ninguna (Carga instantánea)</option>
+                                        <option value="fade">✨ Suave (Fade In)</option>
+                                        <option value="slide">⬆️ Deslizar (Slide Up)</option>
+                                        <option value="scale">🔍 Zoom (Scale Up)</option>
+                                    </select>
+                                </div>
+                                
+                                <div className="flex items-center justify-center p-4 bg-white border border-dashed rounded text-sm text-slate-400">
+                                    {config.tipoAnimacion === "none" && "Sin efectos (Recomendado para velocidad)"}
+                                    {config.tipoAnimacion === "fade" && "Aparición progresiva elegante"}
+                                    {config.tipoAnimacion === "slide" && "Efecto moderno de subida"}
+                                    {config.tipoAnimacion === "scale" && "Efecto sutil de crecimiento"}
+                                    {(!config.tipoAnimacion) && "Sin efectos (Default)"}
+                                </div>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         )
     }
 
+    // ... (Resto de secciones sin cambios)
     if (activeSection === "styles") {
         return (
             <div className="max-w-3xl mx-auto pb-20">
@@ -286,7 +313,6 @@ export default function AdminPage() {
         )
     }
 
-    // --- EDITOR PARA HERO FIJO ---
     if (activeSection && isHomePage && bloqueSeleccionadoId === "fixed-hero-home") {
         return (
             <div className="max-w-4xl mx-auto pb-20">
@@ -308,7 +334,6 @@ export default function AdminPage() {
                         variant={tempHeroVariant}
                         onChange={(campo, valor) => setTempHeroData({ ...tempHeroData, [campo]: valor })} 
                     />
-                    
                     <div className="mt-6 pt-6 border-t">
                         <Label className="mb-2 block">Estilo de Portada</Label>
                         <div className="flex gap-2">
@@ -397,7 +422,32 @@ export default function AdminPage() {
                     </div>
                     <div className="space-y-1">
                         
-                        {/* HERO FIJO EN HOME */}
+                        {/* 1. SECCIÓN SUPERIOR: ANUNCIOS (TOP BAR) */}
+                        {activePage.blocks
+                            .filter(b => b.tipo === "announcement")
+                            .map(bloque => (
+                            <div 
+                                key={bloque.id} 
+                                onClick={() => setBloqueSeleccionadoId(bloque.id)} 
+                                className={cn("flex items-center justify-between p-2 rounded-md text-sm cursor-pointer hover:bg-muted/50 border border-transparent mb-1", bloqueSeleccionadoId === bloque.id ? "bg-purple-50 border-purple-200 text-purple-900 font-medium" : "text-slate-600")}
+                            >
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    <Megaphone className="w-4 h-4 opacity-70" />
+                                    <span className="truncate">Barra de Anuncios</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded border border-blue-200 mr-1">Top</span>
+                                    <button onClick={(e) => handleToggleVisibility(bloque.id, e)}>
+                                        {bloque.activo ? <Eye className="w-3 h-3 text-muted-foreground hover:text-foreground"/> : <EyeOff className="w-3 h-3 text-muted-foreground/50"/>}
+                                    </button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleDeleteBlock(bloque.id); }} className="hover:text-red-500 ml-1">
+                                        <Trash2 className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* 2. HERO FIJO (SOLO EN HOME) */}
                         {isHomePage && (
                              <div 
                                 onClick={() => setBloqueSeleccionadoId("fixed-hero-home")} 
@@ -411,8 +461,9 @@ export default function AdminPage() {
                              </div>
                         )}
 
+                        {/* 3. RESTO DE BLOQUES */}
                         {activePage.blocks
-                            .filter(b => !(isHomePage && b.tipo === "hero")) 
+                            .filter(b => !(isHomePage && b.tipo === "hero") && b.tipo !== "announcement") 
                             .map((bloque, idx) => (
                             <div key={bloque.id} onClick={() => setBloqueSeleccionadoId(bloque.id)} className={cn("flex items-center justify-between p-2 rounded-md text-sm cursor-pointer hover:bg-muted/50 border border-transparent", bloqueSeleccionadoId === bloque.id ? "bg-muted border-border shadow-sm" : "")}>
                                 <div className="flex items-center gap-2 overflow-hidden"><span className="text-xs text-muted-foreground w-4">{idx + 1}</span><span className="truncate capitalize">{bloque.tipo}</span></div>

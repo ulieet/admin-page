@@ -12,7 +12,8 @@ import type {
   LogoMarqueeBlock, 
   ImageCardListBlock, 
   TituloParrafosBlock,
-  FaqBlock // <--- 1. Importamos el tipo FAQ
+  FaqBlock,
+  AnnouncementBlock // <--- AGREGADO
 } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,7 +27,8 @@ import {
   MoveHorizontal, 
   LayoutGrid, 
   Split,
-  HelpCircle // <--- 2. Icono para FAQ
+  HelpCircle,
+  Megaphone 
 } from "lucide-react"
 
 interface NuevoBloqueDialogProps {
@@ -43,8 +45,9 @@ const tiposBloques = [
   { tipo: "logo-marquee", nombre: "Carrusel de Logos", descripcion: "Cinta deslizante infinita de marcas", icono: MoveHorizontal },
   { tipo: "image-card-list", nombre: "Lista de Tarjetas Destacadas", descripcion: "Múltiples tarjetas de imagen en 3 o 4 columnas", icono: LayoutGrid },
   { tipo: "titulo-parrafos", nombre: "Título y Párrafos Divididos", descripcion: "Sección con título primario y texto en 1 o 2 columnas.", icono: Split },
-  // --- 3. Opción FAQ agregada al menú ---
   { tipo: "faq", nombre: "Preguntas Frecuentes (FAQ)", descripcion: "Lista desplegable de preguntas y respuestas", icono: HelpCircle },
+  // --- NUEVA OPCIÓN ---
+  { tipo: "announcement", nombre: "Barra de Anuncios", descripcion: "Cinta superior para ofertas o avisos", icono: Megaphone },
 ]
 
 export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDialogProps) {
@@ -178,7 +181,6 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           }
         } as TituloParrafosBlock
 
-      // --- 4. Lógica para crear el bloque FAQ ---
       case "faq":
         return {
           ...base,
@@ -192,6 +194,20 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             ]
           }
         } as FaqBlock
+
+      // --- CASE NUEVO ---
+      case "announcement":
+        return {
+          ...base,
+          tipo: "announcement",
+          datos: {
+            texto: "¡Oferta especial! 30% OFF en toda la tienda.",
+            enlace: "",
+            bgColor: "#000000",
+            textColor: "#ffffff",
+            animado: false,
+          },
+        } as AnnouncementBlock
       
       default:
         throw new Error("Tipo de bloque no soportado")

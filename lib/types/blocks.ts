@@ -19,7 +19,8 @@ export type BlockType =
   | "contact-form"
   | "stats"
   | "iconos"
-  | "faq" // Agregado
+  | "faq"
+  | "announcement"
 
 // =====================
 // CONFIGURACIÓN GLOBAL
@@ -189,6 +190,18 @@ export interface FaqBlock extends BaseBlock {
       pregunta: string
       respuesta: string
     }>
+  }
+}
+
+// NUEVO BLOQUE: ANNOUNCEMENT (BARRA SUPERIOR)
+export interface AnnouncementBlock extends BaseBlock {
+  tipo: "announcement"
+  datos: {
+    texto: string
+    enlace?: string
+    bgColor: string
+    textColor: string
+    animado: boolean
   }
 }
 
@@ -363,7 +376,7 @@ export type Block =
   | TextImageBlock
   | TituloParrafosBlock
   | StatsBlock
-  | FaqBlock // Agregado
+  | FaqBlock 
   | Cards3Block
   | ServicesBlock
   | FeaturesBlock
@@ -374,7 +387,7 @@ export type Block =
   | CtaBlock
   | LogoMarqueeBlock
   | GalleryBlock
-  | FaqBlock // <--- AGREGAR ESTO
+  | AnnouncementBlock 
 
 // =====================
 // MULTI PAGE
@@ -394,6 +407,9 @@ export interface SiteConfig {
   footer: FooterBlock
   pages: PageData[]
   estilos: StyleConfig
+  
+  tipoAnimacion?: "none" | "fade" | "slide" | "scale"
+  
   empresa: {
     nombre: string
     logo?: string

@@ -40,10 +40,25 @@ export default function HomePage() {
   const headerData = { ...config.header.datos, nombreEmpresa: config.header.datos.nombreEmpresa || config.empresa.nombre }
   const footerData = { ...config.footer.datos, nombreEmpresa: config.footer.datos.nombreEmpresa || config.empresa.nombre }
 
+  // --- LÓGICA DE SEPARACIÓN (CRÍTICO PARA QUE SE VEA LA BARRA) ---
+  // 1. Filtramos solo los bloques de tipo 'announcement'
+  const announcementBlocks = homePage?.blocks.filter(b => b.tipo === "announcement" && b.activo) || []
+  
+  // 2. Filtramos el resto de bloques (que NO sean announcement)
+  const contentBlocks = homePage?.blocks.filter(b => b.tipo !== "announcement") || []
+
   return (
     <div className="min-h-screen flex flex-col w-full font-[family-name:var(--fuente-base)] bg-[var(--color-fondo)] text-[var(--color-texto)]">
       
-      {/* HEADER */}
+      {/* 1. ANNOUNCEMENT BAR (TOP BAR) */}
+      {/* Lo renderizamos AQUÍ, arriba del Header, con un z-index alto */}
+      {announcementBlocks.length > 0 && (
+        <div className="relative z-[100] w-full">
+          <RenderBlocks blocks={announcementBlocks} />
+        </div>
+      )}
+
+      {/* 2. HEADER */}
       {config.header.activo && (
         <BloqueHeader
           data={headerData}
@@ -52,20 +67,21 @@ export default function HomePage() {
         />
       )}
 
-      {/* MAIN */}
-      <main className="flex-1 flex flex-col w-full pt-10">
+      {/* 3. MAIN (CONTENIDO RESTANTE) */}
+      {/* Usamos 'contentBlocks' en vez de todos los bloques */}
+      <main className="flex-1 flex flex-col w-full">
         {!homePage || homePage.blocks.length === 0 ? (
-          <div className="py-20 text-center space-y-4">
+          <div className="py-20 text-center space-y-4 pt-32">
              <h1 className="text-4xl font-bold">¡Bienvenido!</h1>
              <p className="text-muted-foreground">Aún no has configurado la página de inicio en el Admin.</p>
              <Link href="/admin"><Button>Ir al Admin</Button></Link>
           </div>
         ) : (
-          <RenderBlocks blocks={homePage.blocks} />
+          <RenderBlocks blocks={contentBlocks} />
         )}
       </main>
 
-      {/* FOOTER */}
+      {/* 4. FOOTER */}
       {config.footer.activo && (
         <BloqueFooter
           data={footerData}

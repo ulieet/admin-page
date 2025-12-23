@@ -24,7 +24,8 @@ import { StatsEditor } from "./blocks/StatsEditor"
 import { GalleryEditor } from "./blocks/GalleryEditor"
 import { ImageCardListEditor } from "./blocks/ImageCardListEditor"
 import { TituloParrafosEditor } from "./blocks/TitulosParrafosEditor"
-import  FaqEditor  from "./blocks/FaqEditor" // <--- 1. IMPORT NUEVO
+import FaqEditor from "./blocks/FaqEditor"
+import AnnouncementEditor from "./blocks/AnnouncementEditor" // <--- 1. IMPORT NUEVO
 
 const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   header: HeaderEditor,
@@ -33,7 +34,6 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   banner: BannerEditor,
   about: AboutEditor,
   "text-image": TextImageEditor,
-  // Mapeamos ambas variantes por seguridad
   "texto-imagen": TextImageEditor, 
   "titulo-parrafos": TituloParrafosEditor,
   stats: StatsEditor,
@@ -46,7 +46,8 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   cta: CtaEditor,
   gallery: GalleryEditor,
   "logo-marquee": ClientsEditor,
-  faq: FaqEditor, // <--- 2. CONEXIÓN DEL EDITOR
+  faq: FaqEditor,
+  announcement: AnnouncementEditor, // <--- 2. CONEXIÓN DEL EDITOR
 }
 
 // --- DICCIONARIO DE NOMBRES ---
@@ -70,7 +71,8 @@ const NOMBRES_BLOQUES: Record<string, string> = {
   features: "Características",
   "contact-form": "Contacto Simple",
   iconos: "Íconos con Texto",
-  faq: "Preguntas Frecuentes (FAQ)" // <--- 3. NOMBRE VISIBLE
+  faq: "Preguntas Frecuentes (FAQ)",
+  announcement: "Barra de Anuncios (Top Bar)" // <--- 3. NOMBRE VISIBLE
 }
 
 interface EditorBloqueProps {
