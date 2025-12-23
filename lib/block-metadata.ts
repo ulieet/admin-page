@@ -304,7 +304,6 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
       },
     ],
   },
-
   "titulo-parrafos": { 
     type: "titulo-parrafos",
     name: "Título y Párrafos Divididos",
@@ -324,6 +323,23 @@ export const BLOCK_METADATA: Record<string, BlockMetadata> = {
         name: "Título + 2 Párrafos",
         description: "Título a la izquierda, dos párrafos a la derecha.",
         previewImage: "/placeholder.svg?text=Dividido",
+      },
+    ],
+  },
+  // NUEVO BLOQUE FAQ
+  faq: {
+    type: "faq",
+    name: "Preguntas Frecuentes",
+    description: "Lista desplegable de preguntas y respuestas (Acordeón)",
+    icon: "HelpCircle",
+    category: "content",
+    previewImage: "/placeholder.svg?text=FAQ",
+    variants: [
+      {
+        id: "default",
+        name: "Clásico",
+        description: "Acordeón limpio con fondo blanco",
+        previewImage: "/placeholder.svg?text=FAQ+Clasico",
       },
     ],
   },

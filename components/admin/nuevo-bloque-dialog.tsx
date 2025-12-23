@@ -1,11 +1,33 @@
 "use client"
 
 import { useState } from "react"
-import type { Block, BlockType, BannerBlock, Cards3Block, TextImageBlock, FormBlock, GalleryBlock, LogoMarqueeBlock, ImageCardListBlock, TituloParrafosBlock } from "@/lib/types/blocks"
+import type { 
+  Block, 
+  BlockType, 
+  BannerBlock, 
+  Cards3Block, 
+  TextImageBlock, 
+  FormBlock, 
+  GalleryBlock, 
+  LogoMarqueeBlock, 
+  ImageCardListBlock, 
+  TituloParrafosBlock,
+  FaqBlock // <--- 1. Importamos el tipo FAQ
+} from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EditorBloque } from "./editor-bloque"
-import { ImageIcon, CreditCard, FileText, FormInput, Grid3x3Icon, MoveHorizontal, LayoutGrid, Split } from "lucide-react"
+import { 
+  ImageIcon, 
+  CreditCard, 
+  FileText, 
+  FormInput, 
+  Grid3x3Icon, 
+  MoveHorizontal, 
+  LayoutGrid, 
+  Split,
+  HelpCircle // <--- 2. Icono para FAQ
+} from "lucide-react"
 
 interface NuevoBloqueDialogProps {
   onAgregar: (bloque: Block) => void
@@ -14,23 +36,15 @@ interface NuevoBloqueDialogProps {
 
 const tiposBloques = [
   { tipo: "banner", nombre: "Banner", descripcion: "Sección destacada con imagen de fondo", icono: ImageIcon },
-  {
-    tipo: "cards-3",
-    nombre: "Tarjetas (3 columnas)",
-    descripcion: "3 tarjetas con iconos y contenido",
-    icono: CreditCard,
-  },
-  {
-    tipo: "text-image",
-    nombre: "Texto + Imagen",
-    descripcion: "Sección con texto e imagen alternados",
-    icono: FileText,
-  },
+  { tipo: "cards-3", nombre: "Tarjetas (3 columnas)", descripcion: "3 tarjetas con iconos y contenido", icono: CreditCard },
+  { tipo: "text-image", nombre: "Texto + Imagen", descripcion: "Sección con texto e imagen alternados", icono: FileText },
   { tipo: "form", nombre: "Formulario", descripcion: "Formulario de contacto personalizable", icono: FormInput },
   { tipo: "gallery", nombre: "Galería", descripcion: "Grid de imágenes", icono: Grid3x3Icon },
   { tipo: "logo-marquee", nombre: "Carrusel de Logos", descripcion: "Cinta deslizante infinita de marcas", icono: MoveHorizontal },
   { tipo: "image-card-list", nombre: "Lista de Tarjetas Destacadas", descripcion: "Múltiples tarjetas de imagen en 3 o 4 columnas", icono: LayoutGrid },
   { tipo: "titulo-parrafos", nombre: "Título y Párrafos Divididos", descripcion: "Sección con título primario y texto en 1 o 2 columnas.", icono: Split },
+  // --- 3. Opción FAQ agregada al menú ---
+  { tipo: "faq", nombre: "Preguntas Frecuentes (FAQ)", descripcion: "Lista desplegable de preguntas y respuestas", icono: HelpCircle },
 ]
 
 export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDialogProps) {
@@ -54,6 +68,7 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             alineacion: "centro",
           },
         } as BannerBlock
+
       case "cards-3":
         return {
           ...base,
@@ -61,30 +76,13 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           datos: {
             titulo: "Nuestros Servicios",
             items: [
-              {
-                icono: "award",
-                titulo: "Servicio 1",
-                descripcion: "Descripción del servicio",
-                botonTexto: "Más info",
-                botonUrl: "#",
-              },
-              {
-                icono: "users",
-                titulo: "Servicio 2",
-                descripcion: "Descripción del servicio",
-                botonTexto: "Más info",
-                botonUrl: "#",
-              },
-              {
-                icono: "building",
-                titulo: "Servicio 3",
-                descripcion: "Descripción del servicio",
-                botonTexto: "Más info",
-                botonUrl: "#",
-              },
+              { icono: "award", titulo: "Servicio 1", descripcion: "Descripción del servicio", botonTexto: "Más info", botonUrl: "#" },
+              { icono: "users", titulo: "Servicio 2", descripcion: "Descripción del servicio", botonTexto: "Más info", botonUrl: "#" },
+              { icono: "building", titulo: "Servicio 3", descripcion: "Descripción del servicio", botonTexto: "Más info", botonUrl: "#" },
             ],
           },
         } as Cards3Block
+
       case "text-image":
         return {
           ...base,
@@ -98,6 +96,7 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             puntos: ["Punto destacado 1", "Punto destacado 2", "Punto destacado 3"],
           },
         } as TextImageBlock
+
       case "form":
         return {
           ...base,
@@ -119,6 +118,7 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             },
           },
         } as FormBlock
+
       case "gallery":
         return {
           ...base,
@@ -133,6 +133,7 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             columnas: 3,
           },
         } as GalleryBlock
+
       case "logo-marquee":
         return {
             ...base,
@@ -157,33 +158,9 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             subtitulo: "Descubre nuestro trabajo más reciente.",
             columnas: 3,
             cards: [
-              { 
-                imagenUrl: "/placeholder.jpg", 
-                altTexto: "Card 1", 
-                etiqueta: "Residential", 
-                titulo: "Hogar Moderno", 
-                descripcion: "Descripción del primer proyecto.", 
-                linkTexto: "Explorar", 
-                linkUrl: "#" 
-              },
-              { 
-                imagenUrl: "/placeholder.jpg", 
-                altTexto: "Card 2", 
-                etiqueta: "Comercial", 
-                titulo: "Edificio Corporativo", 
-                descripcion: "Descripción del segundo proyecto.", 
-                linkTexto: "Explorar", 
-                linkUrl: "#" 
-              },
-              { 
-                imagenUrl: "/placeholder.jpg", 
-                altTexto: "Card 3", 
-                etiqueta: "Urbanismo", 
-                titulo: "Parque Urbano", 
-                descripcion: "Descripción del tercer proyecto.", 
-                linkTexto: "Explorar", 
-                linkUrl: "#" 
-              },
+              { imagenUrl: "/placeholder.jpg", altTexto: "Card 1", etiqueta: "Residential", titulo: "Hogar Moderno", descripcion: "Descripción del primer proyecto.", linkTexto: "Explorar", linkUrl: "#" },
+              { imagenUrl: "/placeholder.jpg", altTexto: "Card 2", etiqueta: "Comercial", titulo: "Edificio Corporativo", descripcion: "Descripción del segundo proyecto.", linkTexto: "Explorar", linkUrl: "#" },
+              { imagenUrl: "/placeholder.jpg", altTexto: "Card 3", etiqueta: "Urbanismo", titulo: "Parque Urbano", descripcion: "Descripción del tercer proyecto.", linkTexto: "Explorar", linkUrl: "#" },
             ],
           }
         } as ImageCardListBlock
@@ -194,12 +171,27 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           tipo: "titulo-parrafos",
           datos: {
             titulo: "Título que usa el color primario del sitio.",
-            parrafoIzquierda: "Este es el párrafo principal. Se utiliza para introducir la sección o dar contexto al texto dividido. En modo centrado, ocupa el centro del contenedor.",
-            parrafoDerecha: "Este segundo párrafo se utiliza para el modo 'dividido'. Aquí puedes profundizar en la información presentada en la columna izquierda o añadir un segundo punto de vista.",
+            parrafoIzquierda: "Este es el párrafo principal. Se utiliza para introducir la sección o dar contexto al texto dividido.",
+            parrafoDerecha: "Este segundo párrafo se utiliza para el modo 'dividido'. Aquí puedes profundizar en la información presentada.",
             alineacion: "dividido",
-            colorFondo: "#ffffff", // ✅ Inicializamos en blanco. El componente de visualización usa el color de fondo del body si es `#ffffff` o transparente, pero aquí se fuerza a blanco.
+            colorFondo: "#ffffff",
           }
         } as TituloParrafosBlock
+
+      // --- 4. Lógica para crear el bloque FAQ ---
+      case "faq":
+        return {
+          ...base,
+          tipo: "faq",
+          datos: {
+            titulo: "Preguntas Frecuentes",
+            items: [
+              { pregunta: "¿Cuál es el horario de atención?", respuesta: "Atendemos de lunes a viernes de 9:00 a 18:00hs." },
+              { pregunta: "¿Realizan envíos al interior?", respuesta: "Sí, realizamos envíos a todo el país a través de correo privado." },
+              { pregunta: "¿Cuáles son los medios de pago?", respuesta: "Aceptamos tarjetas de crédito, débito y transferencia bancaria." },
+            ]
+          }
+        } as FaqBlock
       
       default:
         throw new Error("Tipo de bloque no soportado")
@@ -241,7 +233,7 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
     <div className="space-y-4">
       <div className="flex items-center gap-2">
         <Button type="button" variant="outline" size="sm" onClick={() => setTipoSeleccionado(null)}>
-          ← Volver
+          Volver
         </Button>
         <h3 className="font-semibold">Configurar {tiposBloques.find((t) => t.tipo === tipoSeleccionado)?.nombre}</h3>
       </div>

@@ -24,6 +24,7 @@ import { StatsEditor } from "./blocks/StatsEditor"
 import { GalleryEditor } from "./blocks/GalleryEditor"
 import { ImageCardListEditor } from "./blocks/ImageCardListEditor"
 import { TituloParrafosEditor } from "./blocks/TitulosParrafosEditor"
+import  FaqEditor  from "./blocks/FaqEditor" // <--- 1. IMPORT NUEVO
 
 const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   header: HeaderEditor,
@@ -45,6 +46,7 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   cta: CtaEditor,
   gallery: GalleryEditor,
   "logo-marquee": ClientsEditor,
+  faq: FaqEditor, // <--- 2. CONEXIÓN DEL EDITOR
 }
 
 // --- DICCIONARIO DE NOMBRES ---
@@ -67,7 +69,8 @@ const NOMBRES_BLOQUES: Record<string, string> = {
   services: "Lista de Servicios",
   features: "Características",
   "contact-form": "Contacto Simple",
-  iconos: "Íconos con Texto"
+  iconos: "Íconos con Texto",
+  faq: "Preguntas Frecuentes (FAQ)" // <--- 3. NOMBRE VISIBLE
 }
 
 interface EditorBloqueProps {
@@ -154,7 +157,6 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
             Cancelar
           </Button>
           
-          {/* CORRECCIÓN: Botón siempre habilitado */}
           <Button 
             onClick={handleGuardarCambios} 
             className="bg-slate-900 text-white hover:bg-slate-800"

@@ -18,6 +18,7 @@ import { BloqueForm } from "@/components/bloques/form"
 import { BloqueContactForm } from "@/components/bloques/contact-form"
 import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
+import { BloqueFaq } from "@/components/bloques/faq" 
 
 interface RenderBlocksProps {
   blocks: Block[]
@@ -90,6 +91,9 @@ export function RenderBlocks({ blocks }: RenderBlocksProps) {
 
             case "text-image":
               return <BloqueTextoImagen key={key} data={block.datos} />
+
+            case "faq": // Nuevo Caso
+              return <BloqueFaq key={key} data={block.datos} />
 
             default:
               if (process.env.NODE_ENV === "development") {

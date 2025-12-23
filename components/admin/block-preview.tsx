@@ -18,8 +18,8 @@ import { BloqueFeatures } from "@/components/bloques/features"
 import { BloqueCTA } from "@/components/bloques/cta"
 import { BloqueContactForm } from "@/components/bloques/contact-form"
 import { BloqueStats } from "@/components/bloques/stats"
-
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
+import { BloqueFaq } from "@/components/bloques/faq" // Nuevo Import
 
 const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   header: BloqueHeader,
@@ -41,6 +41,7 @@ const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   "contact-form": BloqueContactForm,
   stats: BloqueStats,
   "titulo-parrafos": BloqueTituloParrafos,
+  faq: BloqueFaq, 
 }
 
 interface BlockPreviewProps {

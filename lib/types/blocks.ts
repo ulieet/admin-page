@@ -19,6 +19,7 @@ export type BlockType =
   | "contact-form"
   | "stats"
   | "iconos"
+  | "faq" // Agregado
 
 // =====================
 // CONFIGURACIÓN GLOBAL
@@ -176,6 +177,18 @@ export interface StatsBlock extends BaseBlock {
   datos: {
     fondoOscuro?: boolean
     estadisticas: Array<{ numero: string; etiqueta: string }>
+  }
+}
+
+export interface FaqBlock extends BaseBlock {
+  tipo: "faq"
+  datos: {
+    titulo: string
+    descripcion?: string
+    items: Array<{
+      pregunta: string
+      respuesta: string
+    }>
   }
 }
 
@@ -350,6 +363,7 @@ export type Block =
   | TextImageBlock
   | TituloParrafosBlock
   | StatsBlock
+  | FaqBlock // Agregado
   | Cards3Block
   | ServicesBlock
   | FeaturesBlock
@@ -360,6 +374,7 @@ export type Block =
   | CtaBlock
   | LogoMarqueeBlock
   | GalleryBlock
+  | FaqBlock // <--- AGREGAR ESTO
 
 // =====================
 // MULTI PAGE
