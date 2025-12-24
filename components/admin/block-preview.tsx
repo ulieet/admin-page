@@ -16,7 +16,7 @@ import { BloqueFeatures } from "@/components/bloques/features"
 import { BloqueCTA } from "@/components/bloques/cta"
 import { BloqueStats } from "@/components/bloques/stats"
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
-import { BloqueFaq } from "@/components/bloques/faq" // Nuevo Import
+import { BloqueFaq } from "@/components/bloques/faq" 
 
 const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   header: BloqueHeader,
@@ -61,7 +61,7 @@ export function BlockPreview({ bloque, estilos }: BlockPreviewProps) {
     "--color-texto": estilos.colores.texto,
   } as React.CSSProperties;
 
-  // Corrección para evitar fallos en cards vacías
+  // Evitar fallos en cards vacías
   let datosCorregidos = bloque.datos;
   if (bloque.tipo === "cards-3") {
     if (!Array.isArray(bloque.datos.items) || bloque.datos.items.length === 0) {

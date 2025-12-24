@@ -8,7 +8,7 @@ interface FeaturesData {
     icono: string
     titulo: string
     descripcion: string
-    botonTexto: string
+    botonTexto?: string
   }>
 }
 
@@ -19,9 +19,14 @@ const ICONOS = {
 }
 
 export function BloqueFeatures({ data }: { data: FeaturesData }) {
-  // Ahora usamos las variables globales que inyecta RenderBlocks
   return (
-    <section className="py-20 bg-[var(--color-fondo)] text-[var(--color-texto)]">
+    <section 
+      className="py-20"
+      style={{ 
+        backgroundColor: "var(--color-fondo)", 
+        color: "var(--color-texto)" 
+      }}
+    >
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8">
           {data.caracteristicas.map((caracteristica, index) => {
@@ -30,7 +35,6 @@ export function BloqueFeatures({ data }: { data: FeaturesData }) {
             return (
               <div key={index} className="flex flex-col items-center text-center space-y-4 p-6 rounded-xl border border-transparent hover:border-slate-100 transition-colors">
                 
-                {/* Ícono: Fondo primario, icono blanco */}
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full text-white shadow-sm"
                      style={{ backgroundColor: "var(--color-primario)" }}>
                   <Icono className="h-8 w-8" />

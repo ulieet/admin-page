@@ -15,12 +15,10 @@ interface ClientsData {
 export function BloqueLogoMarquee({ data }: { data: ClientsData }) {
   if (!data.empresas || data.empresas.length === 0) return null
 
-  // Duplicamos los elementos para el loop infinito
   const multiplier = data.empresas.length < 5 ? 4 : 2
   const logos = Array(multiplier).fill(data.empresas).flat()
 
   return (
-    // FORZADO: bg-white para que siempre sea blanco limpio
     <section className="py-16 overflow-hidden border-y border-gray-100 bg-white text-slate-800">
       <div className="container mx-auto px-4 mb-10 text-center">
         {data.titulo && (
@@ -36,7 +34,6 @@ export function BloqueLogoMarquee({ data }: { data: ClientsData }) {
       </div>
 
       <div className="relative w-full overflow-hidden">
-        {/* Máscaras laterales BLANCAS para que coincidan con el fondo */}
         <div 
             className="absolute left-0 top-0 z-10 h-full w-24 md:w-32 pointer-events-none" 
             style={{ background: "linear-gradient(to right, #ffffff, transparent)" }} 
@@ -64,7 +61,7 @@ export function BloqueLogoMarquee({ data }: { data: ClientsData }) {
             {logos.map((empresa, index) => (
               <div
                 key={index}
-                className="relative h-20 w-40 md:h-24 md:w-52 flex-shrink-0 flex items-center justify-center opacity-60 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-500"
+                className="relative h-20 w-40 md:h-24 md:w-52  flex items-center justify-center opacity-60 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-500"
               >
                 {empresa.logo ? (
                   <Image

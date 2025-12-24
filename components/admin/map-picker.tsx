@@ -5,7 +5,6 @@ import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-lea
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
-// --- CONFIGURACIÓN DE ICONOS ---
 const fixLeafletIcons = () => {
   // @ts-ignore
   delete L.Icon.Default.prototype._getIconUrl
@@ -16,7 +15,6 @@ const fixLeafletIcons = () => {
   })
 }
 
-// --- COMPONENTE CONTROLADOR ---
 function MapController({ 
   position, 
   onLocationSelect 
@@ -27,13 +25,12 @@ function MapController({
   const map = useMap()
 
   useEffect(() => {
-    // CORRECCIÓN: Timeout para esperar a que el Tab se muestre y el contenedor tenga tamaño real
     const timer = setTimeout(() => {
       map.invalidateSize()
       if (position) {
         map.flyTo(position, 13, { animate: false })
       }
-    }, 200) // 200ms de retraso es suficiente
+    }, 200)
 
     return () => clearTimeout(timer)
   }, [map, position])
@@ -57,7 +54,6 @@ interface MapPickerProps {
 export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
   const [isMounted, setIsMounted] = useState(false)
   
-  // CORRECCIÓN: Validación más robusta. lat !== "" previene NaN si viene string vacío.
   const numLat = (lat !== undefined && lat !== null && lat !== "") ? Number(lat) : null
   const numLng = (lng !== undefined && lng !== null && lng !== "") ? Number(lng) : null
   
@@ -71,14 +67,20 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
 
   if (!isMounted) {
     return (
-      <div className="h-[300px] w-full bg-slate-100 flex items-center justify-center text-slate-400">
+      <div 
+        className="w-full bg-slate-100 flex items-center justify-center text-slate-400"
+        style={{ height: "300px" }} 
+      >
         Cargando mapa...
       </div>
     )
   }
 
   return (
-    <div className="h-[300px] w-full rounded-md overflow-hidden border bg-slate-50 relative z-0 isolate">
+    <div 
+      className="w-full rounded-md overflow-hidden border bg-slate-50 relative z-0 isolate"
+      style={{ height: "300px" }} 
+    >
       <MapContainer
         center={position || defaultCenter}
         zoom={13}

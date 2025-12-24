@@ -29,7 +29,6 @@ export default function DynamicPage() {
     setLoading(false)
   }, [slug])
 
-  // Aplicar estilos globales
   useEffect(() => {
     if (!config?.estilos) return
     const root = document.documentElement
@@ -69,11 +68,18 @@ export default function DynamicPage() {
   const contentBlocks = currentPage.blocks.filter(b => b.tipo !== "announcement")
 
   return (
-    <div className="min-h-screen flex flex-col w-full font-[family-name:var(--fuente-base)] bg-[var(--color-fondo)] text-[var(--color-texto)]">
+    <div 
+      className="min-h-screen flex flex-col w-full"
+      style={{ 
+        fontFamily: 'var(--fuente-base)',
+        backgroundColor: 'var(--color-fondo)',
+        color: 'var(--color-texto)'
+      }}
+    >
 
       {/* 1. TOP BAR (Antes del Header) */}
       {announcementBlocks.length > 0 && (
-        <div className="relative z-[100] w-full">
+        <div className="relative w-full" style={{ zIndex: 100 }}>
           <RenderBlocks blocks={announcementBlocks} />
         </div>
       )}
@@ -83,7 +89,7 @@ export default function DynamicPage() {
         <BloqueHeader
           data={headerData}
           navLinks={config.header.datos.navegacion}
-          variant={config.header.variant}
+          variant={config.header.variant as any}
         />
       )}
 
@@ -101,7 +107,7 @@ export default function DynamicPage() {
       {/* 4. FOOTER */}
       {config.footer.activo && (
         <BloqueFooter
-          data={footerData}
+          data={footerData as any}
           navLinks={config.header.datos.navegacion}
           estilos={config.estilos}
         />

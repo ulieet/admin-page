@@ -44,7 +44,7 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   announcement: AnnouncementEditor, 
 }
 
-// --- DICCIONARIO DE NOMBRES ---
+// DICCIONARIO DE NOMBRES 
 const NOMBRES_BLOQUES: Record<string, string> = {
   header: "Encabezado Principal",
   footer: "Pie de Página",
@@ -76,7 +76,6 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
   const [bloqueEditado, setBloqueEditado] = useState<Block>(bloque)
   const [tieneCambios, setTieneCambios] = useState(false)
 
-  // Reseteamos el estado interno cuando cambia el bloque seleccionado desde afuera
   useEffect(() => {
     setBloqueEditado(bloque)
     setTieneCambios(false)
@@ -110,7 +109,6 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
       <div className="p-6 border-b bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-200">
-                {/* Nombre amigable */}
                 {NOMBRES_BLOQUES[bloqueEditado.tipo] || bloqueEditado.tipo}
             </span>
             <h2 className="font-semibold text-slate-800">Editando Bloque</h2>

@@ -40,35 +40,34 @@ export default function HomePage() {
   const headerData = { ...config.header.datos, nombreEmpresa: config.header.datos.nombreEmpresa || config.empresa.nombre }
   const footerData = { ...config.footer.datos, nombreEmpresa: config.footer.datos.nombreEmpresa || config.empresa.nombre }
 
-  // --- LÓGICA DE SEPARACIÓN (CRÍTICO PARA QUE SE VEA LA BARRA) ---
-  // 1. Filtramos solo los bloques de tipo 'announcement'
   const announcementBlocks = homePage?.blocks.filter(b => b.tipo === "announcement" && b.activo) || []
   
-  // 2. Filtramos el resto de bloques (que NO sean announcement)
   const contentBlocks = homePage?.blocks.filter(b => b.tipo !== "announcement") || []
 
   return (
-    <div className="min-h-screen flex flex-col w-full font-[family-name:var(--fuente-base)] bg-[var(--color-fondo)] text-[var(--color-texto)]">
+    <div 
+      className="min-h-screen flex flex-col w-full"
+      style={{ 
+        fontFamily: 'var(--fuente-base)',
+        backgroundColor: 'var(--color-fondo)',
+        color: 'var(--color-texto)'
+      }}
+    >
       
-      {/* 1. ANNOUNCEMENT BAR (TOP BAR) */}
-      {/* Lo renderizamos AQUÍ, arriba del Header, con un z-index alto */}
       {announcementBlocks.length > 0 && (
-        <div className="relative z-[100] w-full">
+        <div className="relative w-full" style={{ zIndex: 100 }}>
           <RenderBlocks blocks={announcementBlocks} />
         </div>
       )}
 
-      {/* 2. HEADER */}
       {config.header.activo && (
         <BloqueHeader
           data={headerData}
           navLinks={config.header.datos.navegacion}
-          variant={config.header.variant}
+          variant={config.header.variant as any}
         />
       )}
 
-      {/* 3. MAIN (CONTENIDO RESTANTE) */}
-      {/* Usamos 'contentBlocks' en vez de todos los bloques */}
       <main className="flex-1 flex flex-col w-full">
         {!homePage || homePage.blocks.length === 0 ? (
           <div className="py-20 text-center space-y-4 pt-32">
@@ -81,10 +80,9 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* 4. FOOTER */}
       {config.footer.activo && (
         <BloqueFooter
-          data={footerData}
+          data={footerData as any}
           navLinks={config.header.datos.navegacion} 
           estilos={config.estilos}
         />

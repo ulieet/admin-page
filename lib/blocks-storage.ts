@@ -1,6 +1,6 @@
 import type { SiteConfig, PageData, Block, StyleConfig } from "./types/blocks"
 
-const STORAGE_KEY = "site-builder-config-v3" // Forzamos reset para aplicar cambios
+const STORAGE_KEY = "site-builder-config-v3"
 
 const generateId = () => Math.random().toString(36).substr(2, 9)
 
@@ -18,7 +18,6 @@ const defaultStyles: StyleConfig = {
   },
 }
 
-// Hero por defecto (Solo para Home)
 const defaultHero: Block = {
   id: "hero-home-default",
   tipo: "hero",
@@ -95,7 +94,11 @@ export function cargarConfiguracion(): SiteConfig {
 
 export function guardarConfiguracion(config: SiteConfig): void {
   if (typeof window === "undefined") return
+  
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
+
+  // DISPARAR EVENTO PERSONALIZADO para sincronizar componentes en la misma pestaña
+  window.dispatchEvent(new Event("storage-update"))
 }
 
 export function crearPagina(titulo: string, slug: string): void {

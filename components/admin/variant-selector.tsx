@@ -41,7 +41,7 @@ export function VariantSelector({ blockType, currentVariant, onSelectVariant }: 
             >
               <div className="p-3">
                 <div className="flex gap-3">
-                  <div className="relative w-32 h-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                  <div className="relative w-32 h-20 rounded-md overflow-hidden bg-muted ">
                     <Image
                       src={variant.previewImage || "/placeholder.svg"}
                       alt={variant.name}
@@ -55,7 +55,7 @@ export function VariantSelector({ blockType, currentVariant, onSelectVariant }: 
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <h4 className="font-semibold text-sm">{variant.name}</h4>
                       {isSelected && (
-                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center ">
                           <Check className="w-3 h-3 text-white" />
                         </div>
                       )}

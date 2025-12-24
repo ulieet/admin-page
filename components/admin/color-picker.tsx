@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 
 interface ColorPickerProps {
-    value?: string; // Hacemos opcional el valor para evitar crashes
+    value?: string; 
     onChange: (color: string) => void;
     className?: string;
 }

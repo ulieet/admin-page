@@ -31,17 +31,18 @@ export function RenderBlocks({ blocks }: RenderBlocksProps) {
         .map((block) => {
           const key = block.id
 
+         
           switch (block.tipo) {
-            case "hero": return <BloqueHero key={key} data={block.datos} variant={block.variant} />
+            case "hero": return <BloqueHero key={key} data={block.datos} variant={block.variant as any} />
             case "banner": return <BloqueBanner key={key} data={block.datos} />
-            case "features": return <BloqueFeatures key={key} data={block.datos} />
+            case "features": return <BloqueFeatures key={key} data={block.datos as any} />
             case "titulo-parrafos": return <BloqueTituloParrafos key={key} data={block.datos} />
             case "image-card-list": return <BloqueImageCardList key={key} data={block.datos} />
             case "cards-3": return <BloqueCards3 key={key} data={block.datos} />
             case "gallery": return <BloqueGallery key={key} data={block.datos} />
             case "logo-marquee": return <BloqueLogoMarquee key={key} data={block.datos} />
             case "stats": return <BloqueStats key={key} data={block.datos} />
-            case "cta": return <BloqueCTA key={key} data={block.datos} />
+            case "cta": return <BloqueCTA key={key} data={block.datos as any} />
             case "form": return <BloqueForm key={key} data={block.datos} />
             case "text-image": return <BloqueTextoImagen key={key} data={block.datos} />
             case "faq": return <BloqueFaq key={key} data={block.datos} />

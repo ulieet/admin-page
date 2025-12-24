@@ -1,4 +1,3 @@
-// lib/types/blocks.ts
 
 export type BlockType =
   | "header"
@@ -15,7 +14,6 @@ export type BlockType =
   | "features"
   | "cta"
   | "stats"
-  | "iconos"
   | "faq"
   | "announcement"
 
@@ -180,7 +178,6 @@ export interface FaqBlock extends BaseBlock {
   }
 }
 
-// NUEVO BLOQUE: ANNOUNCEMENT (BARRA SUPERIOR)
 export interface AnnouncementBlock extends BaseBlock {
   tipo: "announcement"
   datos: {
@@ -224,17 +221,7 @@ export interface FeaturesBlock extends BaseBlock {
   }
 }
 
-export interface IconosBlock extends BaseBlock {
-  tipo: "iconos"
-  datos: {
-    titulo: string
-    items: Array<{
-      icono: string
-      titulo: string
-      descripcion: string
-    }>
-  }
-}
+
 
 // =====================
 // IMAGE CARD LIST
@@ -345,7 +332,6 @@ export type Block =
   | FaqBlock 
   | Cards3Block
   | FeaturesBlock
-  | IconosBlock
   | ImageCardListBlock
   | FormBlock
   | CtaBlock

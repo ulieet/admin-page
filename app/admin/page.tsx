@@ -5,7 +5,7 @@ import {
   cargarConfiguracion,
   guardarConfiguracion,
 } from "@/lib/blocks-storage"
-import type { Block, SiteConfig, PageData } from "@/lib/types/blocks"
+import type { Block, SiteConfig, PageData, BlockVariant } from "@/lib/types/blocks" // <--- IMPORTAMOS BlockVariant
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -37,7 +37,9 @@ export default function AdminPage() {
   const [tempHeaderData, setTempHeaderData] = useState<any>(null)
   const [tempFooterData, setTempFooterData] = useState<any>(null)
   const [tempHeroData, setTempHeroData] = useState<any>(null)
-  const [tempHeroVariant, setTempHeroVariant] = useState<string>("default")
+  
+  // CORRECCIÓN 1: Tipado explícito del estado para evitar el error de string vs BlockVariant
+  const [tempHeroVariant, setTempHeroVariant] = useState<BlockVariant>("default")
 
   const [dialogNewBlockOpen, setDialogNewBlockOpen] = useState(false)
   const [dialogNewPageOpen, setDialogNewPageOpen] = useState(false)
@@ -78,7 +80,9 @@ export default function AdminPage() {
         subtitulo: "Texto de ejemplo",
         imagenes: [],
         botonPrimarioTexto: "Ver más",
-        botonPrimarioUrl: "#"
+        botonPrimarioUrl: "#",
+        botonSecundarioTexto: "Contacto",
+        botonSecundarioUrl: "/contacto"
       })
       setTempHeroVariant("default")
     }
@@ -103,7 +107,7 @@ export default function AdminPage() {
 
   // Funciones de manejo
   const handleCreatePage = () => {
-    if (!newPageName) return
+    if (!newPageName || !config) return
     const slug = newPageName.toLowerCase().trim().replace(/\s+/g, '-')
     if (config.pages.some(p => p.slug === slug)) { alert("Ya existe una página con ese nombre/slug"); return }
     const newPage: PageData = { id: Math.random().toString(36).substr(2, 9), slug, title: newPageName, blocks: [] }
@@ -116,6 +120,7 @@ export default function AdminPage() {
 
   const handleDeletePage = (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
+    if (!config) return
     if (confirm("¿Borrar página?")) {
         const newPages = config.pages.filter(p => p.id !== id)
         setConfig({ ...config, pages: newPages })
@@ -127,7 +132,7 @@ export default function AdminPage() {
   }
 
   const handleAddBlock = (bloque: Block) => {
-    if (!activePage) return
+    if (!activePage || !config) return
     const newBlocks = [...activePage.blocks, bloque]
     newBlocks.forEach((b, i) => b.orden = i)
     const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: newBlocks } : p)
@@ -137,7 +142,7 @@ export default function AdminPage() {
   }
 
   const handleUpdateBlock = (bloqueActualizado: Block) => {
-    if (activePage) {
+    if (activePage && config) {
         const updatedBlocks = activePage.blocks.map(b => b.id === bloqueActualizado.id ? bloqueActualizado : b)
         const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: updatedBlocks } : p)
         setConfig({ ...config, pages: updatedPages })
@@ -145,7 +150,7 @@ export default function AdminPage() {
   }
 
   const handleDeleteBlock = (blockId: string) => {
-    if (!activePage) return
+    if (!activePage || !config) return
     if(confirm("¿Eliminar bloque?")) {
         const filtered = activePage.blocks.filter(b => b.id !== blockId)
         const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: filtered } : p)
@@ -156,7 +161,7 @@ export default function AdminPage() {
 
   const handleMoveBlock = (blockId: string, direction: 'up' | 'down', e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!activePage) return
+    if (!activePage || !config) return
     const index = activePage.blocks.findIndex(b => b.id === blockId)
     if (index === -1) return
     
@@ -165,32 +170,47 @@ export default function AdminPage() {
     
     const newBlocks = [...activePage.blocks]
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    // PROTECCIÓN DE HOME: Evitar saltar por encima del Hero
+    if (isHomePage && direction === 'up') {
+      const targetBlock = newBlocks[targetIndex]
+      if (targetBlock && targetBlock.tipo === 'hero') {
+        return 
+      }
+    }
+
+    // Intercambio
     [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]]
     newBlocks.forEach((b, i) => b.orden = i)
+    
     const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: newBlocks } : p)
     setConfig({ ...config, pages: updatedPages })
   }
 
   const handleToggleVisibility = (blockId: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!activePage) return
+    if (!activePage || !config) return
     const updatedBlocks = activePage.blocks.map(b => b.id === blockId ? { ...b, activo: !b.activo } : b)
     const updatedPages = config.pages.map(p => p.id === activeSection ? { ...p, blocks: updatedBlocks } : p)
     setConfig({ ...config, pages: updatedPages })
   }
 
   const saveHeader = () => {
+     if(!config) return
      setConfig({ ...config, header: { ...config.header, datos: tempHeaderData } })
      alert("Header guardado")
   }
 
   const saveFooter = () => {
+     if(!config) return
      setConfig({ ...config, footer: { ...config.footer, datos: tempFooterData } })
      alert("Footer guardado")
   }
 
+  // --- ERROR 1 CORREGIDO AQUÍ ---
+  // tempHeroVariant ahora está tipado como BlockVariant en el useState
   const saveHero = () => {
-    if (!activePage) return
+    if (!activePage || !config) return
     let newBlocks = [...activePage.blocks]
     const heroIndex = newBlocks.findIndex(b => b.tipo === "hero")
     
@@ -221,6 +241,8 @@ export default function AdminPage() {
   }
 
   const renderMainEditor = () => {
+    if (!config) return null 
+
     if (activeSection === "global-settings") {
         return (
             <div className="max-w-3xl mx-auto space-y-6 pb-20">
@@ -230,7 +252,6 @@ export default function AdminPage() {
                     <div className="space-y-2"><Label>WhatsApp</Label><Input value={config.empresa.whatsapp || ""} onChange={(e) => setConfig({ ...config, empresa: { ...config.empresa, whatsapp: e.target.value } })} /></div>
                 </CardContent></Card>
 
-                {/* --- SECCIÓN DE TRANSICIONES (CON SELECTOR) --- */}
                 <Card>
                     <CardHeader><CardTitle>Experiencia de Usuario</CardTitle></CardHeader>
                     <CardContent>
@@ -270,7 +291,6 @@ export default function AdminPage() {
         )
     }
 
-    // ... (Resto de secciones sin cambios)
     if (activeSection === "styles") {
         return (
             <div className="max-w-3xl mx-auto pb-20">
@@ -307,7 +327,11 @@ export default function AdminPage() {
                     <Button onClick={saveFooter} className="bg-green-600 hover:bg-green-700"><Save className="w-4 h-4 mr-2" /> Guardar Cambios</Button>
                 </div>
                 <div className="bg-white p-6 rounded-lg border shadow-sm">
-                    <FooterEditor data={tempFooterData} onChange={(campo, valor) => setTempFooterData({ ...tempFooterData, [campo]: valor })} />
+                    {/* CORRECCIÓN 2: Tipado explícito de los parámetros del onChange */}
+                    <FooterEditor 
+                        data={tempFooterData} 
+                        onChange={(campo: string, valor: any) => setTempFooterData({ ...tempFooterData, [campo]: valor })} 
+                    />
                 </div>
             </div>
         )
@@ -341,7 +365,7 @@ export default function AdminPage() {
                                 <Button 
                                     key={v}
                                     variant={tempHeroVariant === v ? "default" : "outline"}
-                                    onClick={() => setTempHeroVariant(v)}
+                                    onClick={() => setTempHeroVariant(v as BlockVariant)}
                                     size="sm"
                                     className="capitalize"
                                 >
@@ -417,11 +441,11 @@ export default function AdminPage() {
             {activePage && (
                 <div className="pt-4 border-t mt-2">
                     <div className="flex items-center justify-between mb-2 px-2">
-                        <p className="text-xs font-bold text-primary truncate max-w-[120px]">{activePage.title.toUpperCase()}</p>
+                        {/* CORRECCIÓN 3: Reemplazo de max-w-[120px] por max-w-30 */}
+                        <p className="text-xs font-bold text-primary truncate max-w-30">{activePage.title.toUpperCase()}</p>
                         <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setDialogNewBlockOpen(true)}><Plus className="w-3 h-3" /></Button>
                     </div>
                     <div className="space-y-1">
-                        
                         {/* 1. SECCIÓN SUPERIOR: ANUNCIOS (TOP BAR) */}
                         {activePage.blocks
                             .filter(b => b.tipo === "announcement")

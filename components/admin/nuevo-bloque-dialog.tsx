@@ -14,8 +14,9 @@ import type {
   TituloParrafosBlock,
   FaqBlock,
   AnnouncementBlock,
-  CtaBlock,      // <--- IMPORTADO
-  FeaturesBlock  // <--- IMPORTADO
+  CtaBlock,
+  FeaturesBlock,
+  StatsBlock
 } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -31,8 +32,9 @@ import {
   Split,
   HelpCircle,
   Megaphone,
-  MousePointerClick, // <--- ICONO CTA
-  ListChecks         // <--- ICONO FEATURES
+  MousePointerClick,
+  ListChecks,
+  BarChart3
 } from "lucide-react"
 
 interface NuevoBloqueDialogProps {
@@ -40,19 +42,28 @@ interface NuevoBloqueDialogProps {
   siguienteOrden: number
 }
 
+// ORDEN REORGANIZADO: Intro -> Contenido -> Social -> Conversión
 const tiposBloques = [
+  // --- INTRODUCCIÓN ---
   { tipo: "banner", nombre: "Banner", descripcion: "Sección destacada con imagen de fondo", icono: ImageIcon },
+  { tipo: "announcement", nombre: "Barra de Anuncios", descripcion: "Cinta superior para ofertas o avisos", icono: Megaphone },
+  { tipo: "titulo-parrafos", nombre: "Título y Párrafos Divididos", descripcion: "Sección con título primario y texto en 1 o 2 columnas.", icono: Split },
+  
+  // --- CONTENIDO ---
   { tipo: "text-image", nombre: "Texto + Imagen", descripcion: "Sección con texto e imagen alternados", icono: FileText },
-  { tipo: "features", nombre: "Características", descripcion: "Lista de beneficios o puntos clave", icono: ListChecks }, // <--- NUEVO
-  { tipo: "cta", nombre: "Llamada a la Acción (CTA)", descripcion: "Bloque de conversión con botones", icono: MousePointerClick }, // <--- NUEVO
+  { tipo: "features", nombre: "Características", descripcion: "Lista de beneficios o puntos clave", icono: ListChecks },
   { tipo: "cards-3", nombre: "Tarjetas (3 columnas)", descripcion: "3 tarjetas con iconos y contenido", icono: CreditCard },
   { tipo: "image-card-list", nombre: "Lista de Tarjetas Destacadas", descripcion: "Múltiples tarjetas de imagen en 3 o 4 columnas", icono: LayoutGrid },
-  { tipo: "form", nombre: "Formulario", descripcion: "Formulario de contacto personalizable", icono: FormInput },
   { tipo: "gallery", nombre: "Galería", descripcion: "Grid de imágenes", icono: Grid3x3Icon },
+  
+  // --- SOCIAL PROOF ---
   { tipo: "logo-marquee", nombre: "Carrusel de Logos", descripcion: "Cinta deslizante infinita de marcas", icono: MoveHorizontal },
-  { tipo: "titulo-parrafos", nombre: "Título y Párrafos Divididos", descripcion: "Sección con título primario y texto en 1 o 2 columnas.", icono: Split },
+  { tipo: "stats", nombre: "Estadísticas", descripcion: "Números destacados para mostrar métricas", icono: BarChart3 },
+
+  // --- CIERRE Y CONVERSIÓN ---
   { tipo: "faq", nombre: "Preguntas Frecuentes (FAQ)", descripcion: "Lista desplegable de preguntas y respuestas", icono: HelpCircle },
-  { tipo: "announcement", nombre: "Barra de Anuncios", descripcion: "Cinta superior para ofertas o avisos", icono: Megaphone },
+  { tipo: "form", nombre: "Formulario", descripcion: "Formulario de contacto personalizable", icono: FormInput },
+  { tipo: "cta", nombre: "Llamada a la Acción (CTA)", descripcion: "Bloque de conversión con botones", icono: MousePointerClick },
 ]
 
 export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDialogProps) {
@@ -105,7 +116,6 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           },
         } as TextImageBlock
 
-      // --- LOGICA CTA ---
       case "cta":
         return {
           ...base,
@@ -121,7 +131,6 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           }
         } as CtaBlock
 
-      // --- LOGICA FEATURES ---
       case "features":
         return {
           ...base,
@@ -134,6 +143,20 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             ]
           }
         } as FeaturesBlock
+
+      case "stats":
+        return {
+          ...base,
+          tipo: "stats",
+          datos: {
+            fondoOscuro: false,
+            estadisticas: [
+              { numero: "+100", etiqueta: "Clientes Felices" },
+              { numero: "50k", etiqueta: "Ventas Totales" },
+              { numero: "24/7", etiqueta: "Soporte" },
+            ],
+          },
+        } as StatsBlock
 
       case "form":
         return {
@@ -261,7 +284,7 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             >
               <CardHeader>
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Icon className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1">

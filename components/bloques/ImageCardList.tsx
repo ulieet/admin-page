@@ -16,7 +16,13 @@ export function BloqueImageCardList({ data, className }: BloqueImageCardListProp
     : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
 
   return (
-    <section className={cn("py-20 md:py-24 bg-[var(--color-fondo)] text-[var(--color-texto)]", className)}>
+    <section 
+      className={cn("py-20 md:py-24", className)}
+      style={{ 
+        backgroundColor: "var(--color-fondo)", 
+        color: "var(--color-texto)" 
+      }}
+    >
       <div className="container mx-auto px-4">
         
         {(data.titulo || data.subtitulo) && (

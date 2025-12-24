@@ -26,7 +26,6 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
   const bgColor = "var(--color-fondo)"
   const textColor = "var(--color-texto)"
 
-  // --- MODERN (Tarjeta Flotante) ---
   if (variant === "modern") {
     return (
       <section className="py-24 px-4 bg-slate-100">
@@ -43,7 +42,15 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
                         <div className="space-y-2"><Label>Apellido</Label><Input className="bg-slate-50 border-slate-200" style={{ caretColor: primaryColor }} /></div>
                     </div>
                     <div className="space-y-2"><Label>Email</Label><Input type="email" className="bg-slate-50 border-slate-200" style={{ caretColor: primaryColor }} /></div>
-                    <div className="space-y-2"><Label>Mensaje</Label><Textarea className="min-h-[120px] bg-slate-50 border-slate-200" style={{ caretColor: primaryColor }} /></div>
+                    
+                    {/* CORREGIDO: minHeight en style */}
+                    <div className="space-y-2">
+                        <Label>Mensaje</Label>
+                        <Textarea 
+                            className="bg-slate-50 border-slate-200" 
+                            style={{ caretColor: primaryColor, minHeight: "120px" }} 
+                        />
+                    </div>
                     
                     <Button className="w-full h-12 text-base font-medium rounded-xl text-white shadow-lg transition-all hover:opacity-90" 
                             style={{ backgroundColor: primaryColor }}>
@@ -57,7 +64,6 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
     )
   }
 
-  // --- MINIMAL (Limpio) ---
   if (variant === "minimal") {
     return (
       <section className="py-24 px-4" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -69,7 +75,16 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
            <form className="space-y-6">
                 <div className="space-y-1"><Input placeholder="Nombre completo" className="h-12 border-x-0 border-t-0 border-b-2 rounded-none px-0 focus-visible:ring-0 text-lg shadow-none bg-transparent" /></div>
                 <div className="space-y-1"><Input type="email" placeholder="Correo electrónico" className="h-12 border-x-0 border-t-0 border-b-2 rounded-none px-0 focus-visible:ring-0 text-lg shadow-none bg-transparent" /></div>
-                <div className="space-y-1"><Textarea placeholder="Escribe tu mensaje..." className="min-h-[100px] border-x-0 border-t-0 border-b-2 rounded-none px-0 focus-visible:ring-0 resize-none text-lg shadow-none bg-transparent" /></div>
+                
+                {/* CORREGIDO: minHeight en style */}
+                <div className="space-y-1">
+                    <Textarea 
+                        placeholder="Escribe tu mensaje..." 
+                        className="border-x-0 border-t-0 border-b-2 rounded-none px-0 focus-visible:ring-0 resize-none text-lg shadow-none bg-transparent" 
+                        style={{ minHeight: "100px" }}
+                    />
+                </div>
+                
                 <div className="pt-4">
                     <Button variant="outline" className="h-12 px-8 border-2 font-bold tracking-wide bg-transparent hover:bg-transparent transition-opacity hover:opacity-70" 
                             style={{ borderColor: primaryColor, color: primaryColor }}>
@@ -82,12 +97,10 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
     )
   }
 
-  // --- CLÁSICO (Default) ---
   return (
     <section className="py-24 px-4 bg-white">
       <div className="container mx-auto max-w-6xl">
         
-        {/* Cabecera */}
         <div className="mb-12 border-l-4 pl-6" style={{ borderColor: primaryColor }}>
              <h2 className="text-3xl md:text-4xl font-bold text-black uppercase tracking-tight mb-2">
                 {title}
@@ -142,9 +155,13 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
                     <Input type="email" className="bg-slate-50 border-slate-200 h-12 rounded-none focus-visible:ring-1 focus-visible:ring-slate-400" />
                 </div>
 
+                {/* CORREGIDO: minHeight en style */}
                 <div className="space-y-1">
                     <Label className="font-bold text-slate-900 text-xs uppercase">Consulta</Label>
-                    <Textarea className="bg-slate-50 border-slate-200 min-h-[160px] rounded-none focus-visible:ring-1 focus-visible:ring-slate-400 resize-none" />
+                    <Textarea 
+                        className="bg-slate-50 border-slate-200 rounded-none focus-visible:ring-1 focus-visible:ring-slate-400 resize-none" 
+                        style={{ minHeight: "160px" }}
+                    />
                 </div>
 
                 <div className="pt-2 flex justify-end">

@@ -15,22 +15,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-// --- LISTA DE FUENTES EMPRESARIALES ESTÁNDAR ---
 const FUENTES_DISPONIBLES = [
-  // Sans-Serif (Modernas, Limpias, Tech)
-  "Inter",           // La estándar hoy en día (tipo Vercel/Stripe)
-  "Roboto",          // La clásica de Google (muy legible)
-  "Open Sans",       // Muy usada en corporaciones viejas y nuevas
-  "Lato",            // Amigable pero seria
-  "Montserrat",      // Genial para títulos, muy geométrica
-  "Poppins",         // Muy de moda en Startups y agencias
-  "Source Sans 3",   // De Adobe, excelente para lectura
+  "Inter",           
+  "Roboto",         
+  "Open Sans",       
+  "Lato",            
+  "Montserrat",     
+  "Poppins",         
+  "Source Sans 3",   
   
-  // Serif (Elegantes, Confianza, Abogados/Consultoras)
-  "Playfair Display",// Lujo, moda, estética
-  "Merriweather",    // Alta legibilidad, seria (diarios, blogs serios)
-  "Lora",            // Sofisticada, estilo literario
-  "Libre Baskerville",// Clásica, transmite mucha confianza
+  
+  "Playfair Display",
+  "Merriweather",    
+  "Lora",            
+  "Libre Baskerville",
 ]
 
 interface EditorEstilosProps {
@@ -161,7 +159,6 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
                   <SelectValue placeholder="Selecciona una fuente" />
                 </SelectTrigger>
                 <SelectContent>
-                   {/* Opcional: Podrías usar SelectGroup y SelectLabel si quisieras separarlas visualmente */}
                    {FUENTES_DISPONIBLES.map((font) => (
                     <SelectItem key={font} value={font}>
                       <span style={{ fontFamily: font }}>{font}</span>
