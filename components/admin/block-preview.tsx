@@ -12,11 +12,8 @@ import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
 import { BloqueImageCard } from "@/components/bloques/ImageCard"
 import { BloqueImageCardList } from "@/components/bloques/ImageCardList"
 import { BloqueTituloParrafos } from "@/components/bloques/TitulosParrafos"
-import { BloqueAbout } from "@/components/bloques/about"
-import { BloqueServices } from "@/components/bloques/services"
 import { BloqueFeatures } from "@/components/bloques/features"
 import { BloqueCTA } from "@/components/bloques/cta"
-import { BloqueContactForm } from "@/components/bloques/contact-form"
 import { BloqueStats } from "@/components/bloques/stats"
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
 import { BloqueFaq } from "@/components/bloques/faq" // Nuevo Import
@@ -34,11 +31,8 @@ const BLOCK_COMPONENTS: Record<string, React.ComponentType<any>> = {
   "logo-marquee": BloqueLogoMarquee,
   "image-card": BloqueImageCard,
   "image-card-list": BloqueImageCardList,
-  about: BloqueAbout,
-  services: BloqueServices,
   features: BloqueFeatures,
   cta: BloqueCTA,
-  "contact-form": BloqueContactForm,
   stats: BloqueStats,
   "titulo-parrafos": BloqueTituloParrafos,
   faq: BloqueFaq, 

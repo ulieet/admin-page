@@ -12,11 +12,8 @@ export type BlockType =
   | "logo-marquee"
   | "image-card-list"
   | "titulo-parrafos"
-  | "about"
-  | "services"
   | "features"
   | "cta"
-  | "contact-form"
   | "stats"
   | "iconos"
   | "faq"
@@ -138,17 +135,7 @@ export interface BannerBlock extends BaseBlock {
   }
 }
 
-export interface AboutBlock extends BaseBlock {
-  tipo: "about"
-  datos: {
-    titulo: string
-    subtitulo?: string
-    descripcion: string
-    imagen?: string
-    botonTexto?: string
-    botonUrl?: string
-  }
-}
+
 
 export interface TextImageBlock extends BaseBlock {
   tipo: "text-image"
@@ -223,18 +210,7 @@ export interface Cards3Block extends BaseBlock {
   }
 }
 
-export interface ServicesBlock extends BaseBlock {
-  tipo: "services"
-  datos: {
-    titulo: string
-    subtitulo: string
-    servicios: Array<{
-      icono: string
-      titulo: string
-      descripcion: string
-    }>
-  }
-}
+
 
 export interface FeaturesBlock extends BaseBlock {
   tipo: "features"
@@ -310,16 +286,7 @@ export interface FormBlock extends BaseBlock {
   }
 }
 
-export interface ContactFormBlock extends BaseBlock {
-  tipo: "contact-form"
-  datos: {
-    titulo: string
-    descripcion: string
-    telefono: string
-    email: string
-    horario: string
-  }
-}
+
 
 export interface CtaBlock extends BaseBlock {
   tipo: "cta"
@@ -372,18 +339,15 @@ export type Block =
   | HeroBlock
   | FooterBlock
   | BannerBlock
-  | AboutBlock
   | TextImageBlock
   | TituloParrafosBlock
   | StatsBlock
   | FaqBlock 
   | Cards3Block
-  | ServicesBlock
   | FeaturesBlock
   | IconosBlock
   | ImageCardListBlock
   | FormBlock
-  | ContactFormBlock
   | CtaBlock
   | LogoMarqueeBlock
   | GalleryBlock

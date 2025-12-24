@@ -19,7 +19,6 @@ export function BloqueImageCardList({ data, className }: BloqueImageCardListProp
     <section className={cn("py-20 md:py-24 bg-[var(--color-fondo)] text-[var(--color-texto)]", className)}>
       <div className="container mx-auto px-4">
         
-        {/* Cabecera de Sección */}
         {(data.titulo || data.subtitulo) && (
             <div className="text-center mb-16 max-w-3xl mx-auto space-y-4">
                 {data.titulo && (
@@ -38,7 +37,6 @@ export function BloqueImageCardList({ data, className }: BloqueImageCardListProp
             </div>
         )}
 
-        {/* Grid de Tarjetas */}
         <div className={cn("grid gap-8 items-stretch", gridClasses)}>
           {data.cards && data.cards.length > 0 ? (
              data.cards.map((cardData, index) => (

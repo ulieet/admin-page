@@ -14,40 +14,34 @@ import { BannerEditor } from "./blocks/BannerEditor"
 import { FormEditor } from "./blocks/FormEditor"
 import { Cards3Editor } from "./blocks/Cards3Editor"
 import { TextImageEditor } from "./blocks/TextImageEditor"
-import { AboutEditor } from "./blocks/AboutEditor"
-import { ServicesEditor } from "./blocks/ServicesEditor"
 import { FeaturesEditor } from "./blocks/FeaturesEditor"
-import { ClientsEditor } from "./blocks/ClientsEditor"
+import { ClientsEditor } from "./blocks/LogoMarqueeEditor"
 import { CtaEditor } from "./blocks/CTAEditor"
-import { ContactFormEditor } from "./blocks/ContactFormEditor"
 import { StatsEditor } from "./blocks/StatsEditor"
 import { GalleryEditor } from "./blocks/GalleryEditor"
 import { ImageCardListEditor } from "./blocks/ImageCardListEditor"
 import { TituloParrafosEditor } from "./blocks/TitulosParrafosEditor"
 import FaqEditor from "./blocks/FaqEditor"
-import AnnouncementEditor from "./blocks/AnnouncementEditor" // <--- 1. IMPORT NUEVO
+import AnnouncementEditor from "./blocks/AnnouncementEditor" 
 
 const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   header: HeaderEditor,
   hero: HeroEditor,
   footer: FooterEditor,
   banner: BannerEditor,
-  about: AboutEditor,
   "text-image": TextImageEditor,
   "texto-imagen": TextImageEditor, 
   "titulo-parrafos": TituloParrafosEditor,
   stats: StatsEditor,
   "cards-3": Cards3Editor,
-  services: ServicesEditor,
   features: FeaturesEditor,
   "image-card-list": ImageCardListEditor,
   form: FormEditor,
-  "contact-form": ContactFormEditor,
   cta: CtaEditor,
   gallery: GalleryEditor,
   "logo-marquee": ClientsEditor,
   faq: FaqEditor,
-  announcement: AnnouncementEditor, // <--- 2. CONEXIÓN DEL EDITOR
+  announcement: AnnouncementEditor, 
 }
 
 // --- DICCIONARIO DE NOMBRES ---
@@ -66,13 +60,10 @@ const NOMBRES_BLOQUES: Record<string, string> = {
   "titulo-parrafos": "Título y Párrafos",
   stats: "Estadísticas",
   cta: "Llamada a la Acción",
-  about: "Sobre Nosotros",
-  services: "Lista de Servicios",
   features: "Características",
-  "contact-form": "Contacto Simple",
   iconos: "Íconos con Texto",
   faq: "Preguntas Frecuentes (FAQ)",
-  announcement: "Barra de Anuncios (Top Bar)" // <--- 3. NOMBRE VISIBLE
+  announcement: "Barra de Anuncios (Top Bar)" 
 }
 
 interface EditorBloqueProps {

@@ -13,7 +13,9 @@ import type {
   ImageCardListBlock, 
   TituloParrafosBlock,
   FaqBlock,
-  AnnouncementBlock // <--- AGREGADO
+  AnnouncementBlock,
+  CtaBlock,      // <--- IMPORTADO
+  FeaturesBlock  // <--- IMPORTADO
 } from "@/lib/types/blocks"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,7 +30,9 @@ import {
   LayoutGrid, 
   Split,
   HelpCircle,
-  Megaphone 
+  Megaphone,
+  MousePointerClick, // <--- ICONO CTA
+  ListChecks         // <--- ICONO FEATURES
 } from "lucide-react"
 
 interface NuevoBloqueDialogProps {
@@ -38,15 +42,16 @@ interface NuevoBloqueDialogProps {
 
 const tiposBloques = [
   { tipo: "banner", nombre: "Banner", descripcion: "Sección destacada con imagen de fondo", icono: ImageIcon },
-  { tipo: "cards-3", nombre: "Tarjetas (3 columnas)", descripcion: "3 tarjetas con iconos y contenido", icono: CreditCard },
   { tipo: "text-image", nombre: "Texto + Imagen", descripcion: "Sección con texto e imagen alternados", icono: FileText },
+  { tipo: "features", nombre: "Características", descripcion: "Lista de beneficios o puntos clave", icono: ListChecks }, // <--- NUEVO
+  { tipo: "cta", nombre: "Llamada a la Acción (CTA)", descripcion: "Bloque de conversión con botones", icono: MousePointerClick }, // <--- NUEVO
+  { tipo: "cards-3", nombre: "Tarjetas (3 columnas)", descripcion: "3 tarjetas con iconos y contenido", icono: CreditCard },
+  { tipo: "image-card-list", nombre: "Lista de Tarjetas Destacadas", descripcion: "Múltiples tarjetas de imagen en 3 o 4 columnas", icono: LayoutGrid },
   { tipo: "form", nombre: "Formulario", descripcion: "Formulario de contacto personalizable", icono: FormInput },
   { tipo: "gallery", nombre: "Galería", descripcion: "Grid de imágenes", icono: Grid3x3Icon },
   { tipo: "logo-marquee", nombre: "Carrusel de Logos", descripcion: "Cinta deslizante infinita de marcas", icono: MoveHorizontal },
-  { tipo: "image-card-list", nombre: "Lista de Tarjetas Destacadas", descripcion: "Múltiples tarjetas de imagen en 3 o 4 columnas", icono: LayoutGrid },
   { tipo: "titulo-parrafos", nombre: "Título y Párrafos Divididos", descripcion: "Sección con título primario y texto en 1 o 2 columnas.", icono: Split },
   { tipo: "faq", nombre: "Preguntas Frecuentes (FAQ)", descripcion: "Lista desplegable de preguntas y respuestas", icono: HelpCircle },
-  // --- NUEVA OPCIÓN ---
   { tipo: "announcement", nombre: "Barra de Anuncios", descripcion: "Cinta superior para ofertas o avisos", icono: Megaphone },
 ]
 
@@ -99,6 +104,36 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
             puntos: ["Punto destacado 1", "Punto destacado 2", "Punto destacado 3"],
           },
         } as TextImageBlock
+
+      // --- LOGICA CTA ---
+      case "cta":
+        return {
+          ...base,
+          tipo: "cta",
+          datos: {
+            titulo: "¿Listo para comenzar?",
+            subtitulo: "Únete a cientos de clientes satisfechos hoy mismo.",
+            botonPrimarioTexto: "Empezar Ahora",
+            botonPrimarioUrl: "/contacto",
+            botonSecundarioTexto: "Saber más",
+            botonSecundarioUrl: "/nosotros",
+            textoInferior: "Sin compromiso de compra."
+          }
+        } as CtaBlock
+
+      // --- LOGICA FEATURES ---
+      case "features":
+        return {
+          ...base,
+          tipo: "features",
+          datos: {
+            caracteristicas: [
+              { icono: "check", titulo: "Calidad Garantizada", descripcion: "Trabajamos con los mejores estándares del mercado." },
+              { icono: "zap", titulo: "Entrega Rápida", descripcion: "Recibe tu producto en tiempo récord." },
+              { icono: "shield", titulo: "Soporte 24/7", descripcion: "Estamos aquí para ayudarte cuando lo necesites." },
+            ]
+          }
+        } as FeaturesBlock
 
       case "form":
         return {
@@ -195,7 +230,6 @@ export function NuevoBloqueDialog({ onAgregar, siguienteOrden }: NuevoBloqueDial
           }
         } as FaqBlock
 
-      // --- CASE NUEVO ---
       case "announcement":
         return {
           ...base,

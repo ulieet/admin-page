@@ -1,22 +1,16 @@
 "use client"
 
-import React from "react"
 import type { Block } from "@/lib/types/blocks"
-
-// Imports de componentes
 import { BloqueHero } from "@/components/bloques/hero"
 import { BloqueBanner } from "@/components/bloques/banner"
 import { BloqueFeatures } from "@/components/bloques/features"
 import { BloqueTituloParrafos } from "@/components/bloques/TitulosParrafos"
-import { BloqueServices } from "@/components/bloques/services"
 import { BloqueGallery } from "@/components/bloques/gallery"
 import { BloqueCTA } from "@/components/bloques/cta"
-import { BloqueAbout } from "@/components/bloques/about"
 import { BloqueStats } from "@/components/bloques/stats"
 import { BloqueImageCardList } from "@/components/bloques/ImageCardList"
 import { BloqueCards3 } from "@/components/bloques/cards-3"
 import { BloqueForm } from "@/components/bloques/form"
-import { BloqueContactForm } from "@/components/bloques/contact-form"
 import { BloqueLogoMarquee } from "@/components/bloques/logo-marquee"
 import { BloqueTextoImagen } from "@/components/bloques/texto-imagen"
 import { BloqueFaq } from "@/components/bloques/faq"
@@ -41,8 +35,6 @@ export function RenderBlocks({ blocks }: RenderBlocksProps) {
             case "hero": return <BloqueHero key={key} data={block.datos} variant={block.variant} />
             case "banner": return <BloqueBanner key={key} data={block.datos} />
             case "features": return <BloqueFeatures key={key} data={block.datos} />
-            case "services": return <BloqueServices key={key} data={block.datos} />
-            case "about": return <BloqueAbout key={key} data={block.datos} />
             case "titulo-parrafos": return <BloqueTituloParrafos key={key} data={block.datos} />
             case "image-card-list": return <BloqueImageCardList key={key} data={block.datos} />
             case "cards-3": return <BloqueCards3 key={key} data={block.datos} />
@@ -51,7 +43,6 @@ export function RenderBlocks({ blocks }: RenderBlocksProps) {
             case "stats": return <BloqueStats key={key} data={block.datos} />
             case "cta": return <BloqueCTA key={key} data={block.datos} />
             case "form": return <BloqueForm key={key} data={block.datos} />
-            case "contact-form": return <BloqueContactForm key={key} data={block.datos} />
             case "text-image": return <BloqueTextoImagen key={key} data={block.datos} />
             case "faq": return <BloqueFaq key={key} data={block.datos} />
             case "announcement": return <BloqueAnnouncement key={key} data={block.datos} />

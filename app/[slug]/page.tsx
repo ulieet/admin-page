@@ -48,7 +48,7 @@ export default function DynamicPage() {
 
   const currentPage = config.pages.find(p => p.slug === slug)
 
-  // 404
+  // si me tira error 404
   if (!currentPage) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4 pt-24">
@@ -65,7 +65,6 @@ export default function DynamicPage() {
   const headerData = { ...config.header.datos, nombreEmpresa: config.header.datos.nombreEmpresa || config.empresa.nombre }
   const footerData = { ...config.footer.datos, nombreEmpresa: config.footer.datos.nombreEmpresa || config.empresa.nombre }
 
-  // --- LÓGICA DE SEPARACIÓN ---
   const announcementBlocks = currentPage.blocks.filter(b => b.tipo === "announcement" && b.activo)
   const contentBlocks = currentPage.blocks.filter(b => b.tipo !== "announcement")
 
