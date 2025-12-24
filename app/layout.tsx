@@ -1,20 +1,21 @@
 import type { Metadata } from "next"
 import { Geist } from "next/font/google"
-import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
+
+import { Toaster } from "@/components/ui/toaster"
 import DynamicFavicon from "@/components/DynamicFavicon"
 import { ThemeInitializer } from "@/components/theme-initializer"
 
 const geist = Geist({ subsets: ["latin"] })
 
-// 1. Limpiamos iconos de los metadatos para que Next.js no genere etiquetas <link>
+// ✅ FAVICON SERVER-SIDE → carga SIEMPRE al refrescar
 export const metadata: Metadata = {
   title: "Mi Sitio Web",
   description: "Powered by Page Builder",
   icons: {
-    icon: [], // Esto le dice a Next.js que no genere iconos predeterminados
-    apple: [],
-  }
+    icon: "/dynamic-favicon.png",
+    apple: "/dynamic-favicon.png",
+  },
 }
 
 export default function RootLayout({
@@ -24,12 +25,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <head>
-        {/* El DynamicFavicon debe estar aquí para que el navegador lo lea lo antes posible */}
+      <body
+        className={`${geist.className} antialiased min-h-screen flex flex-col bg-background text-foreground`}
+      >
+        {/* Componentes que tocan DOM */}
         <ThemeInitializer />
-      </head>
-      <body className={`${geist.className} antialiased min-h-screen flex flex-col bg-background text-foreground`}>
         <DynamicFavicon />
+
         {children}
         <Toaster />
       </body>

@@ -3,56 +3,55 @@
 import { useEffect } from "react"
 import { cargarConfiguracion } from "@/lib/blocks-storage"
 
+const FAVICON_ID = "dynamic-favicon"
+const APPLE_ID = "dynamic-apple-icon"
+
 export default function DynamicFavicon() {
   useEffect(() => {
     const updateFavicon = () => {
-      if (typeof window === "undefined") return
-
       const config = cargarConfiguracion()
       const logoUrl = config?.header?.datos?.logoImagen
 
       if (!logoUrl) return
 
-      try {
-        // 1. Eliminar CUALQUIER etiqueta de icono previa para evitar conflictos
-        const existingIcons = document.querySelectorAll("link[rel*='icon']")
-        existingIcons.forEach(icon => icon.parentNode?.removeChild(icon))
+      const version = Date.now()
+      const separator = logoUrl.includes("?") ? "&" : "?"
+      const href = `${logoUrl}${separator}v=${version}`
 
-        // 2. Crear el nuevo tag link
-        const link = document.createElement("link")
-        link.rel = "icon"
-        
-        // 3. FORZAR REFRESCO DE CACHÉ con un timestamp único
-        const version = Date.now()
-        const separator = logoUrl.includes('?') ? '&' : '?'
-        link.href = `${logoUrl}${separator}v=${version}`
+      // 🔒 Buscar SOLO los iconos nuestros
+      let icon = document.getElementById(FAVICON_ID) as HTMLLinkElement | null
+      let apple = document.getElementById(APPLE_ID) as HTMLLinkElement | null
 
-        // 4. Asignar tipo de contenido según la extensión
-        if (logoUrl.toLowerCase().endsWith(".svg")) {
-          link.type = "image/svg+xml"
-        } else if (logoUrl.toLowerCase().endsWith(".png")) {
-          link.type = "image/png"
-        } else {
-          link.type = "image/x-icon"
-        }
-
-        // 5. Inyectar en el head
-        document.head.appendChild(link)
-
-      } catch (error) {
-        console.error("Error al actualizar DynamicFavicon:", error)
+      // Crear si no existen
+      if (!icon) {
+        icon = document.createElement("link")
+        icon.id = FAVICON_ID
+        icon.rel = "icon"
+        icon.sizes = "32x32"
+        icon.type = "image/png"
+        document.head.appendChild(icon)
       }
+
+      if (!apple) {
+        apple = document.createElement("link")
+        apple.id = APPLE_ID
+        apple.rel = "apple-touch-icon"
+        document.head.appendChild(apple)
+      }
+
+      // Actualizar href (esto es seguro)
+      icon.href = href
+      apple.href = href
     }
 
-    // Ejecución inicial
     updateFavicon()
 
-    // Escuchar el evento manual de storage-update (misma pestaña)
     window.addEventListener("storage-update", updateFavicon)
-    
-    // Escuchar el evento nativo storage (otras pestañas)
+
     window.addEventListener("storage", (e) => {
-      if (e.key === "site-builder-config-v3") updateFavicon()
+      if (e.key === "site-builder-config-v3") {
+        updateFavicon()
+      }
     })
 
     return () => {

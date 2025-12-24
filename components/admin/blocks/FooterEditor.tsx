@@ -23,10 +23,21 @@ export function FooterEditor({ data, onChange }: any) {
     onChange("personalizacion", { ...data.personalizacion, [key]: value })
   }
 
+  const normalizeCoord = (value: any) => {
+  if (value === null || value === undefined || value === "") return null
+  if (typeof value === "string") return Number(value.replace(",", "."))
+  return Number(value)
+}
+
+
   // LECTURA INTELIGENTE: Lee del nuevo formato (ubicacion) o del viejo (lat/lng)
-  const latValue = data.ubicacion?.lat || data.lat
-  const lngValue = data.ubicacion?.lng || data.lng
-  const tieneUbicacion = latValue && lngValue
+ const latValue = normalizeCoord(data.ubicacion?.lat ?? data.lat)
+const lngValue = normalizeCoord(data.ubicacion?.lng ?? data.lng)
+
+const tieneUbicacion =
+  Number.isFinite(latValue) &&
+  Number.isFinite(lngValue)
+
 
   const estiloActual = data.estiloVisual || "clasico"
 

@@ -25,13 +25,13 @@ function MapController({
   const map = useMap()
 
   useEffect(() => {
+    // CORRECCIÓN: Se aumentó ligeramente el tiempo para asegurar que el contenedor esté listo
     const timer = setTimeout(() => {
       map.invalidateSize()
       if (position) {
-        map.flyTo(position, 13, { animate: false })
+        map.setView(position, map.getZoom())
       }
-    }, 200)
-
+    }, 400)
     return () => clearTimeout(timer)
   }, [map, position])
 
@@ -68,9 +68,10 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
   if (!isMounted) {
     return (
       <div 
-        className="w-full bg-slate-100 flex items-center justify-center text-slate-400"
+        className="w-full bg-slate-100 flex flex-col items-center justify-center text-slate-400 gap-2"
         style={{ height: "300px" }} 
       >
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
         Cargando mapa...
       </div>
     )
@@ -78,7 +79,7 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
 
   return (
     <div 
-      className="w-full rounded-md overflow-hidden border bg-slate-50 relative z-0 isolate"
+      className="w-full rounded-md overflow-hidden border bg-slate-50 relative z-0 isolate shadow-inner"
       style={{ height: "300px" }} 
     >
       <MapContainer
@@ -88,10 +89,9 @@ export default function MapPicker({ lat, lng, onChange }: MapPickerProps) {
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
-          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        
         <MapController 
           position={position} 
           onLocationSelect={onChange} 
