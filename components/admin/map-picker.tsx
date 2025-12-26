@@ -25,7 +25,6 @@ function MapController({
   const map = useMap()
 
   useEffect(() => {
-    // CORRECCIÓN: Se aumentó ligeramente el tiempo para asegurar que el contenedor esté listo
     const timer = setTimeout(() => {
       map.invalidateSize()
       if (position) {

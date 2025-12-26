@@ -5,24 +5,22 @@ import { Button } from "@/components/ui/button"
 import { Save } from "lucide-react"
 import { useState, useEffect, useCallback } from "react"
 import { toast } from "sonner"
-
-// Importación de editores
-import { HeaderEditor } from "./blocks/HeaderEditor"
-import { HeroEditor } from "./blocks/HeroEditor"
-import { FooterEditor } from "./blocks/FooterEditor"
-import { BannerEditor } from "./blocks/BannerEditor"
-import { FormEditor } from "./blocks/FormEditor"
-import { Cards3Editor } from "./blocks/Cards3Editor"
-import { TextImageEditor } from "./blocks/TextImageEditor"
-import { FeaturesEditor } from "./blocks/FeaturesEditor"
-import { ClientsEditor } from "./blocks/LogoMarqueeEditor"
-import { CtaEditor } from "./blocks/CTAEditor"
-import { StatsEditor } from "./blocks/StatsEditor"
-import { GalleryEditor } from "./blocks/GalleryEditor"
-import { ImageCardListEditor } from "./blocks/ImageCardListEditor"
-import { TituloParrafosEditor } from "./blocks/TitulosParrafosEditor"
-import FaqEditor from "./blocks/FaqEditor"
-import AnnouncementEditor from "./blocks/AnnouncementEditor" 
+import { HeaderEditor } from "./bloques-editor/HeaderEditor"
+import { HeroEditor } from "./bloques-editor/HeroEditor"
+import { FooterEditor } from "./bloques-editor/FooterEditor"
+import { BannerEditor } from "./bloques-editor/BannerEditor"
+import { FormEditor } from "./bloques-editor/FormEditor"
+import { Cards3Editor } from "./bloques-editor/Cards3Editor"
+import { TextImageEditor } from "./bloques-editor/TextImageEditor"
+import { FeaturesEditor } from "./bloques-editor/FeaturesEditor"
+import { ClientsEditor } from "./bloques-editor/LogoMarqueeEditor"
+import { CtaEditor } from "./bloques-editor/CTAEditor"
+import { StatsEditor } from "./bloques-editor/StatsEditor"
+import { GalleryEditor } from "./bloques-editor/GalleryEditor"
+import { ImageCardListEditor } from "./bloques-editor/ImageCardListEditor"
+import { TituloParrafosEditor } from "./bloques-editor/TitulosParrafosEditor"
+import FaqEditor from "./bloques-editor/FaqEditor"
+import AnnouncementEditor from "./bloques-editor/AnnouncementEditor" 
 
 const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   header: HeaderEditor,
@@ -30,7 +28,6 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   footer: FooterEditor,
   banner: BannerEditor,
   "text-image": TextImageEditor,
-  "texto-imagen": TextImageEditor, 
   "titulo-parrafos": TituloParrafosEditor,
   stats: StatsEditor,
   "cards-3": Cards3Editor,
@@ -44,7 +41,6 @@ const BLOCK_EDITORS: Record<string, React.ComponentType<any>> = {
   announcement: AnnouncementEditor, 
 }
 
-// DICCIONARIO DE NOMBRES 
 const NOMBRES_BLOQUES: Record<string, string> = {
   header: "Encabezado Principal",
   footer: "Pie de Página",
@@ -52,7 +48,6 @@ const NOMBRES_BLOQUES: Record<string, string> = {
   banner: "Banner Promocional",
   "cards-3": "Tarjetas de Servicios",
   "text-image": "Texto + Imagen",
-  "texto-imagen": "Texto + Imagen",
   form: "Formulario de Contacto",
   gallery: "Galería de Imágenes",
   "logo-marquee": "Carrusel de Logos",
@@ -105,7 +100,6 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
   return (
     <div className="flex flex-col bg-background border rounded-xl shadow-sm overflow-hidden h-full">
       
-      {/* CABECERA DEL EDITOR */}
       <div className="p-6 border-b bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-200">
@@ -115,7 +109,6 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
         </div>
       </div>
 
-      {/* ÁREA DE EDICIÓN */}
       <div className="p-6 overflow-y-auto flex-1">
         <div className="space-y-6">
           {EditorComponent ? (
@@ -131,7 +124,6 @@ export function EditorBloque({ bloque, onGuardar, onCancelar }: EditorBloqueProp
         </div>
       </div>
 
-      {/* BOTONES DE ACCIÓN */}
       <div className="border-t p-4 bg-slate-50/50 flex items-center justify-between sticky bottom-0 z-10">
         <div className="text-sm font-medium">
           {tieneCambios ? (

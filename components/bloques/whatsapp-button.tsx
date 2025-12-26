@@ -4,7 +4,6 @@ import { MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface WhatsappFloatingButtonProps {
-  // Aceptamos data si viene de un bloque, o props directas si se usa en layout
   data?: {
     numero?: string
     mensaje?: string
@@ -15,7 +14,6 @@ interface WhatsappFloatingButtonProps {
 }
 
 export function WhatsappFloatingButton({ numero, mensaje, data, className }: WhatsappFloatingButtonProps) {
-  // Priorizamos los datos del bloque (data) si existen, sino usamos las props directas
   const finalNumber = data?.numero || numero
   const finalMessage = data?.mensaje || mensaje
 
@@ -36,8 +34,6 @@ export function WhatsappFloatingButton({ numero, mensaje, data, className }: Wha
       aria-label="Contactar por WhatsApp"
     >
       <MessageCircle className="h-7 w-7 md:h-9 md:w-9" />
-      
-      {/* Onda de animación opcional (Ping) */}
       <span className="absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-20 animate-ping"></span>
     </a>
   )

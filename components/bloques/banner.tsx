@@ -13,9 +13,8 @@ interface BannerData {
 
 export function BloqueBanner({ data }: { data: BannerData }) {
   return (
-    <section className="relative h-[500px] flex items-center justify-center text-center text-white overflow-hidden">
+    <section className="relative h-128 flex items-center justify-center text-center text-white overflow-hidden">
       
-      {/* 1. IMAGEN DE FONDO (Limpia, sin efectos) */}
       <div className="absolute inset-0 z-0">
         {data.imagenFondo ? (
           <img 
@@ -27,11 +26,9 @@ export function BloqueBanner({ data }: { data: BannerData }) {
           <div className="w-full h-full bg-slate-900" />
         )}
         
-        {/* 2. OVERLAY NEGRO SIMPLE (50% opacidad para leer el texto) */}
         <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      {/* 3. CONTENIDO (Centrado y directo) */}
       <div className="relative z-10 container px-4 mx-auto max-w-4xl">
         <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
           {data.titulo}

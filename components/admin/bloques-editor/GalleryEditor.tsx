@@ -86,7 +86,6 @@ export function GalleryEditor({ data, onChange }: GalleryEditorProps) {
               />
             </div>
             
-            {/* CAMPO DE LINK */}
             <div className="space-y-1">
               <Label className="text-xs">Enlace de redirección (opcional)</Label>
               <div className="flex items-center gap-2">

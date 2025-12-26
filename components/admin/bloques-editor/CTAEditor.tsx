@@ -29,7 +29,6 @@ export function CtaEditor({ data, onChange }: CtaEditorProps) {
         />
       </div>
 
-      {/* Botón Primario */}
       <div className="space-y-2 border-t pt-4">
         <Label className="font-semibold text-sm">Botón Primario</Label>
         <div className="grid grid-cols-2 gap-4">
@@ -50,7 +49,6 @@ export function CtaEditor({ data, onChange }: CtaEditorProps) {
         </div>
       </div>
 
-      {/* Botón Secundario */}
       <div className="space-y-2 border-t pt-4">
         <Label className="font-semibold text-sm">Botón Secundario</Label>
         <div className="grid grid-cols-2 gap-4">

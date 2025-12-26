@@ -52,8 +52,6 @@ export interface BaseBlock {
   orden: number
   activo: boolean
   variant?: BlockVariant
-
-  // 🔒 BLOQUE FIJO (Hero Home, etc.)
   locked?: boolean
 }
 

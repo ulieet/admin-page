@@ -7,47 +7,38 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 
-// Interface ajustada a lo que recibe desde EditorBloque
 interface FaqEditorProps {
   data: {
     titulo?: string;
-    descripcion?: string; // Agregué descripción porque tu frontend lo soporta
+    descripcion?: string; 
     items?: { pregunta: string; respuesta: string }[];
   };
   onChange: (campo: string, valor: any) => void;
 }
 
 export default function FaqEditor({ data, onChange }: FaqEditorProps) {
-  // 1. Extraemos los datos con seguridad (usando defaults)
   const items = Array.isArray(data.items) ? data.items : [];
   const titulo = data.titulo || "";
   const descripcion = data.descripcion || "";
 
-  // 2. Manejadores de cambios simples (Título y Descripción)
-  // Nota: EditorBloque espera (key, value)
   const handleTituloChange = (val: string) => onChange("titulo", val);
   const handleDescripcionChange = (val: string) => onChange("descripcion", val);
 
-  // 3. Manejar cambio dentro del array de items
   const handleItemChange = (index: number, field: "pregunta" | "respuesta", val: string) => {
     const newItems = [...items];
-    // Creamos una copia del objeto item para no mutar directamente
     newItems[index] = {
       ...newItems[index],
       [field]: val,
     };
-    // Enviamos el array completo actualizado al padre con la key "items"
     onChange("items", newItems);
   };
 
-  // 4. Agregar nueva pregunta
   const addFaq = () => {
-    // Usamos 'pregunta' y 'respuesta' en español para coincidir con tu frontend BloqueFaq
+    // 'pregunta' y 'respuesta' para coincidir frontend BloqueFaq
     const newItems = [...items, { pregunta: "", respuesta: "" }];
     onChange("items", newItems);
   };
 
-  // 5. Eliminar pregunta
   const removeFaq = (index: number) => {
     const newItems = items.filter((_, i) => i !== index);
     onChange("items", newItems);
@@ -55,7 +46,6 @@ export default function FaqEditor({ data, onChange }: FaqEditorProps) {
 
   return (
     <div className="space-y-6 p-4 border rounded-md bg-slate-50">
-      {/* Edición del Título Principal */}
       <div className="space-y-2">
         <Label>Título de la Sección FAQ</Label>
         <Input
@@ -66,7 +56,6 @@ export default function FaqEditor({ data, onChange }: FaqEditorProps) {
         />
       </div>
 
-      {/* Edición de la Descripción (Opcional) */}
       <div className="space-y-2">
         <Label>Descripción (Opcional)</Label>
         <Textarea
@@ -92,7 +81,6 @@ export default function FaqEditor({ data, onChange }: FaqEditorProps) {
         {items.map((item, index) => (
           <Card key={index} className="relative group overflow-hidden">
             <CardContent className="pt-6 space-y-4 bg-white">
-              {/* Botón Eliminar */}
               <Button
                 variant="destructive"
                 size="icon"

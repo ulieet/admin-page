@@ -26,7 +26,6 @@ export default function AnnouncementEditor({ data, onChange }: AnnouncementEdito
   return (
     <div className="space-y-6 p-4 border rounded-md bg-slate-50">
       
-      {/* VISTA PREVIA DENTRO DEL EDITOR */}
       <div className="space-y-2">
         <Label>Vista Previa Rápida</Label>
         <div 
@@ -38,7 +37,6 @@ export default function AnnouncementEditor({ data, onChange }: AnnouncementEdito
       </div>
 
       <div className="grid gap-5">
-        {/* CAMPO DE TEXTO */}
         <div className="space-y-2">
           <Label>Texto del Anuncio</Label>
           <Input
@@ -48,7 +46,6 @@ export default function AnnouncementEditor({ data, onChange }: AnnouncementEdito
           />
         </div>
 
-        {/* CAMPO DE ENLACE */}
         <div className="space-y-2">
           <Label>Enlace (Opcional)</Label>
           <Input
@@ -59,7 +56,6 @@ export default function AnnouncementEditor({ data, onChange }: AnnouncementEdito
           <p className="text-[11px] text-muted-foreground">Si lo dejas vacío, será solo un texto informativo.</p>
         </div>
 
-        {/* SELECTORES DE COLOR */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Color de Fondo</Label>
@@ -95,7 +91,6 @@ export default function AnnouncementEditor({ data, onChange }: AnnouncementEdito
           </div>
         </div>
 
-        {/* SWITCH ANIMACIÓN */}
         <div className="flex items-center justify-between border p-3 rounded-lg bg-white">
           <div className="space-y-0.5">
             <Label className="text-sm font-semibold">Modo Deslizante (Marquee)</Label>

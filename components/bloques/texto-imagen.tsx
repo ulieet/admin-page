@@ -1,59 +1,91 @@
 "use client"
 
-import type { TextoImagenBlock } from "@/lib/types/blocks"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 import { Check } from "lucide-react"
+import type { TextImageBlock } from "@/lib/types/blocks"
 
-interface TextoImagenProps {
-  data: TextoImagenBlock["datos"]
-  // Ya no necesitamos 'estilos' explícito, usamos variables
+interface BloqueTextoImagenProps {
+  data: TextImageBlock["datos"]
 }
 
-export function BloqueTextoImagen({ data }: TextoImagenProps) {
-  // Usamos las variables CSS globales para mantener la consistencia automática
+export function BloqueTextoImagen({ data }: BloqueTextoImagenProps) {
   const primaryColor = "var(--color-primario)"
-  const textColor = "var(--color-texto)"
+  const isImageRight = !!data.imagenDerecha
 
   return (
-    <section className="py-16 md:py-24 bg-[var(--color-fondo)]">
+    <section 
+        className="py-16 md:py-24"
+        style={{ backgroundColor: "var(--color-fondo)" }}
+    >
       <div className="container mx-auto px-4">
-        <div className={`grid md:grid-cols-2 gap-12 items-center ${data.imagenDerecha ? "" : "md:flex-row-reverse"}`}>
+        <div className={cn(
+          "grid gap-12 lg:gap-16 items-center",
+          "grid-cols-1 lg:grid-cols-2"
+        )}>
           
-          {/* Columna de Texto */}
-          <div className={data.imagenDerecha ? "md:order-1" : "md:order-2"}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance" style={{ color: textColor }}>
-              {data.titulo}
-            </h2>
+          <div className={cn(
+             "space-y-6 order-2", 
+             isImageRight ? "lg:order-1" : "lg:order-2"
+          )}>
             
-            <p className="text-lg leading-relaxed text-pretty mb-6 opacity-90" style={{ color: textColor }}>
-              {data.texto}
-            </p>
-            
-            {/* Lista de Puntos con Checks (Restaurada) */}
+            {data.titulo && (
+                <h2 
+                    className="text-3xl md:text-4xl font-bold tracking-tight"
+                    style={{ color: "var(--color-texto)" }}
+                >
+                    {data.titulo}
+                </h2>
+            )}
+
+            {data.texto && (
+                <div 
+                    className="prose prose-lg leading-relaxed opacity-90"
+                    style={{ color: "var(--color-texto)" }}
+                >
+                    <p>{data.texto}</p>
+                </div>
+            )}
+
             {data.puntos && data.puntos.length > 0 && (
-              <ul className="space-y-3">
-                {data.puntos.map((punto, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 mt-1 flex-shrink-0" style={{ color: primaryColor }} />
-                    <span style={{ color: textColor }}>{punto}</span>
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-3 pt-4">
+                    {(data.puntos || []).map((punto: string, idx: number) => (
+                        <li key={idx} className="flex items-start gap-3">
+                            <Check 
+                                className="w-5 h-5 mt-1 shrink-0" 
+                                style={{ color: primaryColor }} 
+                            />
+                            <span style={{ color: "var(--color-texto)" }} className="opacity-85">
+                                {punto}
+                            </span>
+                        </li>
+                    ))}
+                </ul>
             )}
           </div>
-          
-          {/* Columna de Imagen */}
-          <div className={data.imagenDerecha ? "md:order-2" : "md:order-1"}>
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
-              <Image 
-                src={data.imagen || "/placeholder.svg"} 
-                alt={data.titulo} 
-                fill 
-                className="object-cover" 
-              />
-            </div>
+          <div className={cn(
+              "order-1", 
+              isImageRight ? "lg:order-2" : "lg:order-1"
+          )}>
+             <div 
+                className="relative rounded-2xl overflow-hidden shadow-xl"
+                style={{ aspectRatio: "4/3" }}
+             >
+                {data.imagen ? (
+                    <Image
+                        src={data.imagen}
+                        alt={data.titulo || "Imagen descriptiva"}
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-700"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-slate-200 flex items-center justify-center">
+                        <span className="text-slate-400">Sin imagen</span>
+                    </div>
+                )}
+             </div>
           </div>
-          
+
         </div>
       </div>
     </section>

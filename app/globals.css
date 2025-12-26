@@ -4,7 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Colores empresariales con azul royal como primario */
   --background: oklch(0.985 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -39,7 +38,6 @@
   --sidebar-border: oklch(0.92 0 0);
   --sidebar-ring: oklch(0.45 0.15 265);
 
-  /* Custom style variables for dynamic theming */
   --color-primario: #1e40af;
   --color-secundario: #1e3a8a;
   --color-fondo: #ffffff;
@@ -132,15 +130,12 @@
     @apply border-border outline-ring/50;
   }
   
-  /* ✅ CORRECCIÓN CLAVE: Mover la aplicación del tamaño base a HTML */
   html {
     font-size: var(--tamano-base);
   }
   
   body {
     @apply bg-background text-foreground;
-    /* Apply dynamic font family */
     font-family: var(--fuente-base), var(--font-sans);
-    /* ❌ Eliminamos la línea font-size: var(--tamano-base); de aquí */
   }
 }

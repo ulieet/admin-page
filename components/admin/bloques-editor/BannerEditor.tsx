@@ -13,7 +13,6 @@ interface BannerEditorProps {
 export function BannerEditor({ data, onChange }: BannerEditorProps) {
   return (
     <div className="space-y-6">
-      {/* TÍTULO */}
       <div className="space-y-2">
         <Label>Título</Label>
         <Input 
@@ -33,7 +32,6 @@ export function BannerEditor({ data, onChange }: BannerEditorProps) {
         />
       </div>
 
-      {/* IMAGEN (Arreglado: usa 'imagenFondo' para coincidir con el bloque) */}
       <div className="space-y-2">
         <Label>Imagen de Fondo</Label>
         <ImageUpload
@@ -42,7 +40,6 @@ export function BannerEditor({ data, onChange }: BannerEditorProps) {
         />
       </div>
 
-      {/* BOTÓN */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
             <Label>Texto Botón</Label>

@@ -43,7 +43,6 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
                     </div>
                     <div className="space-y-2"><Label>Email</Label><Input type="email" className="bg-slate-50 border-slate-200" style={{ caretColor: primaryColor }} /></div>
                     
-                    {/* CORREGIDO: minHeight en style */}
                     <div className="space-y-2">
                         <Label>Mensaje</Label>
                         <Textarea 
@@ -155,7 +154,6 @@ export function BloqueForm({ data, variant = "default" }: BloqueFormProps) {
                     <Input type="email" className="bg-slate-50 border-slate-200 h-12 rounded-none focus-visible:ring-1 focus-visible:ring-slate-400" />
                 </div>
 
-                {/* CORREGIDO: minHeight en style */}
                 <div className="space-y-1">
                     <Label className="font-bold text-slate-900 text-xs uppercase">Consulta</Label>
                     <Textarea 

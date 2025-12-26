@@ -3,26 +3,24 @@
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { ArrowRight, Building2 } from "lucide-react"
-import type { ImageCardBlock } from "@/lib/types/blocks" 
+import type { ImageCardListBlock } from "@/lib/types/blocks" 
+
+type SingleCardData = NonNullable<ImageCardListBlock["datos"]["cards"]>[number];
 
 interface BloqueImageCardProps {
-  data: ImageCardBlock["datos"] 
+  data: SingleCardData 
   className?: string
 }
 
 export function BloqueImageCard({ data, className }: BloqueImageCardProps) {
-  // Variables CSS solo para elementos de color (como el botón o badge)
   const primaryColor = "var(--color-primario)"
   
   return (
-    // FIX CLAVE: Forzamos 'bg-white' Y 'text-slate-900' (oscuro) 
-    // Esto garantiza contraste perfecto aunque tu web esté en modo oscuro.
     <div className={cn(
         "bg-white text-slate-900 rounded-xl shadow-md overflow-hidden border border-slate-100 h-full w-full flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1", 
         className
     )}>
       
-      {/* Imagen de Portada */}
       <div className="aspect-video overflow-hidden relative bg-slate-100">
         {data.imagenUrl ? (
             <img 
@@ -36,14 +34,11 @@ export function BloqueImageCard({ data, className }: BloqueImageCardProps) {
             </div>
         )}
         
-        {/* Overlay sutil al hover */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
       </div>
       
-      {/* Contenido */}
       <div className="p-6 md:p-8 space-y-4 flex flex-col flex-1">
         
-        {/* Etiqueta / Badge */}
         {data.etiqueta && (
             <div 
                 className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider w-fit shadow-sm"
@@ -56,17 +51,16 @@ export function BloqueImageCard({ data, className }: BloqueImageCardProps) {
             </div>
         )}
         
-        {/* Título (Siempre oscuro) */}
         <h3 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900">
           {data.titulo}
         </h3>
         
-        {/* Descripción (Siempre gris medio/oscuro) */}
-        <p className="text-base text-slate-600 flex-1 leading-relaxed">
-          {data.descripcion}
-        </p>
+        {data.descripcion && (
+            <p className="text-base text-slate-600 flex-1 leading-relaxed">
+            {data.descripcion}
+            </p>
+        )}
         
-        {/* Link / Botón */}
         {data.linkTexto && data.linkUrl && (
             <Link 
                 href={data.linkUrl} 

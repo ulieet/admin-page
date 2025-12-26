@@ -5,7 +5,7 @@ import {
   cargarConfiguracion,
   guardarConfiguracion,
 } from "@/lib/blocks-storage"
-import type { Block, SiteConfig, PageData, BlockVariant } from "@/lib/types/blocks" // <--- IMPORTAMOS BlockVariant
+import type { Block, SiteConfig, PageData, BlockVariant } from "@/lib/types/blocks" 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -19,9 +19,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { EditorBloque } from "@/components/admin/editor-bloque"
 import { NuevoBloqueDialog } from "@/components/admin/nuevo-bloque-dialog"
 import { EditorEstilos } from "@/components/admin/editor-estilos"
-import { HeaderEditor } from "@/components/admin/blocks/HeaderEditor"
-import { FooterEditor } from "@/components/admin/blocks/FooterEditor"
-import { HeroEditor } from "@/components/admin/blocks/HeroEditor"
+import { HeaderEditor } from "@/components/admin/bloques-editor/HeaderEditor"
+import { FooterEditor } from "@/components/admin/bloques-editor/FooterEditor"
+import { HeroEditor } from "@/components/admin/bloques-editor/HeroEditor"
 import { cn } from "@/lib/utils"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,12 +33,10 @@ export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<string>("home-page") 
   const [bloqueSeleccionadoId, setBloqueSeleccionadoId] = useState<string | null>(null)
   
-  // Estados temporales
   const [tempHeaderData, setTempHeaderData] = useState<any>(null)
   const [tempFooterData, setTempFooterData] = useState<any>(null)
   const [tempHeroData, setTempHeroData] = useState<any>(null)
   
-  // CORRECCIÓN 1: Tipado explícito del estado para evitar el error de string vs BlockVariant
   const [tempHeroVariant, setTempHeroVariant] = useState<BlockVariant>("default")
 
   const [dialogNewBlockOpen, setDialogNewBlockOpen] = useState(false)
@@ -105,7 +103,6 @@ export default function AdminPage() {
   const currentBlocks = activePage ? activePage.blocks : []
   const isHomePage = activePage?.slug === "home"
 
-  // Funciones de manejo
   const handleCreatePage = () => {
     if (!newPageName || !config) return
     const slug = newPageName.toLowerCase().trim().replace(/\s+/g, '-')
@@ -179,7 +176,6 @@ export default function AdminPage() {
       }
     }
 
-    // Intercambio
     [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]]
     newBlocks.forEach((b, i) => b.orden = i)
     
@@ -207,8 +203,6 @@ export default function AdminPage() {
      alert("Footer guardado")
   }
 
-  // --- ERROR 1 CORREGIDO AQUÍ ---
-  // tempHeroVariant ahora está tipado como BlockVariant en el useState
   const saveHero = () => {
     if (!activePage || !config) return
     let newBlocks = [...activePage.blocks]
@@ -269,10 +263,10 @@ export default function AdminPage() {
                                         value={config.tipoAnimacion || "none"}
                                         onChange={(e) => setConfig({ ...config, tipoAnimacion: e.target.value as any })}
                                     >
-                                        <option value="none">🚫 Ninguna (Carga instantánea)</option>
-                                        <option value="fade">✨ Suave (Fade In)</option>
-                                        <option value="slide">⬆️ Deslizar (Slide Up)</option>
-                                        <option value="scale">🔍 Zoom (Scale Up)</option>
+                                        <option value="none"> Ninguna (Carga instantánea)</option>
+                                        <option value="fade"> Suave (Fade In)</option>
+                                        <option value="slide"> Deslizar (Slide Up)</option>
+                                        <option value="scale"> Zoom (Scale Up)</option>
                                     </select>
                                 </div>
                                 
@@ -327,7 +321,6 @@ export default function AdminPage() {
                     <Button onClick={saveFooter} className="bg-green-600 hover:bg-green-700"><Save className="w-4 h-4 mr-2" /> Guardar Cambios</Button>
                 </div>
                 <div className="bg-white p-6 rounded-lg border shadow-sm">
-                    {/* CORRECCIÓN 2: Tipado explícito de los parámetros del onChange */}
                     <FooterEditor 
                         data={tempFooterData} 
                         onChange={(campo: string, valor: any) => setTempFooterData({ ...tempFooterData, [campo]: valor })} 
@@ -441,12 +434,10 @@ export default function AdminPage() {
             {activePage && (
                 <div className="pt-4 border-t mt-2">
                     <div className="flex items-center justify-between mb-2 px-2">
-                        {/* CORRECCIÓN 3: Reemplazo de max-w-[120px] por max-w-30 */}
                         <p className="text-xs font-bold text-primary truncate max-w-30">{activePage.title.toUpperCase()}</p>
                         <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setDialogNewBlockOpen(true)}><Plus className="w-3 h-3" /></Button>
                     </div>
                     <div className="space-y-1">
-                        {/* 1. SECCIÓN SUPERIOR: ANUNCIOS (TOP BAR) */}
                         {activePage.blocks
                             .filter(b => b.tipo === "announcement")
                             .map(bloque => (
@@ -471,7 +462,6 @@ export default function AdminPage() {
                             </div>
                         ))}
 
-                        {/* 2. HERO FIJO (SOLO EN HOME) */}
                         {isHomePage && (
                              <div 
                                 onClick={() => setBloqueSeleccionadoId("fixed-hero-home")} 
@@ -485,7 +475,6 @@ export default function AdminPage() {
                              </div>
                         )}
 
-                        {/* 3. RESTO DE BLOQUES */}
                         {activePage.blocks
                             .filter(b => !(isHomePage && b.tipo === "hero") && b.tipo !== "announcement") 
                             .map((bloque, idx) => (

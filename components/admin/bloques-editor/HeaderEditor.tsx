@@ -25,7 +25,7 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
   ]
 
   const alineacionMenu = data.alineacionMenu || "right"
-  const fuenteActual = data.fuente || "geist" // Geist por defecto
+  const fuenteActual = data.fuente || "geist" 
 
   const updateNavLink = (index: number, field: string, value: string) => {
     const newNav = [...(data.navegacion || [])]
@@ -46,7 +46,6 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
   return (
     <div className="space-y-8">
       
-      {/* --- SELECTOR DE DISEÑO --- */}
       {onVariantChange ? (
         <div className="space-y-4">
             <Label className="text-base font-semibold">Diseño del Encabezado</Label>
@@ -81,7 +80,7 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
         </div>
       ) : (
         <div className="p-4 bg-red-50 text-red-600 rounded text-sm border border-red-200">
-            ⚠️ Error: Falta la función "onVariantChange" en AdminPage.tsx
+              Error: Falta la función "onVariantChange" en AdminPage.tsx
         </div>
       )}
 
@@ -89,7 +88,6 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
 
       <div className="grid gap-6">
         
-        {/* LOGO */}
         <div className="space-y-3">
           <Label>Logo del Sitio</Label>
           <div className="p-1 border rounded-lg bg-slate-50">
@@ -100,7 +98,6 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
           </div>
         </div>
 
-        {/* --- NUEVA SECCIÓN DE TIPOGRAFÍA --- */}
         <div className="space-y-4 p-4 border rounded-lg bg-slate-50">
             <h3 className="font-medium flex items-center gap-2"><Type className="w-4 h-4"/> Tipografía del Menú</h3>
             
@@ -138,7 +135,6 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
             </div>
         </div>
 
-        {/* ALINEACIÓN DEL MENÚ (Solo para Clásico y Moderno) */}
         {variant !== "centered" && (
             <div className="space-y-3 p-4 border rounded-lg bg-slate-50">
                <Label className="text-sm font-medium">Alineación del Menú</Label>
@@ -150,7 +146,6 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
             </div>
         )}
 
-        {/* TRANSPARENCIA */}
         <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/20">
           <div className="space-y-0.5">
             <Label className="text-base">Fondo Transparente</Label>
@@ -159,7 +154,6 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
           <Switch checked={data.transparente} onCheckedChange={(checked) => onChange("transparente", checked)} />
         </div>
 
-        {/* EDITOR DE MENÚ */}
         <div className="space-y-3 pt-2">
             <div className="flex justify-between items-center">
                 <Label>Enlaces del Menú</Label>
@@ -176,7 +170,6 @@ export function HeaderEditor({ data, onChange, variant = "default", onVariantCha
             </div>
         </div>
 
-        {/* BOTÓN CTA */}
         <div className="grid grid-cols-2 gap-4 border-t pt-4">
             <div className="space-y-2">
                 <Label>Texto Botón</Label>

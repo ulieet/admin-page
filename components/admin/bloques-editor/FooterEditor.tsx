@@ -10,7 +10,7 @@ import dynamic from "next/dynamic"
 
 const MapPicker = dynamic(() => import("@/components/admin/map-picker"), { 
   ssr: false,
-  loading: () => <div className="h-[300px] w-full bg-slate-100 flex items-center justify-center text-slate-400">Cargando mapa...</div>
+  loading: () => <div className="h-72 w-full bg-slate-100 flex items-center justify-center text-slate-400">Cargando mapa...</div>
 })
 
 export function FooterEditor({ data, onChange }: any) {
@@ -30,7 +30,6 @@ export function FooterEditor({ data, onChange }: any) {
 }
 
 
-  // LECTURA INTELIGENTE: Lee del nuevo formato (ubicacion) o del viejo (lat/lng)
  const latValue = normalizeCoord(data.ubicacion?.lat ?? data.lat)
 const lngValue = normalizeCoord(data.ubicacion?.lng ?? data.lng)
 
@@ -52,7 +51,6 @@ const tieneUbicacion =
 
         <TabsContent value="contenido" className="space-y-5 pt-4">
           
-          {/* IDENTIDAD */}
           <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Nombre Empresa</Label>
@@ -78,7 +76,6 @@ const tieneUbicacion =
             />
           </div>
 
-          {/* IMAGEN ADICIONAL */}
           <div className="space-y-2 p-3 bg-slate-50 rounded-lg border">
             <Label>Imagen Adicional (Ej: QR DataFiscal, premios)</Label>
             <ImageUpload 
@@ -126,11 +123,7 @@ const tieneUbicacion =
                         {tieneUbicacion ? "✓ Ubicación activa" : "Sin definir"}
                     </span>
                 </div>
-                {/* SOLUCIÓN DEFINITIVA: 
-                   Actualizamos "ubicacion" como un único objeto. 
-                   Esto evita el conflicto de actualizaciones (race condition) 
-                   que hacía que desapareciera el punto.
-                */}
+              
                 <MapPicker 
                     lat={latValue} 
                     lng={lngValue} 
@@ -142,7 +135,6 @@ const tieneUbicacion =
         </TabsContent>
 
         <TabsContent value="estilo" className="space-y-6 pt-4">
-           {/* --- SELECTOR DE DISEÑO VISUAL --- */}
            <div className="space-y-3">
               <Label className="text-base font-medium">Distribución del Footer</Label>
               <div className="grid grid-cols-3 gap-3">

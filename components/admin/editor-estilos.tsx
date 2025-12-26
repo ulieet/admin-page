@@ -141,7 +141,6 @@ export function EditorEstilos({ estilos, onGuardar }: EditorEstilosProps) {
           </CardContent>
         </Card>
 
-        {/* TIPOGRAFÍA */}
         <Card>
           <CardHeader>
             <CardTitle>Tipografía</CardTitle>

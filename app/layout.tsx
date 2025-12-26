@@ -8,7 +8,6 @@ import { ThemeInitializer } from "@/components/theme-initializer"
 
 const geist = Geist({ subsets: ["latin"] })
 
-// ✅ FAVICON SERVER-SIDE → carga SIEMPRE al refrescar
 export const metadata: Metadata = {
   title: "Mi Sitio Web",
   description: "Powered by Page Builder",
@@ -28,7 +27,6 @@ export default function RootLayout({
       <body
         className={`${geist.className} antialiased min-h-screen flex flex-col bg-background text-foreground`}
       >
-        {/* Componentes que tocan DOM */}
         <ThemeInitializer />
         <DynamicFavicon />
 

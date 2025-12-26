@@ -11,7 +11,6 @@ interface StatsData {
 }
 
 export function BloqueStats({ data }: { data: StatsData }) {
-  // Si elige fondo oscuro, forzamos el color primario como fondo
   const useDarkBg = data.fondoOscuro
   
   return (
@@ -29,7 +28,6 @@ export function BloqueStats({ data }: { data: StatsData }) {
               <div 
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2 tracking-tight"
                 style={{ 
-                  // Si el fondo es claro, el número es del color primario. Si es oscuro, es blanco.
                   color: useDarkBg ? "#ffffff" : "var(--color-primario)" 
                 }}
               >

@@ -33,7 +33,6 @@ const AVAILABLE_ICONS = [
 export function Cards3Editor({ data, onChange }: CardsEditorProps) {
   const estiloActual = data.variant || "corporate"
   
-  // CORRECCIÓN: link empieza vacío ("") en lugar de "#"
   const items = data.items || [
     { title: "Atención Personalizada", description: "Valoramos a cada cliente...", icon: "users", link: "", buttonText: "Ver más" },
     { title: "Confidencialidad", description: "Integridad y confianza...", icon: "lock", link: "", buttonText: "Ver más" },
@@ -53,7 +52,6 @@ export function Cards3Editor({ data, onChange }: CardsEditorProps) {
   return (
     <div className="space-y-8 bg-white p-6 rounded-lg border shadow-sm">
       
-      {/* 1. SELECCIÓN DE ESTILO */}
       <div className="space-y-4">
         <Label className="text-base font-semibold">Diseño Visual</Label>
         <div className="grid gap-3">
@@ -77,7 +75,6 @@ export function Cards3Editor({ data, onChange }: CardsEditorProps) {
 
       <Separator />
 
-      {/* 2. TEXTOS GENERALES */}
       <div className="space-y-4">
           <Label className="text-base font-semibold">Cabecera</Label>
           <div className="grid gap-4">
@@ -94,7 +91,6 @@ export function Cards3Editor({ data, onChange }: CardsEditorProps) {
 
       <Separator />
 
-      {/* 3. EDITAR TARJETAS */}
       <div className="space-y-6">
         <Label className="text-base font-semibold">Tarjetas Individuales</Label>
         
@@ -104,7 +100,6 @@ export function Cards3Editor({ data, onChange }: CardsEditorProps) {
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Tarjeta #{index + 1}</span>
                 </div>
                 
-                {/* ICONO Y TÍTULO */}
                 <div className="grid grid-cols-[1fr_2fr] gap-3">
                     <div>
                         <Label className="text-xs mb-1.5 block">Icono</Label>
@@ -125,13 +120,11 @@ export function Cards3Editor({ data, onChange }: CardsEditorProps) {
                     </div>
                 </div>
 
-                {/* DESCRIPCIÓN */}
                 <div>
                     <Label className="text-xs mb-1.5 block">Descripción</Label>
-                    <Textarea value={item.description || ""} onChange={(e) => handleItemChange(index, "description", e.target.value)} className="bg-white min-h-[70px]" />
+                    <Textarea value={item.description || ""} onChange={(e) => handleItemChange(index, "description", e.target.value)} className="bg-white min-h-20" />
                 </div>
 
-                {/* ENLACE Y TEXTO BOTÓN */}
                 <div className="grid grid-cols-2 gap-3 p-3 bg-white rounded border border-slate-200">
                     <div>
                         <Label className="text-xs mb-1.5 block text-blue-600 font-semibold">Texto Botón</Label>
@@ -145,7 +138,6 @@ export function Cards3Editor({ data, onChange }: CardsEditorProps) {
                     <div>
                         <Label className="text-xs mb-1.5 block text-blue-600 font-semibold">Enlace (Ruta)</Label>
                         <Input 
-                            // CORRECCIÓN: value={item.link || ""} permite que el campo esté totalmente vacío
                             value={item.link || ""} 
                             onChange={(e) => handleItemChange(index, "link", e.target.value)} 
                             placeholder="Ej: /contacto"

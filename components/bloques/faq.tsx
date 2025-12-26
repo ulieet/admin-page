@@ -20,7 +20,6 @@ interface FaqData {
 }
 
 export function BloqueFaq({ data }: { data: FaqData }) {
-  // Aseguramos que items sea un array para evitar errores si está vacío
   const items = Array.isArray(data.items) ? data.items : []
 
   return (
@@ -46,7 +45,11 @@ export function BloqueFaq({ data }: { data: FaqData }) {
               value={`item-${index}`} 
               className="border border-slate-200 rounded-lg px-6 bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
             >
-              <AccordionTrigger className="text-left text-lg font-medium text-[var(--color-primario)] hover:no-underline py-6 [&[data-state=open]]:text-[var(--color-primario)]">
+             
+              <AccordionTrigger 
+                className="text-left text-lg font-medium hover:no-underline py-6"
+                style={{ color: "var(--color-primario)" }}
+              >
                 {item.pregunta}
               </AccordionTrigger>
               <AccordionContent className="text-slate-600 text-base leading-relaxed pb-6">

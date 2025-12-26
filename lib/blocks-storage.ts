@@ -97,7 +97,6 @@ export function guardarConfiguracion(config: SiteConfig): void {
   
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
 
-  // DISPARAR EVENTO PERSONALIZADO para sincronizar componentes en la misma pestaña
   window.dispatchEvent(new Event("storage-update"))
 }
 

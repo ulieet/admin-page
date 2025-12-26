@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
 import { Geist, Inter, Montserrat, Lato, Open_Sans, Roboto, Playfair_Display } from "next/font/google"
 
-// --- FUENTES ---
 const geist = Geist({ subsets: ["latin"] })
 const inter = Inter({ subsets: ["latin"] })
 const montserrat = Montserrat({ subsets: ["latin"] })
@@ -16,7 +15,6 @@ const openSans = Open_Sans({ subsets: ["latin"] })
 const roboto = Roboto({ weight: ["300", "400", "500", "700"], subsets: ["latin"] })
 const playfair = Playfair_Display({ subsets: ["latin"] })
 
-// --- NAV ITEM ---
 const NavItem = ({ href, children, className, variant = "default", onClick, fontClass, isBold }: any) => {
   const [isHovered, setIsHovered] = useState(false)
   const isModern = variant === "modern"
@@ -90,11 +88,7 @@ export function BloqueHeader({ data, navLinks, variant = "default" }: BloqueHead
   const isTransparentState = esTransparente && !scrolled
 
   const headerClass = cn(
-    // 🔥 CAMBIO CRÍTICO: De 'fixed' a 'sticky'
-    // 'sticky' permite que el header respete el espacio de la barra de anuncios arriba.
-    // 'z-40' para que esté por debajo de la barra de anuncios (que suele ser z-50 o z-100).
     "sticky top-0 left-0 right-0 z-40 transition-all duration-300 w-full",
-    
     !isTransparentState && "shadow-sm backdrop-blur-md",
     isTransparentState ? "py-4" : "py-2",
     variant === "centered" && "py-4"
@@ -133,7 +127,6 @@ export function BloqueHeader({ data, navLinks, variant = "default" }: BloqueHead
     return "flex-1 flex justify-end mr-8"
   }
 
-  // --- MODO EDITORIAL (CENTRADO) ---
   if (variant === "centered") {
     return (
       <header className={headerClass} style={containerStyle}>
@@ -178,7 +171,6 @@ export function BloqueHeader({ data, navLinks, variant = "default" }: BloqueHead
     )
   }
 
-  // --- MODO DEFAULT / MODERN ---
   const isModern = variant === "modern"
   return (
     <header className={headerClass} style={containerStyle}>

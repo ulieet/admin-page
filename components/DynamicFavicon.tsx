@@ -18,11 +18,9 @@ export default function DynamicFavicon() {
       const separator = logoUrl.includes("?") ? "&" : "?"
       const href = `${logoUrl}${separator}v=${version}`
 
-      // 🔒 Buscar SOLO los iconos nuestros
       let icon = document.getElementById(FAVICON_ID) as HTMLLinkElement | null
       let apple = document.getElementById(APPLE_ID) as HTMLLinkElement | null
 
-      // Crear si no existen
       if (!icon) {
         icon = document.createElement("link")
         icon.id = FAVICON_ID
@@ -39,7 +37,6 @@ export default function DynamicFavicon() {
         document.head.appendChild(apple)
       }
 
-      // Actualizar href (esto es seguro)
       icon.href = href
       apple.href = href
     }

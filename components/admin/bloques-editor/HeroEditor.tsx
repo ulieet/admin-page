@@ -17,7 +17,6 @@ interface HeroEditorProps {
 
 export function HeroEditor({ data, variant = "default", onChange }: HeroEditorProps) {
   
-  // Detectamos si es minimal para ocultar imágenes
   const isMinimal = variant === "minimal"
   const isRestrictedVariant = variant === "minimal" || variant === "modern"
 
@@ -31,7 +30,6 @@ export function HeroEditor({ data, variant = "default", onChange }: HeroEditorPr
   return (
     <div className="space-y-6">
       
-      {/* SECCIÓN DE IMÁGENES (Oculta en Minimal) */}
       {!isMinimal ? (
         <div className="space-y-4 border-b pb-6">
           <div className="flex items-center justify-between">
@@ -95,7 +93,6 @@ export function HeroEditor({ data, variant = "default", onChange }: HeroEditorPr
         </div>
       )}
 
-      {/* SECCIÓN DE TEXTOS Y BOTONES */}
       <div className={data.soloSlider ? "opacity-50 pointer-events-none" : ""}>
         <div className="space-y-2">
           <Label>Título</Label>
@@ -155,7 +152,6 @@ export function HeroEditor({ data, variant = "default", onChange }: HeroEditorPr
         </div>
       </div>
 
-      {/* CONFIGURACIÓN EXTRA */}
       <div className="space-y-4 border-t pt-6">
         <Label className="text-base font-semibold">Configuración de Visualización</Label>
         

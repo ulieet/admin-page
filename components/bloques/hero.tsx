@@ -15,7 +15,7 @@ interface HeroProps {
   data: HeroBlock["datos"] & { 
     soloSlider?: boolean; 
     mostrarIndicadores?: boolean;
-    alineacion?: "left" | "center" | "right"; // Nueva prop
+    alineacion?: "left" | "center" | "right"; 
   }
   variant?: BlockVariant
   estilos?: StyleConfig | null
@@ -25,13 +25,10 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [direction, setDirection] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
-
   const imagenes = data.imagenes || []
   const hasMultipleImages = imagenes.length > 1
   const showDots = data.mostrarIndicadores !== false
   const showContent = !data.soloSlider
-  
-  // ALINEACIÓN: Default a 'center' si no existe
   const alineacion = data.alineacion || "center"
 
   const nextImage = useCallback(() => {
@@ -63,7 +60,6 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
     exit: (direction: number) => ({ x: direction < 0 ? 1000 : -1000, opacity: 0 }),
   }
 
-  // VARIABLES
   const primaryColor = "var(--color-primario)"
   const bgColor = "var(--color-fondo)"
   const textColor = "var(--color-texto)"
@@ -83,26 +79,23 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
     )
   }
 
-  // --- HELPER PARA CLASES DE ALINEACIÓN ---
   const getAlignmentClasses = (isFlex = false) => {
     if (alineacion === "left") return isFlex ? "items-start text-left" : "text-left"
     if (alineacion === "right") return isFlex ? "items-end text-right" : "text-right"
-    return isFlex ? "items-center text-center" : "text-center" // Center by default
+    return isFlex ? "items-center text-center" : "text-center" 
   }
 
   const getContainerJustify = () => {
-    if (alineacion === "left") return "justify-start md:pl-20" // Un poco de padding extra para que no pegue al borde
+    if (alineacion === "left") return "justify-start md:pl-20" 
     if (alineacion === "right") return "justify-end md:pr-20"
     return "justify-center"
   }
 
-  // --- DISEÑO 1: MODERN (Split) ---
   if (variant === "modern" && showContent) {
     return (
       <section className="py-20 px-4" style={{ backgroundColor: bgColor }}>
         <div className="container mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Aplicamos alineación dinámica aquí */}
             <div className={`space-y-6 flex flex-col ${getAlignmentClasses(true)}`}>
               <h1 className="font-bold text-balance" style={{ fontSize: tituloSize, color: textColor }}>{data.titulo}</h1>
               <p className="text-balance opacity-80" style={{ fontSize: subtituloSize, color: textColor }}>{data.subtitulo}</p>
@@ -111,7 +104,7 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
                 {data.botonSecundarioTexto && <Button size="lg" variant="outline" asChild style={{ borderColor: primaryColor, color: primaryColor }}><a href={data.botonSecundarioUrl}>{data.botonSecundarioTexto}</a></Button>}
               </div>
             </div>
-            <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+            <div className="relative h-128 rounded-2xl overflow-hidden shadow-2xl" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
               <AnimatePresence initial={false} custom={direction}>
                 <motion.div key={currentImageIndex} custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }} className="absolute w-full h-full">
                   <Image src={currentImage || "/placeholder.svg"} alt={data.titulo || "Hero"} fill className="object-cover" priority={currentImageIndex === 0} />
@@ -131,7 +124,6 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
     )
   }
 
-  // --- DISEÑO 2: MINIMAL (Siempre Centrado) ---
   if (variant === "minimal" && showContent) {
     return (
       <section className="relative py-32 px-4" style={{ background: `linear-gradient(135deg, ${primaryColor}15, var(--color-fondo), transparent)` }}>
@@ -147,14 +139,12 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
     )
   }
 
-  // --- DISEÑO 3: CLÁSICO (DEFAULT) - Estilo BOCETO con GEIST y Alineación ---
   return (
     <section 
-      className={`relative h-96 md:h-[500px] w-full flex items-center overflow-hidden ${geistFont.className} ${getContainerJustify()}`} 
+      className={`relative h-96 md:h-128 w-full flex items-center overflow-hidden ${geistFont.className} ${getContainerJustify()}`} 
       onMouseEnter={() => setIsPaused(true)} 
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Slider de Imágenes */}
       <AnimatePresence initial={false} custom={direction}>
         <motion.div 
             key={currentImageIndex} 
@@ -177,7 +167,6 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
         </motion.div>
       </AnimatePresence>
 
-      {/* Flechas */}
       {hasMultipleImages && (
         <>
           <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/30 text-white hover:bg-black/50 transition-colors"><ChevronLeft className="h-5 w-5" /></button>
@@ -187,12 +176,9 @@ export function BloqueHero({ data, variant = "default", estilos }: HeroProps) {
 
       <Indicators />
 
-      {/* Contenido Central con Alineación Dinámica */}
       {showContent && (
         <div className="relative z-10 container mx-auto px-6 h-full flex items-center w-full">
-             {/* Contenedor de texto con ancho limitado pero flexible en posicionamiento.
-                 'w-full' permite que flexbox del padre lo ubique.
-             */}
+            
             <div className={`w-full max-w-3xl text-white flex flex-col ${getAlignmentClasses(true)} ${alineacion === "center" ? "mx-auto" : ""} ${alineacion === "right" ? "ml-auto" : ""}`}>
                 <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
                     {data.titulo}

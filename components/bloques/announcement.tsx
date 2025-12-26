@@ -3,10 +3,10 @@ import { ArrowRight } from "lucide-react";
 
 interface AnnouncementData {
   texto: string;
-  enlace?: string; // Opcional: si quieres que toda la barra sea clickeable
+  enlace?: string; 
   bgColor?: string;
   textColor?: string;
-  animado?: boolean; // Para activar el efecto "se desliza"
+  animado?: boolean; 
 }
 
 export function BloqueAnnouncement({ data }: { data: AnnouncementData }) {
@@ -18,7 +18,6 @@ export function BloqueAnnouncement({ data }: { data: AnnouncementData }) {
     animado = false,
   } = data;
 
-  // Contenido base
   const content = (
     <div className="flex items-center justify-center h-full px-4">
       <span className="font-medium text-sm md:text-base tracking-wide flex items-center gap-2">
@@ -34,16 +33,13 @@ export function BloqueAnnouncement({ data }: { data: AnnouncementData }) {
       style={{ backgroundColor: bgColor, color: textColor }}
     >
       {animado ? (
-        // Versión Animada (Marquee infinito)
         <div className="py-2.5 flex whitespace-nowrap overflow-hidden">
           <div className="animate-marquee flex min-w-full justify-around items-center gap-8 px-4">
-             {/* Repetimos el texto un par de veces para el efecto infinito suave */}
             <span>{texto}</span>
             <span>{texto}</span>
             <span>{texto}</span>
             <span>{texto}</span>
           </div>
-          {/* Duplicado para el loop continuo (Tailwind requiere configuración o este truco) */}
           <div className="animate-marquee flex min-w-full justify-around items-center gap-8 px-4 absolute top-2.5 left-full">
             <span>{texto}</span>
             <span>{texto}</span>
@@ -52,7 +48,6 @@ export function BloqueAnnouncement({ data }: { data: AnnouncementData }) {
           </div>
         </div>
       ) : (
-        // Versión Estática
         <div className="py-2.5 container mx-auto text-center">
           {enlace ? (
             <Link href={enlace} className="hover:underline decoration-1 underline-offset-4 block w-full h-full">
@@ -64,7 +59,6 @@ export function BloqueAnnouncement({ data }: { data: AnnouncementData }) {
         </div>
       )}
 
-      {/* Estilos inline para la animación si no la tienes en tailwind.config.js */}
       <style jsx>{`
         @keyframes marquee {
           0% { transform: translateX(0%); }

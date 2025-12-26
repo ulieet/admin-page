@@ -15,7 +15,6 @@ interface CTAData {
 
 export function BloqueCTA({ data }: { data: CTAData }) {
   return (
-    // Fondo primario forzado, Texto blanco forzado (para contraste)
     <section className="py-24 text-white text-center" style={{ backgroundColor: "var(--color-primario)" }}>
       <div className="container mx-auto px-4">
         

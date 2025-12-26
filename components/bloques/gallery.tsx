@@ -7,15 +7,29 @@ import { cn } from "@/lib/utils"
 
 interface BloqueGalleryProps {
   data: GalleryBlock["datos"]
-  // Sin 'estilos'
+}
+
+interface ExtendedGalleryImage {
+  url: string
+  alt: string
+  link?: string
+  descripcion?: string
 }
 
 export function BloqueGallery({ data }: BloqueGalleryProps) {
   const columnas = data.columnas || 3
   const titulo = data.titulo || ""
+  
+  const imagenes = (data.imagenes || []) as unknown as ExtendedGalleryImage[]
 
   return (
-    <section className="py-20 md:py-24 bg-[var(--color-fondo)] text-[var(--color-texto)]">
+    <section 
+        className="py-20 md:py-24"
+        style={{ 
+            backgroundColor: "var(--color-fondo)", 
+            color: "var(--color-texto)" 
+        }}
+    >
       <div className="container mx-auto px-4">
         {titulo && (
           <h2 
@@ -32,9 +46,8 @@ export function BloqueGallery({ data }: BloqueGalleryProps) {
           columnas === 3 && "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
           columnas === 4 && "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
         )}>
-          {(data.imagenes || []).map((imagen, index) => {
+          {imagenes.map((imagen, index) => {
             
-            // Renderizado de la imagen
             const ImageContent = (
               <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-black/5 group shadow-sm hover:shadow-md transition-all">
                 <Image
@@ -44,7 +57,6 @@ export function BloqueGallery({ data }: BloqueGalleryProps) {
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 
-                {/* Overlay oscuro al pasar el mouse (solo si tiene link o descripción) */}
                 {(imagen.link || imagen.descripcion) && (
                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
                       {imagen.descripcion && (
@@ -57,7 +69,6 @@ export function BloqueGallery({ data }: BloqueGalleryProps) {
               </div>
             )
 
-            // Si es un link, lo envolvemos
             return (
               <div key={index}>
                 {imagen.link ? (

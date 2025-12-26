@@ -24,11 +24,9 @@ export function FormEditor({ data, onChange }: FormEditorProps) {
   return (
     <div className="space-y-8 bg-white p-6 rounded-lg border shadow-sm">
       
-      {/* 1. SELECCIÓN DE ESTILO */}
       <div className="space-y-4">
         <Label className="text-base font-semibold">Estilo del Formulario</Label>
         <div className="grid gap-3">
-            {/* CLÁSICO */}
             <div onClick={() => handleEstiloChange("default")} className={`relative flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-slate-50 ${estiloActual === 'default' ? 'border-blue-600 bg-blue-50/20' : 'border-slate-200'}`}>
                 <LayoutTemplate className="w-5 h-5 text-slate-500" />
                 <div className="flex-1">
@@ -38,7 +36,6 @@ export function FormEditor({ data, onChange }: FormEditorProps) {
                 {estiloActual === 'default' && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
             </div>
 
-            {/* TARJETA */}
             <div onClick={() => handleEstiloChange("modern")} className={`relative flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-slate-50 ${estiloActual === 'modern' ? 'border-blue-600 bg-blue-50/20' : 'border-slate-200'}`}>
                 <CreditCard className="w-5 h-5 text-slate-500" />
                 <div className="flex-1">
@@ -48,7 +45,6 @@ export function FormEditor({ data, onChange }: FormEditorProps) {
                 {estiloActual === 'modern' && <CheckCircle2 className="w-4 h-4 text-blue-600" />}
             </div>
 
-            {/* MINIMALISTA */}
             <div onClick={() => handleEstiloChange("minimal")} className={`relative flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all hover:bg-slate-50 ${estiloActual === 'minimal' ? 'border-blue-600 bg-blue-50/20' : 'border-slate-200'}`}>
                 <AlignJustify className="w-5 h-5 text-slate-500" />
                 <div className="flex-1">
@@ -62,7 +58,6 @@ export function FormEditor({ data, onChange }: FormEditorProps) {
 
       <Separator />
 
-      {/* 2. TEXTOS PRINCIPALES */}
       <div className="space-y-4">
           <Label className="text-base font-semibold">Cabecera</Label>
           <div className="grid gap-4">
@@ -79,7 +74,6 @@ export function FormEditor({ data, onChange }: FormEditorProps) {
 
       <Separator />
 
-      {/* 3. INFORMACIÓN DE CONTACTO (SOLO SI ES CLÁSICO) */}
       {estiloActual === 'default' && (
           <>
             <div className="space-y-4 bg-slate-50 p-4 rounded-lg border animate-in fade-in slide-in-from-top-2 duration-300">
@@ -113,7 +107,6 @@ export function FormEditor({ data, onChange }: FormEditorProps) {
           </>
       )}
 
-      {/* 4. CONFIGURACIÓN */}
       <div className="space-y-4">
         <Label className="text-base font-semibold">Configuración</Label>
         <div className="grid grid-cols-2 gap-4">

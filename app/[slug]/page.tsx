@@ -47,7 +47,6 @@ export default function DynamicPage() {
 
   const currentPage = config.pages.find(p => p.slug === slug)
 
-  // si me tira error 404
   if (!currentPage) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4 pt-24">
@@ -77,14 +76,12 @@ export default function DynamicPage() {
       }}
     >
 
-      {/* 1. TOP BAR (Antes del Header) */}
       {announcementBlocks.length > 0 && (
         <div className="relative w-full" style={{ zIndex: 100 }}>
           <RenderBlocks blocks={announcementBlocks} />
         </div>
       )}
 
-      {/* 2. HEADER */}
       {config.header.activo && (
         <BloqueHeader
           data={headerData}
@@ -93,7 +90,6 @@ export default function DynamicPage() {
         />
       )}
 
-      {/* 3. MAIN CONTENT (Resto de bloques) */}
       <main className="flex-1 flex flex-col w-full">
         {contentBlocks.length === 0 ? (
             <div className="py-20 text-center text-muted-foreground bg-muted/20 m-8 rounded-lg border border-dashed pt-32">
@@ -104,7 +100,6 @@ export default function DynamicPage() {
         )}
       </main>
 
-      {/* 4. FOOTER */}
       {config.footer.activo && (
         <BloqueFooter
           data={footerData as any}

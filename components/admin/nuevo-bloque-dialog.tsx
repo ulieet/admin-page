@@ -42,25 +42,20 @@ interface NuevoBloqueDialogProps {
   siguienteOrden: number
 }
 
-// ORDEN REORGANIZADO: Intro -> Contenido -> Social -> Conversión
 const tiposBloques = [
-  // --- INTRODUCCIÓN ---
   { tipo: "banner", nombre: "Banner", descripcion: "Sección destacada con imagen de fondo", icono: ImageIcon },
   { tipo: "announcement", nombre: "Barra de Anuncios", descripcion: "Cinta superior para ofertas o avisos", icono: Megaphone },
   { tipo: "titulo-parrafos", nombre: "Título y Párrafos Divididos", descripcion: "Sección con título primario y texto en 1 o 2 columnas.", icono: Split },
   
-  // --- CONTENIDO ---
   { tipo: "text-image", nombre: "Texto + Imagen", descripcion: "Sección con texto e imagen alternados", icono: FileText },
   { tipo: "features", nombre: "Características", descripcion: "Lista de beneficios o puntos clave", icono: ListChecks },
   { tipo: "cards-3", nombre: "Tarjetas (3 columnas)", descripcion: "3 tarjetas con iconos y contenido", icono: CreditCard },
   { tipo: "image-card-list", nombre: "Lista de Tarjetas Destacadas", descripcion: "Múltiples tarjetas de imagen en 3 o 4 columnas", icono: LayoutGrid },
   { tipo: "gallery", nombre: "Galería", descripcion: "Grid de imágenes", icono: Grid3x3Icon },
   
-  // --- SOCIAL PROOF ---
   { tipo: "logo-marquee", nombre: "Carrusel de Logos", descripcion: "Cinta deslizante infinita de marcas", icono: MoveHorizontal },
   { tipo: "stats", nombre: "Estadísticas", descripcion: "Números destacados para mostrar métricas", icono: BarChart3 },
 
-  // --- CIERRE Y CONVERSIÓN ---
   { tipo: "faq", nombre: "Preguntas Frecuentes (FAQ)", descripcion: "Lista desplegable de preguntas y respuestas", icono: HelpCircle },
   { tipo: "form", nombre: "Formulario", descripcion: "Formulario de contacto personalizable", icono: FormInput },
   { tipo: "cta", nombre: "Llamada a la Acción (CTA)", descripcion: "Bloque de conversión con botones", icono: MousePointerClick },

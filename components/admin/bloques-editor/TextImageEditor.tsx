@@ -1,3 +1,5 @@
+// components/admin/blocks/TextImageEditor.tsx
+
 "use client"
 
 import React from "react"
@@ -21,22 +23,18 @@ export function TextImageEditor({ data, onChange }: TextImageEditorProps) {
     onChange(field, value);
   };
 
-  // Aseguramos que puntos sea un array
   const puntos = Array.isArray(data.puntos) ? data.puntos : [];
 
-  // Función para cambiar un punto específico
   const handlePuntoChange = (index: number, value: string) => {
     const nuevosPuntos = [...puntos];
     nuevosPuntos[index] = value;
     handleDataChange("puntos", nuevosPuntos);
   };
 
-  // Agregar un punto vacío
   const handleAddPunto = () => {
     handleDataChange("puntos", [...puntos, ""]);
   };
 
-  // Eliminar un punto
   const handleRemovePunto = (index: number) => {
     const nuevosPuntos = puntos.filter((_, i) => i !== index);
     handleDataChange("puntos", nuevosPuntos);
@@ -46,7 +44,6 @@ export function TextImageEditor({ data, onChange }: TextImageEditorProps) {
     <div className="space-y-6 p-4">
       <h3 className="text-lg font-semibold border-b pb-2">Editor Texto + Imagen</h3>
 
-      {/* Título */}
       <div className="space-y-2">
         <Label htmlFor="titulo">Título Principal</Label>
         <Input
@@ -57,19 +54,16 @@ export function TextImageEditor({ data, onChange }: TextImageEditorProps) {
         />
       </div>
 
-      {/* Imagen */}
       <div className="space-y-2">
         <Label>Imagen Destacada</Label>
         <div className="bg-slate-50 p-4 rounded-lg border border-dashed">
             <ImageUpload 
                 value={data.imagen || ""} 
                 onChange={(url) => handleDataChange("imagen", url)}
-                placeholder="Subir imagen..."
             />
         </div>
       </div>
 
-      {/* Posición Imagen */}
       <div className="flex items-center justify-between border p-4 rounded-lg bg-white shadow-sm">
         <div className="space-y-0.5">
           <Label>Posición de la Imagen</Label>
@@ -78,14 +72,13 @@ export function TextImageEditor({ data, onChange }: TextImageEditorProps) {
           </p>
         </div>
         <Switch
-          checked={data.imagenDerecha}
+          checked={!!data.imagenDerecha} 
           onCheckedChange={(checked) => handleDataChange("imagenDerecha", checked)}
         />
       </div>
 
       <Separator />
 
-      {/* Texto Principal */}
       <div className="space-y-2">
         <Label htmlFor="texto">Contenido de Texto</Label>
         <Textarea
@@ -99,7 +92,6 @@ export function TextImageEditor({ data, onChange }: TextImageEditorProps) {
 
       <Separator />
 
-      {/* LISTA DINÁMICA DE PUNTOS */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
             <Label className="flex items-center gap-2">

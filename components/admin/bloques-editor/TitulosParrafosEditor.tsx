@@ -19,7 +19,6 @@ export function TituloParrafosEditor({ data, onChange }: TituloParrafosEditorPro
     onChange(field, value);
   };
 
-  // Valores por defecto seguros para evitar errores de "controlled vs uncontrolled"
   const alineacion = data.alineacion || "centrado";
   const colorFondo = data.colorFondo || "#ffffff";
 
@@ -27,7 +26,6 @@ export function TituloParrafosEditor({ data, onChange }: TituloParrafosEditorPro
     <div className="space-y-6 p-4">
       <h3 className="text-lg font-semibold border-b pb-2">Contenido de Título y Párrafos</h3>
 
-      {/* Título Principal */}
       <div className="space-y-2">
         <Label htmlFor="titulo">Título Principal</Label>
         <Input
@@ -40,14 +38,13 @@ export function TituloParrafosEditor({ data, onChange }: TituloParrafosEditorPro
       
       <Separator />
 
-      {/* Alineación */}
       <div className="space-y-2">
         <Label htmlFor="alineacion">Diseño / Alineación</Label>
         <Select 
             value={alineacion} 
             onValueChange={(value) => handleDataChange("alineacion", value)}
         >
-            <SelectTrigger id="alineacion" className="w-full md:w-[250px]">
+            <SelectTrigger id="alineacion" className="w-full md:w-64">
                 <SelectValue placeholder="Seleccionar diseño" />
             </SelectTrigger>
             <SelectContent>
@@ -62,7 +59,6 @@ export function TituloParrafosEditor({ data, onChange }: TituloParrafosEditorPro
 
       <Separator />
 
-      {/* Párrafos */}
       <div className="space-y-4">
         <div className="space-y-2">
             <Label htmlFor="parrafoIzquierda">
@@ -77,7 +73,6 @@ export function TituloParrafosEditor({ data, onChange }: TituloParrafosEditorPro
             />
         </div>
         
-        {/* Mostramos el segundo campo SOLO si está en modo dividido */}
         {alineacion === 'dividido' && (
             <div className="space-y-2 bg-slate-50 p-3 rounded border">
                 <Label htmlFor="parrafoDerecha" className="text-blue-700">Párrafo Columna 2</Label>
@@ -94,7 +89,6 @@ export function TituloParrafosEditor({ data, onChange }: TituloParrafosEditorPro
       
       <Separator />
 
-      {/* Color de Fondo */}
       <div className="space-y-2">
         <Label>Color de Fondo de la Sección</Label>
         <ColorPicker 

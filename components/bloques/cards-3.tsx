@@ -26,7 +26,6 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
   const subtitle = data.description || "Soluciones profesionales para tu crecimiento."
   const rawItems = data.items?.length > 0 ? data.items : DEMO_ITEMS
   
-  // Variables CSS
   const primaryColor = "var(--color-primario)"
   const bgColor = "var(--color-fondo)"
   const textColor = "var(--color-texto)"
@@ -38,7 +37,6 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
 
   const getLink = (link?: string) => link && link.trim() !== "" ? link : "#"
 
-  // --- ESTILO 1: MINIMALISTA (Sin bordes, limpio) ---
   if (variant === "minimal") {
     return (
       <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -50,7 +48,6 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
           <div className="grid md:grid-cols-3 gap-8">
             {rawItems.map((item: any, idx: number) => (
               <div key={idx} className="group flex flex-col items-start gap-3 h-full">
-                {/* Icono con fondo suave para contraste seguro */}
                 <div 
                     className="w-12 h-12 rounded-lg flex items-center justify-center mb-1 transition-colors bg-slate-100" 
                     style={{ color: primaryColor }}
@@ -76,7 +73,6 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
     )
   }
 
-  // --- ESTILO 2: INTERACTIVO (Borde al pasar mouse) ---
   if (variant === "interactive") {
     return (
       <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor, color: textColor }}>
@@ -86,7 +82,6 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
         </div>
         <div className="container mx-auto max-w-5xl grid md:grid-cols-3 gap-5">
           {rawItems.map((item: any, idx: number) => (
-            // FIX: Agregamos shadow-sm por defecto y border-slate-200 para que se note sobre blanco
             <Link 
                 href={getLink(item.link)} 
                 key={idx} 
@@ -110,7 +105,6 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
     )
   }
 
-  // --- ESTILO 3: CORPORATIVO (Default) ---
   return (
     <section className="py-20 px-4 transition-colors" style={{ backgroundColor: bgColor }}>
       <div className="container mx-auto max-w-5xl text-center mb-12">
@@ -122,14 +116,10 @@ export function BloqueCards3({ data, variant = "corporate" }: BloqueCards3Props)
         {rawItems.map((item: any, idx: number) => (
           <Card 
             key={idx} 
-            // ✅ FIX VISIBILIDAD: 
-            // 1. 'shadow-md': Sombra más fuerte para despegarla del fondo blanco.
-            // 2. 'border-slate-200': Mantenemos el borde sutil pero la sombra ayuda.
-            // 3. 'bg-white': Fondo blanco puro.
+           
             className="border border-slate-200 bg-white shadow-md hover:shadow-xl transition-all duration-300 p-8 flex flex-col items-center text-center rounded-xl h-full group"
           >
             
-            {/* Icono sobre círculo gris claro (siempre visible) */}
             <div 
               className="w-16 h-16 rounded-full flex items-center justify-center mb-6 shadow-sm shrink-0 transition-transform group-hover:scale-110 bg-slate-100"
               style={{ color: primaryColor }}
